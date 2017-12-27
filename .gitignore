@@ -5,6 +5,8 @@
 
 /StreamingAssets/**.meta
 
+!*.dll
+
 # Game
 /[Aa]ssemblies/*.dll
 /[Aa]ssemblies/*.mdb

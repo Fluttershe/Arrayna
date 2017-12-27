@@ -1,5 +1,0 @@
-D:\Arrayna\Arrayna\WeaponAssemblage\obj\Debug\WeaponAssemblage.csprojResolveAssemblyReference.cache
-D:\Arrayna\Assets\Assemblies\WeaponAssemblage.dll
-D:\Arrayna\Assets\Assemblies\WeaponAssemblage.pdb
-D:\Arrayna\Arrayna\WeaponAssemblage\obj\Debug\WeaponAssemblage.dll
-D:\Arrayna\Arrayna\WeaponAssemblage\obj\Debug\WeaponAssemblage.pdb

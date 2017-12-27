@@ -1,19 +1,18 @@
 /[Ll]ibrary/
 /[Tt]emp/
-/[Oo]bj/
 /[Bb]uild/
+/[Oo]bj/
 
 /StreamingAssets/**.meta
 
 !*.dll
 
 # Game
-/[Aa]ssemblies/*.dll
-/[Aa]ssemblies/*.mdb
-/[Aa]ssemblies/*.mdb.meta
-/[Aa]ssemblies/*.pdb
-/[Aa]ssemblies/*.pdb.meta
-/Generated/
+Assets/Assemblies/*.dll
+Assets/Assemblies/*.mdb
+Assets/Assemblies/*.mdb.meta
+Assets/Assemblies/*.pdb
+Assets/Assemblies/*.pdb.meta
 
 # Operating System
 .DS_Store
@@ -26,10 +25,11 @@ Thumbs.db.meta
 *.user
 *.vs
 /[Bb]in/
-/[Oo]bj/
 
 # Unity3D generated meta files
 *.pidb.meta
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+Arrayna/**/obj/Debug/

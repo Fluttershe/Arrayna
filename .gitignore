@@ -1,0 +1,33 @@
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+
+/StreamingAssets/**.meta
+
+# Game
+/[Aa]ssemblies/*.dll
+/[Aa]ssemblies/*.mdb
+/[Aa]ssemblies/*.mdb.meta
+/[Aa]ssemblies/*.pdb
+/[Aa]ssemblies/*.pdb.meta
+/Generated/
+
+# Operating System
+.DS_Store
+desktop.ini
+desktop.ini.meta
+Thumbs.db
+Thumbs.db.meta
+
+# Visual Studio
+*.user
+*.vs
+/[Bb]in/
+/[Oo]bj/
+
+# Unity3D generated meta files
+*.pidb.meta
+
+# Unity3D Generated File On Crash Reports
+sysinfo.txt

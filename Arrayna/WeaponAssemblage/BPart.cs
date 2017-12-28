@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WeaponAssemblage
 {
-    public class BasicPart : MonoBehaviour
+    public class BPart : MonoBehaviour
     {
 
     }

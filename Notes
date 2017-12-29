@@ -17,6 +17,9 @@
 				workspace.partsCount++
 			
 	当部件根接口接近一可用接口时，高亮两个部件，或在接口间画一根线，表示部件可连接
+		When pickUpPart
+		
+	
 		When draggingAPart
 			workspace.readyToAttach = workspace.CheckForNearPort(workspace.heldPart.RootPort -> port) ->
 			{

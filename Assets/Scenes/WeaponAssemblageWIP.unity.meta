@@ -1,11 +1,6 @@
 fileFormatVersion: 2
-<<<<<<< Updated upstream:Assets/Assemblies/Editor/UnityUtility.Editor.dll.mdb.meta
-guid: 66cfd8141043aa34a8950d24447c0155
-timeCreated: 1514512570
-=======
 guid: 39f82c85fd1ebad499bd74375288a2dd
-timeCreated: 1514529767
->>>>>>> Stashed changes:Assets/Scenes/WeaponAssemblageWIP.unity.meta
+timeCreated: 1514539428
 licenseType: Free
 DefaultImporter:
   userData: 

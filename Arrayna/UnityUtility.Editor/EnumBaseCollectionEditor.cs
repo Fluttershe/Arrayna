@@ -5,7 +5,7 @@ using UnityUtility;
 
 namespace UnityUtility.Editor
 {
-	[CustomPropertyDrawer(typeof(UnityUtility.EnumBaseCollection), true)]
+	[CustomPropertyDrawer(typeof(EnumBaseCollection), true)]
 	public class EnumBaseCollectionEditor : PropertyDrawer
 	{
 		protected SerializedProperty keys, values;
@@ -15,8 +15,7 @@ namespace UnityUtility.Editor
 		float[] elementHeights;
 		string[] enumNames;
 		const float lineHeight = 16f;
-		const float indent = 8f;
-		object[] dummyArg = new object[1];
+		const float indent = 10f;
 
 		public override float GetPropertyHeight(
 			SerializedProperty property, GUIContent label)
@@ -88,12 +87,39 @@ namespace UnityUtility.Editor
 					var i_value = values.GetArrayElementAtIndex(i);
 					EditorGUI.LabelField(new Rect(k_left, top, k_width,
 						keyHeights[i]), enumNames[i]);
-					EditorGUI.PropertyField(new Rect(v_left, top, v_width,
-						valueHeights[i]), i_value, GUIContent.none);
+					ValueField(new Rect(v_left, top, v_width,
+						valueHeights[i]), i_value, i);
 					top += elementHeights[i];
 				}
 				
 				((EnumBaseCollection)property.GetObject()).EditorUpdate();
+			}
+		}
+		
+		public virtual void ValueField(Rect position,
+			SerializedProperty property, int index)
+		{
+			if (property.isExpanded)
+			{
+				position.yMax = position.yMin + lineHeight - 1;
+				EditorGUI.PropertyField(position, property, GUIContent.none);
+
+				var totalIndent = (EditorGUI.indentLevel * indent);
+				var width = position.width - totalIndent - 2f;
+				var labelLeft = position.xMin - width - totalIndent -2f;
+
+				var enumerator = property.GetEnumerator();
+				while (enumerator.MoveNext())
+				{
+					var top = position.yMin += lineHeight + 2;
+					position.yMax = position.yMin + lineHeight - 1;
+					EditorGUI.LabelField(new Rect(labelLeft, top, width, lineHeight), property.name);
+					ValueField(position, (SerializedProperty)enumerator.Current, index + 1);
+				}
+			}
+			else
+			{
+				EditorGUI.PropertyField(position, property, GUIContent.none);
 			}
 		}
 	}

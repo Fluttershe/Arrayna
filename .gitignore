@@ -13,6 +13,11 @@ Assets/Assemblies/*.mdb
 Assets/Assemblies/*.mdb.meta
 Assets/Assemblies/*.pdb
 Assets/Assemblies/*.pdb.meta
+Assets/Assemblies/Editor/*.dll
+Assets/Assemblies/Editor/*.mdb
+Assets/Assemblies/Editor/*.mdb.meta
+Assets/Assemblies/Editor/*.pdb
+Assets/Assemblies/Editor/*.pdb.meta
 
 # Operating System
 .DS_Store

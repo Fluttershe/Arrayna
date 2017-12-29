@@ -1,0 +1,56 @@
+﻿界面：
+	搭建界面
+	部件菜单
+	属性界面
+	
+初始：
+	搭建界面为空；属性界面清零；部件菜单显示所有可用部件，可滚动
+	
+部件菜单：
+	鼠标悬浮于一部件上方时，显示其信息
+
+拖出部件：
+	无部件情况下，部件菜单中只有枪身可用，能且只能摆放一个枪身
+		When tryAdd a weaponPart
+			if workspace.partsCount < workspace.partsLimit
+				AddPart
+				workspace.partsCount++
+			
+	当部件根接口接近一可用接口时，高亮两个部件，或在接口间画一根线，表示部件可连接
+		When draggingAPart
+			workspace.readyToAttach = workspace.CheckForNearPort(workspace.heldPart.RootPort -> port) ->
+			{
+				int closest = -1;
+				float min = +infinite;
+				for (int i = 0; i < portList; i ++)
+				{
+					if (!portList[i].CanAttachBy(port)) continue;
+					var dist = (port.position - portList[i].position).sqrMagnitude;
+					if (dist < min)
+					{
+						min = dist;
+						closest = i;
+					}
+				}
+				
+				if (min < highLightDist)
+					return portList[closest];
+				return null;
+			}
+			if workspace.readyToAttach isnot null
+				DrawHighLight(workspace.readyToAttach);
+				DrawHighLight(workspace.heldPart.RootPort);
+		
+		When ReleasingPart
+			if wasHoveringMenu 
+				part returns to menu;
+			if workspace.readyToAttach isnot null
+				workspace.readyToAttach.AttachPart(workspace.heldPart)
+			
+			
+			
+	当可用接口已有部件，显示部件信息对比
+	当接入接口时，解除原部件并bump，接入现持部件
+	接入或解除部件后，通知武器更新信息(traverse(Weapon.rootPart))
+	武器遍历所有部件，收集数据并做出计算:(Sum(base) * Sum(mod))
+	

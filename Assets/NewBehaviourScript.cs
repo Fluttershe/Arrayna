@@ -9,6 +9,11 @@ public class NewBehaviourScript : MonoBehaviour {
 	public MultiSelectablePartType typ;
 
 	[SerializeField]
+	public AttributeCollection col;
+
+	public AttributeValue val;
+
+	[SerializeField]
 	public PartType Ttypes;
 
 	// Use this for initialization
@@ -18,6 +23,13 @@ public class NewBehaviourScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		var hit = Physics2D.Raycast(transform.position, transform.right);
+		if (hit.transform != null)
+		{
+			Debug.DrawLine(transform.position, hit.point);
+			Debug.Log(hit.transform.name);
+		}
+
 		if (typ[PartType.Addon])
 			if (typ[PartType.Barrel])
 				if (typ[PartType.BarrelAddon])

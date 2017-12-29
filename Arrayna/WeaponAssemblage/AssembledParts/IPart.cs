@@ -46,9 +46,6 @@ namespace WeaponAssemblage
 		Bullet,
 	}
 
-	[Serializable]
-	public class MultiSelectablePartType : EnumBaseCollection<PartType, bool> { }
-
 	/// <summary>
 	/// 武器的属性类型
 	/// </summary>
@@ -88,28 +85,21 @@ namespace WeaponAssemblage
 		Stabilization,
 	}
 
-	[Serializable]
-	public class AttributeCollection : EnumBaseCollection<AttributeType, AttributeValue> { }
-
 	/// <summary>
 	/// 属性值，用于存放一个属性对应的数值
 	/// </summary>
+	[Serializable]
 	public struct AttributeValue
 	{
 		/// <summary>
-		/// 参数类型
-		/// </summary>
-		public AttributeType Type { get; set; }
-
-		/// <summary>
 		/// 基本值
 		/// </summary>
-		public float BaseValue { get; set; }
+		public float BaseValue;
 
 		/// <summary>
 		/// 比例值
 		/// </summary>
-		public float MODValue { get; set; }
+		public float MODValue;
 	}
 
 	/// <summary>
@@ -175,14 +165,14 @@ namespace WeaponAssemblage
 		MultiSelectablePartType SuitableType { get; }
 
 		/// <summary>
-		/// 接口的位置
+		/// 接口的位置，x和y代表位置，z代表角度
 		/// </summary>
-		Vector2 Position { get; }
+		Vector3 Position { get; set; }
 		
 		/// <summary>
 		/// 目前该端口所隶属的部件
 		/// </summary>
-		IPart Part { get; }
+		IPart Part { get; set; }
 
 		/// <summary>
 		/// 目前该端口所连接的部件
@@ -220,20 +210,47 @@ namespace WeaponAssemblage
 		event Action<IPartPort, IPartPort> OnPortDetached;
 	}
 
+	/// <summary>
+	/// 可多选的部件类型类
+	/// </summary>
+	[Serializable]
+	public class MultiSelectablePartType : EnumBaseCollection<PartType, bool> { }
+
+	/// <summary>
+	/// 武器属性的集合类
+	/// </summary>
+	[Serializable]
+	public class AttributeCollection : EnumBaseCollection<AttributeType, AttributeValue> { }
+
+	/// <summary>
+	/// 基本部件接口类
+	/// </summary>
+	/// TODO: 写一个Editor来编辑接口
 	public class BasicPort : MonoBehaviour, IPartPort
 	{
 		[SerializeField]
 		protected MultiSelectablePartType suitableType;
 		public MultiSelectablePartType SuitableType => suitableType;
 
-		public Vector2 Position { get; private set; }
+		public Vector3 Position { get; set; }
 
-		public IPart Part { get; private set; }
+		public IPart Part { get; set; }
 
 		public IPart AttachedPart { get; private set; }
+		
+		Action<IPartPort, IPartPort> onPortAttached;
+		public event Action<IPartPort, IPartPort> OnPortAttached
+		{
+			add => onPortAttached += value;
+			remove => onPortAttached -= value;
+		}
 
-		public event Action<IPartPort, IPartPort> OnPortAttached;
-		public event Action<IPartPort, IPartPort> OnPortDetached;
+		Action<IPartPort, IPartPort> onPortDetached;
+		public event Action<IPartPort, IPartPort> OnPortDetached
+		{
+			add => onPortDetached += value;
+			remove => onPortDetached -= value;
+		}
 
 		public bool CanAttachBy(IPart part)
 		{
@@ -242,12 +259,29 @@ namespace WeaponAssemblage
 
 		public bool AttachPart(IPart part)
 		{
-			throw new NotImplementedException();
+			if (!CanAttachBy(part))
+			{
+				Debug.LogWarning($"该端口不兼容 {part.Type} 类型的部件！");
+				return false;
+			}
+
+			if (AttachedPart == null
+			|| (AttachedPart != null && DetachPart() != null))
+			{
+				AttachedPart = part;
+			}
+
+			onPortAttached?.Invoke(this, part.RootPort);
+
+			return true;
 		}
 
 		public IPart DetachPart()
 		{
-			throw new NotImplementedException();
+			var part = AttachedPart;
+			if (AttachedPart != null) AttachedPart = null;
+			onPortDetached?.Invoke(this, part.RootPort);
+			return part;
 		}
 	}
 
@@ -256,10 +290,6 @@ namespace WeaponAssemblage
 	/// </summary>
 	public class BasicPart : MonoBehaviour, IPart
 	{
-		[SerializeField, Tooltip("部件的重量")]
-		protected int weight;
-		public int Weight => weight;
-
 		[SerializeField, Tooltip("部件的类型")]
 		protected PartType type;
 		public PartType Type => type;
@@ -289,7 +319,7 @@ namespace WeaponAssemblage
 			remove { onPartDetached -= value; }
 		}
 
-		public bool CanAttachTo(IPartPort port)
+		public virtual bool CanAttachTo(IPartPort port)
 		{
 			return port.CanAttachBy(this);
 		}
@@ -299,12 +329,18 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		public bool AddPort(IPartPort port)
+		public virtual bool AddPort(IPartPort port)
 		{
 			if (port == null) throw new NullReferenceException();
 
-			if (ports.Contains(port)) Debug.LogWarning($"{this.name} 已经包含此接口");
+			if (ports.Contains(port))
+			{
+				Debug.LogWarning($"{this.name} 已经包含此接口");
+				return false;
+			}
 
+			ports.Add(port);
+			port.Part = this;
 			// 挂接事件
 			port.OnPortDetached += PartDetached;
 			port.OnPortAttached += PartAttached;
@@ -316,12 +352,18 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		public bool RemovePort(IPartPort port)
+		public virtual bool RemovePort(IPartPort port)
 		{
 			if (port == null) throw new NullReferenceException();
 
-			if (!ports.Contains(port)) Debug.LogWarning($"{this.name} 并不包含此接口");
+			if (!port.Part.Equals(this))
+			{
+				Debug.LogWarning($"{this.name} 并不包含此接口");
+				return false;
+			}
 
+			ports.Remove(port);
+			port.Part = null;
 			// 取消事件
 			port.OnPortDetached -= PartDetached;
 			port.OnPortAttached -= PartAttached;
@@ -333,7 +375,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="callerport"></param>
 		/// <param name="calleeport"></param>
-		void PartAttached(IPartPort callerport, IPartPort calleeport)
+		protected virtual void PartAttached(IPartPort callerport, IPartPort calleeport)
 		{
 			if (!callerport.Part.Equals(this)) return;
 
@@ -345,7 +387,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="callerport"></param>
 		/// <param name="calleeport"></param>
-		void PartDetached(IPartPort callerport, IPartPort calleeport)
+		protected virtual void PartDetached(IPartPort callerport, IPartPort calleeport)
 		{
 			if (!callerport.Part.Equals(this)) return;
 

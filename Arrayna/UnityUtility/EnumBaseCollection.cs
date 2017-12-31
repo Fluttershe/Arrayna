@@ -28,12 +28,15 @@ namespace UnityUtility
 		protected List<E> keys = new List<E>();
 
 		[SerializeField]
-		protected List<V> values = new List<V>();
+		protected List<V> vals = new List<V>();
+
+		protected Type type;
 
 		public EnumBaseCollection()
 		{
 			if (!typeof(E).IsEnum) throw new ArgumentException($"{typeof(E)} 不是枚举类型！");
-			var eValues = Enum.GetValues(typeof(E));
+			type = typeof(E);
+			var eValues = Enum.GetValues(type);
 			int enumNum = eValues.Length;
 
 			dict = new Dictionary<E, V>();
@@ -42,7 +45,7 @@ namespace UnityUtility
 			{
 				dict.Add((E)eValues.GetValue(i), default(V));
 				keys.Add((E)eValues.GetValue(i));
-				values.Add(default(V));
+				vals.Add(default(V));
 			}
 		}
 
@@ -54,10 +57,17 @@ namespace UnityUtility
 
 			for (int i = 0; i < length; i++)
 			{
-				dict.Add(collection.keys[i], collection.values[i]);
+				dict.Add(collection.keys[i], collection.vals[i]);
 				keys.Add(collection.keys[i]);
-				values.Add(collection.values[i]);
+				vals.Add(collection.vals[i]);
 			}
+		}
+
+		public void Clear()
+		{
+			dict.Clear();
+			keys.Clear();
+			vals.Clear();
 		}
 
 		/// <summary>
@@ -65,12 +75,19 @@ namespace UnityUtility
 		/// </summary>
 		public override void Init()
 		{
-			if (dict != null) return;
+			if (dict != null || dict.Count > 0) return;
+
+			Clear();
+			var eValues = Enum.GetValues(typeof(E));
+			int enumNum = eValues.Length;
 
 			dict = new Dictionary<E, V>();
-			for (int i = 0; i < keys.Count; i++)
+
+			for (int i = 0; i < enumNum; i++)
 			{
-				dict[keys[i]] = values[i];
+				dict.Add((E)eValues.GetValue(i), default(V));
+				keys.Add((E)eValues.GetValue(i));
+				vals.Add(default(V));
 			}
 		}
 
@@ -82,7 +99,7 @@ namespace UnityUtility
 			if (!Application.isEditor) return;
 			for (int i = 0; i < keys.Count; i++)
 			{
-				dict[keys[i]] = values[i];
+				dict[keys[i]] = vals[i];
 			}
 		}
 

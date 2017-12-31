@@ -9,7 +9,7 @@ public class NewBehaviourScript : MonoBehaviour {
 	public MultiSelectablePartType typ;
 
 	[SerializeField]
-	public AttributeCollection col;
+	public WeaponAttributes col;
 
 	public AttributeValue val;
 

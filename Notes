@@ -3,6 +3,8 @@
 	部件菜单
 	属性界面
 	
+	（可能需要映射零件的Sprite到UI界面上的Image）
+	
 初始：
 	搭建界面为空；属性界面清零；部件菜单显示所有可用部件，可滚动
 	
@@ -17,10 +19,16 @@
 				workspace.partsCount++
 			
 	当部件根接口接近一可用接口时，高亮两个部件，或在接口间画一根线，表示部件可连接
-		When pickUpPart
+		When HoveringOver -> part
+			DrawHighLight(part);
+			
+		When PointerDown -> part
+			workspace.heldPart = part
+			
+		When DraggingPart
+			if workspace.heldPart != workspace.RootPart AND workspace.heldPart.RootPort.AttachedPart != null
+				workspace.heldPart.RootPort.AttachedPart.DetachPart(workspace.heldPart);
 		
-	
-		When draggingAPart
 			workspace.readyToAttach = workspace.CheckForNearPort(workspace.heldPart.RootPort -> port) ->
 			{
 				int closest = -1;
@@ -40,15 +48,33 @@
 					return portList[closest];
 				return null;
 			}
-			if workspace.readyToAttach isnot null
+			if workspace.readyToAttach != null
 				DrawHighLight(workspace.readyToAttach);
 				DrawHighLight(workspace.heldPart.RootPort);
 		
 		When ReleasingPart
-			if wasHoveringMenu 
+			if wasHoveringOverMenu 
+				workspace.removePart;
 				part returns to menu;
-			if workspace.readyToAttach isnot null
+			if workspace.readyToAttach != null
+				workspace.CombineParts(workspace.readyToAttach -> masterPort, workspace.heldPart -> slavePart) ->
+				{
+					if (!masterPort.AttachPart(slavePart)) return;
+					
+					var slavePort = slavePart.RootPort;
+					
+					slavePort.Parent = null;
+					HeldPart.Parent = slavePort;
+					
+					slavePort.rotation = masterPort.rotation;
+					slavePort.position = masterPort.position;
+					
+					slavePart.Parent = MasterPort.Part;
+					slavePort.Parent = slavePart;
+				}
 				workspace.readyToAttach.AttachPart(workspace.heldPart)
+			... ...
+			workspace.heldPart = null;
 			
 			
 			
@@ -56,4 +82,62 @@
 	当接入接口时，解除原部件并bump，接入现持部件
 	接入或解除部件后，通知武器更新信息(traverse(Weapon.rootPart))
 	武器遍历所有部件，收集数据并做出计算:(Sum(base) * Sum(mod))
+	
+	
+关于武器系统...
+	整个系统大致分三层，武器，部件，和接口
+	武器即代表一把完整的，可以直接使用的武器
+	部件则为武器的成分，决定了武器的属性
+	接口则为部件的成分，决定了部件之间连接的方式
+	
+	// 部件组合关系示例
+	Weapon.RootPart
+		RootPort->Empty
+		Port->Part1
+		Part1
+			RootPort->RootPart
+			Port->Part3
+			Part3
+				RootPort->Part1
+			Port->Empty
+		Port->Part2
+		Part2
+			RootPort->RootPart
+			Port->Empty
+			......
+	
+	武器的核心部件为枪身，所有部件都是基于一个枪身连接扩展开来的。一把武器至少包含枪身，枪管，弹夹，和子弹四个部件。
+	一个部件上有且只有一个根接口，有任意个其它接口。根接口用于连接该部件到其它部件的接口上，其它接口则用于连接其它部件到该部件上。
+	接口与接口之间一一连接，一个接口只能安装特定类型的部件。
+	
+关于部件的连接与移除...
+	当一个部件（从部件）要连接另一个部件（主部件）时...
+		通知主部件连接自身
+	当一个部件（主部件）要连接另一个部件（从部件）时...
+		主部件要有合适的接口，可接纳从部件的类型
+		主部件接口与根部件接口连接
+		更新武器信息
+		
+	当一个部件（从部件）要从另一个部件（主部件）移除时
+		通知主部件移除自身
+	当一个部件（主部件）要移除一个部件（从部件）时
+		主部件从部件列表中找到该部件并移除
+		清理从部件的根接口
+		清理主部件的对应接口
+		更新武器信息
+	
+关于部件的连接与移除(方位)...
+	链接时，将从部件接口替换parent关系，旋转接口至与主部件接口吻合的程度，将接口相互吻合，再次切换parent关系
+	When Connecting ->
+		var masterPort = ReadyToConnect;
+		var slavePort = HeldPart.RootPort;
+		
+		slavePort.Parent = null;
+		HeldPart.Parent = slavePort;
+		
+		slavePort.rotation = masterPort.rotation;
+		slavePort.position = masterPort.position;
+		
+		HeldPart.Parent = MasterPort.Part;
+		slavePort.Parent = HeldPart;
 	

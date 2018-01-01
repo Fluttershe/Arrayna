@@ -11,27 +11,56 @@ namespace WeaponAssemblage
 	/// </summary>
 	public interface IWeapon
 	{
-	}
-	
-	/// <summary>
-	/// 代表一把完整的武器
-	/// </summary>
-	public class BasicWeapon
-	{
 		/// <summary>
 		/// 包含的部件类型
 		/// </summary>
-		public MultiSelectablePartType ContainedPart { get; private set; }
+		MultiSelectablePartType ContainedPart { get; }
 
 		/// <summary>
 		/// 武器的基本数值属性
 		/// </summary>
-		public WeaponAttributes AttributeValues { get; private set; }
+		WeaponAttributes AttributeValues { get; }
 
 		/// <summary>
 		/// 该武器是否完善可用
 		/// </summary>
-		public bool IsCompleted
+		bool IsCompleted { get; }
+
+		/// <summary>
+		/// 该武器的核心部件
+		/// </summary>
+		IPart RootPart { get; }
+
+		/// <summary>
+		/// 计算武器的数值
+		/// </summary>
+		void CompileWeaponAttribute();
+	}
+
+	public abstract class MonoWeapon : MonoBehaviour, IWeapon
+	{
+		public abstract MultiSelectablePartType ContainedPart { get; }
+		public abstract WeaponAttributes AttributeValues { get; }
+		public abstract bool IsCompleted { get; }
+		public abstract IPart RootPart { get; }
+
+		public abstract void CompileWeaponAttribute();
+	}
+
+	/// <summary>
+	/// 代表一把完整的武器
+	/// </summary>
+	public class BasicWeapon : MonoWeapon
+	{
+		[SerializeField]
+		protected MultiSelectablePartType containedPart;
+		public override MultiSelectablePartType ContainedPart => containedPart;
+		
+		[SerializeField]
+		protected WeaponAttributes attributeValues;
+		public override WeaponAttributes AttributeValues => attributeValues;
+		
+		public override bool IsCompleted
 		{
 			get
 			{
@@ -46,13 +75,13 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 武器的核心部件
 		/// </summary>
-		protected IPart rootPart;
-		IPart RootPart => rootPart;
+		protected MonoPart rootPart;
+		public override IPart RootPart => rootPart;
 
 		/// <summary>
 		/// 计算该武器的各项数值
 		/// </summary>
-		public void CompileWeapon()
+		public override void CompileWeaponAttribute()
 		{
 			ContainedPart.Clear();
 			AttributeValues.Clear();

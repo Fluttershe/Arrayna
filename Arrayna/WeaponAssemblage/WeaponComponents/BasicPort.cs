@@ -42,19 +42,13 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part">尝试连接的部件</param>
 		/// <returns>连接成功即返回true，否则返回false</returns>
-		bool AttachPart(IPart part);
+		bool Attach(IPart part);
 
 		/// <summary>
 		/// 尝试移除该端口上的部件
 		/// </summary>
 		/// <returns>返回移除下来的部件</returns>
-		IPart DetachPart();
-
-		/// <summary>
-		/// 尝试从端口上移除该部件
-		/// </summary>
-		/// <returns>返回移除下来的部件</returns>
-		IPart DetachFrom();
+		IPart Detach();
 
 		/// <summary>
 		/// 当有部件与该接口连接时触发该事件
@@ -70,7 +64,6 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 继承了 <see cref="MonoBehaviour"/> 和 <see cref="IPort"/> 的抽象类
 	/// </summary>
-	/// TODO: 写一个Editor来编辑接口
 	public abstract class MonoPort : MonoBehaviour, IPort
 	{
 		public abstract MultiSelectablePartType SuitableType { get; }
@@ -83,13 +76,13 @@ namespace WeaponAssemblage
 		public abstract event Action<IPort, IPort> OnPortAttached;
 		public abstract event Action<IPort, IPort> OnPortDetached;
 
-		public abstract bool AttachPart(IPart part);
+		public abstract bool Attach(IPart part);
+
+		protected abstract bool AttachRoot(IPort port);
 
 		public abstract bool CanAttachBy(IPart part);
 
-		public abstract IPart DetachFrom();
-
-		public abstract IPart DetachPart();
+		public abstract IPart Detach();
 	}
 
 	/// <summary>
@@ -150,7 +143,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		public override bool AttachPart(IPart part)
+		public override bool Attach(IPart part)
 		{
 			if (!CanAttachBy(part))
 			{
@@ -158,14 +151,27 @@ namespace WeaponAssemblage
 				return false;
 			}
 
-			if (AttachedPort != null && DetachPart() == null)
+			if (AttachedPort != null && Detach() == null)
 				return false;
 
 			// Casting.. Dirty?
 			attachedPort = (MonoPort)part.RootPort;
+			((BasicPort)attachedPort).AttachRoot(this);
 
 			onPortAttached?.Invoke(this, part.RootPort);
 
+			return true;
+		}
+
+		protected override bool AttachRoot(IPort port)
+		{
+			if (!this.part.RootPort.Equals(this))
+			{
+				Debug.Log($"This function should be called by root port only! \nthis part is:{part.PartName}\n The attach port is from {port.Part.PartName}");
+				return false;
+			}
+			if (this.attachedPort != null) Debug.LogWarning($"This rootport isn't empty! this is part {this.part.PartName}");
+			this.attachedPort = (MonoPort)port;
 			return true;
 		}
 
@@ -173,21 +179,20 @@ namespace WeaponAssemblage
 		/// 从连接接口上移除部件
 		/// </summary>
 		/// <returns></returns>
-		public override IPart DetachPart()
+		public override IPart Detach()
 		{
+			if (Part.RootPort.Equals(this))
+			{
+				var part = AttachedPort.Detach();
+				this.attachedPort = null;
+				return part;
+			}
+			if (attachedPort == null) return null;
 			var port = AttachedPort;
 			attachedPort = null;
 			onPortDetached?.Invoke(this, port);
+			
 			return port.Part;
-		}
-
-		/// <summary>
-		/// 把自身从所连接的部件上移除
-		/// </summary>
-		/// <returns></returns>
-		public override IPart DetachFrom()
-		{
-			return AttachedPort.DetachPart();
 		}
 	}
 }

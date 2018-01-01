@@ -67,7 +67,7 @@ namespace WeaponAssemblage
 		{
 			DrawDefaultInspector();
 
-			if (GUILayout.Button("Add Port"))
+			if (GUILayout.Button("添加接口"))
 			{
 				var count = part.PortCount;
 				var port = new GameObject($"port{count}").AddComponent<BasicPort>();
@@ -80,11 +80,25 @@ namespace WeaponAssemblage
 				}
 			}
 
-			if (selectedPort.IsExists())
+			if (selectedPort != null && selectedPort.IsExists())
 			{
-				if (!serializedPort.IsExists())
-					GetSelectedPortInfo();
-				DrawSelectedPortInspector();
+				if (GUILayout.Button("移除接口"))
+				{
+					if (!part.RemovePort(selectedPort))
+					{
+						Debug.LogWarning("移除接口失败！");
+					}
+					else
+					{
+						selectedPort = null;
+					}
+				}
+				else
+				{
+					if (!serializedPort.IsExists())
+						GetSelectedPortInfo();
+					DrawSelectedPortInspector();
+				}
 			}
 		}
 

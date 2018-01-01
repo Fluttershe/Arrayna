@@ -132,8 +132,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 继承了 <see cref="MonoBehaviour"/> 和 <see cref="IPart"/> 的基本部件抽象类
 	/// </summary>
-	/// TODO: 写一个Editor来编辑接口
-	public abstract class MonoPart : MonoBehaviour, IPart
+	public abstract class MonoPart : MonoBehaviour, IPart, ISerializationCallbackReceiver
 	{
 		public abstract string PartName { get; }
 
@@ -161,6 +160,10 @@ namespace WeaponAssemblage
 		public abstract bool CanAttachTo(IPort port);
 
 		public abstract bool RemovePort(IPort port);
+
+		public abstract void OnBeforeSerialize();
+
+		public abstract void OnAfterDeserialize();
 	}
 
 	/// <summary>
@@ -362,6 +365,34 @@ namespace WeaponAssemblage
 			if (!callerport.Part.Equals(this)) return;
 
 			onPartDetached?.Invoke(this, calleeport.Part);
+		}
+
+		////// Unity Serialization //////
+		
+		public override void OnBeforeSerialize()
+		{
+			monoports.Clear();
+			for (int i = 0; i < ports.Count; i ++)
+			{
+				monoports.Add((MonoPort)ports[i]);
+				if (monoports[i] == null)
+				{
+					Debug.Log("端口异常，有非继承于MonoPort的端口");
+				}
+			}
+		}
+
+		public override void OnAfterDeserialize()
+		{
+			ports.Clear();
+			for (int i = 0; i < monoports.Count; i++)
+			{
+				ports.Add(monoports[i]);
+				if (ports[i] == null)
+				{
+					Debug.Log("端口异常，有端口为空");
+				}
+			}
 		}
 	}
 }

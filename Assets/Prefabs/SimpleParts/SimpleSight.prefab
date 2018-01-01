@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4498853326222540}
   - component: {fileID: 114052177923291656}
-  - component: {fileID: 61940809894330476}
+  - component: {fileID: 60714239368109138}
   m_Layer: 0
   m_Name: SimpleSight
   m_TagString: Untagged
@@ -96,7 +96,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1063137179768182}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.23812641, y: 0.21695772, z: 0}
+  m_LocalPosition: {x: 2.36, y: -0.797, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4494050199374488}
@@ -131,8 +131,8 @@ Transform:
   m_Father: {fileID: 4498853326222540}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &61940809894330476
-BoxCollider2D:
+--- !u!60 &60714239368109138
+PolygonCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -153,9 +153,14 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.29, y: 0.13}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.093800545, y: 0.071023405}
+      - {x: 0.09494734, y: -0.030222058}
+      - {x: -0.15558195, y: -0.02908051}
+      - {x: -0.15523887, y: -0.06290352}
+      - {x: 0.14800978, y: -0.06362462}
+      - {x: 0.14798307, y: 0.07075369}
 --- !u!114 &114052177923291656
 MonoBehaviour:
   m_ObjectHideFlags: 1

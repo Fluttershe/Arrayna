@@ -23,7 +23,7 @@ namespace WeaponAssemblage
 			RootPort = (MonoPort)Part?.RootPort;
 			if (Part == null || RootPort == null)
 			{
-				Debug.LogWarning($"This GameObject {this.name} isn't a weapon part, this agent will be disabled.");
+				Debug.LogWarning($"This GameObject {this.name} isn't a complete weapon part, this agent will be disabled.");
 				this.enabled = false;
 			}
 		}
@@ -31,8 +31,15 @@ namespace WeaponAssemblage
 		public void OnDrag(PointerEventData eventData)
 		{
 			if (Workspace.HeldPart != this) Workspace.HeldPart = this;
-			if (Part.RootPort.AttachedPort != null)
-				Part.RootPort.AttachedPort.DetachPart();
+			if (RootPort.AttachedPort != null)
+			{
+				Debug.Log("Try to detach part...");
+				MonoPart part = (MonoPart)RootPort.Detach();
+				if (part == null)
+					Debug.Log($"解除部件失败？{RootPort.AttachedPort?.Part?.PartName}");
+				else
+					part.transform.parent = null;
+			}
 
 			MovePart(eventData);
 
@@ -73,6 +80,10 @@ namespace WeaponAssemblage
 				if (!Workspace.CombineParts(Workspace.ReadyToConnect, Part))
 				{
 					Workspace.Bump(this);
+				}
+				else
+				{
+					Workspace.ReadyToConnect = null;
 				}
 			}
 
@@ -223,9 +234,13 @@ namespace WeaponAssemblage
 			var min = Single.PositiveInfinity;
 			for (int i = 0; i < portsInWorkspace.Count; i++)
 			{
-				if (!portsInWorkspace[i].CanAttachBy(port.Part)) continue;
+				if (!portsInWorkspace[i].CanAttachBy(port.Part)		// 如果部件类型不合适
+				|| (portsInWorkspace[i].Part == port.Part)			// 如果是自己身上的接口
+				|| (portsInWorkspace[i].AttachedPort != null))		// 如果这个接口已经接有部件
+					continue; // 跳过
+
 				var dist = ((Vector2)port.transform.position - (Vector2)portsInWorkspace[i].transform.position).sqrMagnitude;
-				if (dist < min)
+				if (dist < min) 
 				{
 					min = dist;
 					closest = i;
@@ -239,7 +254,7 @@ namespace WeaponAssemblage
 
 		public static bool CombineParts(MonoPort masterPort, MonoPart slavePart)
 		{
-			if (!masterPort.AttachPart(slavePart)) return false;
+			if (!masterPort.Attach(slavePart)) return false;
 
 			var slavePort = (MonoPort)slavePart.RootPort;
 

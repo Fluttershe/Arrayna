@@ -21,7 +21,7 @@ namespace UnityUtility.Editor
 			SerializedProperty property, GUIContent label)
 		{
 			keys = property.FindPropertyRelative("keys");
-			values = property.FindPropertyRelative("values");
+			values = property.FindPropertyRelative("vals");
 			if (keys == null || values == null)
 				return 16f;
 			length = keys.arraySize;
@@ -91,8 +91,6 @@ namespace UnityUtility.Editor
 						valueHeights[i]), i_value, i);
 					top += elementHeights[i];
 				}
-				
-				((EnumBaseCollection)property.GetObject()).EditorUpdate();
 			}
 		}
 		

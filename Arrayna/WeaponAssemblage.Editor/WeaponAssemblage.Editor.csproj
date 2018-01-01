@@ -4,23 +4,22 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{403319BF-C55C-47C0-A921-6581774B4A08}</ProjectGuid>
+    <ProjectGuid>{4D5589C1-550D-48F5-99BD-46180F3E9E8B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UnityUtility.Editor</RootNamespace>
-    <AssemblyName>UnityUtility.Editor</AssemblyName>
+    <RootNamespace>WeaponAssemblage.Editor</RootNamespace>
+    <AssemblyName>WeaponAssemblage.Editor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\..\Assets\Assemblies\Editor\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,13 +46,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EnumBaseCollectionEditor.cs" />
+    <Compile Include="MonoPartEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\UnityUtility\UnityUtility.csproj">
       <Project>{6333a4c4-35f0-456b-8ef9-bc1875d2c714}</Project>
       <Name>UnityUtility</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\WeaponAssemblage\WeaponAssemblage.csproj">
+      <Project>{f8e56bd7-28cf-4a06-985c-472784a8715f}</Project>
+      <Name>WeaponAssemblage</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

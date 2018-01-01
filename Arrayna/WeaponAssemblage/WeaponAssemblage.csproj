@@ -68,6 +68,7 @@
     <ProjectReference Include="..\UnityUtility\UnityUtility.csproj">
       <Project>{6333a4c4-35f0-456b-8ef9-bc1875d2c714}</Project>
       <Name>UnityUtility</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace UnityUtility
 {
@@ -19,7 +21,7 @@ namespace UnityUtility
 	/// <typeparam name="E"></typeparam>
 	/// TODO: Figure out how to make a serializable Dictionary
 	[Serializable]
-	public abstract class EnumBaseCollection<E, V> : EnumBaseCollection where E : struct, IConvertible where V : struct
+	public abstract class EnumBaseCollection<E, V> : EnumBaseCollection, ISerializationCallbackReceiver, IEnumerable<V> where E : struct, IConvertible where V : struct
 	{
 		[NonSerialized]
 		protected Dictionary<E, V> dict = new Dictionary<E, V>();
@@ -30,7 +32,7 @@ namespace UnityUtility
 		[SerializeField]
 		protected List<V> vals = new List<V>();
 
-		protected Type type;
+		public Type type { get; private set; }
 
 		public EnumBaseCollection()
 		{
@@ -96,7 +98,38 @@ namespace UnityUtility
 		/// </summary>
 		public override void EditorUpdate()
 		{
+			Debug.Log("EditorUpdate");
 			if (!Application.isEditor) return;
+			for (int i = 0; i < keys.Count; i++)
+			{
+				dict[keys[i]] = vals[i];
+			}
+		}
+
+		public IEnumerator<V> GetEnumerator()
+		{
+			return ((IEnumerable<V>)vals).GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return ((IEnumerable<V>)vals).GetEnumerator();
+		}
+
+		public void OnBeforeSerialize()
+		{
+			if (dict == null) dict = new Dictionary<E, V>();
+			var values = Enum.GetValues(type);
+			for (int i = 0; i < values.Length; i ++)
+			{
+				keys[i] = (E)values.GetValue(i);
+				vals[i] = dict[keys[i]];
+			}
+		}
+
+		public void OnAfterDeserialize()
+		{
+			if (dict == null) dict = new Dictionary<E, V>();
 			for (int i = 0; i < keys.Count; i++)
 			{
 				dict[keys[i]] = vals[i];

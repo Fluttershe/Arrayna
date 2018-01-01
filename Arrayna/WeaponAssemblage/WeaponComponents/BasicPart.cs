@@ -80,12 +80,17 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 部件的主接口
 		/// </summary>
-		IPartPort RootPort { get; }
+		IPort RootPort { get; }
 
 		/// <summary>
 		/// 部件的各个接口
 		/// </summary>
-		IEnumerable<IPartPort> Ports { get; }
+		IEnumerable<IPort> Ports { get; }
+
+		/// <summary>
+		/// 部件的接口数量(不包括root port)
+		/// </summary>
+		int PortCount { get; }
 
 		/// <summary>
 		/// 该武器部件的属性
@@ -97,21 +102,21 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		bool CanAttachTo(IPartPort port);
+		bool CanAttachTo(IPort port);
 
 		/// <summary>
 		/// 添加一个接口到该部件上
 		/// </summary>
 		/// <param name="part">尝试连接的部件</param>
 		/// <returns>连接成功即返回true，否则返回false</returns>
-		bool AddPort(IPartPort port);
+		bool AddPort(IPort port, bool isRootPart = false);
 
 		/// <summary>
 		/// 从该部件上移除一个接口
 		/// </summary>
 		/// <param name="part">尝试连接的部件</param>
 		/// <returns>解除成功即返回true，否则返回false</returns>
-		bool RemovePort(IPartPort port);
+		bool RemovePort(IPort port);
 
 		/// <summary>
 		/// 当有部件连接到该部件时触发该事件
@@ -124,52 +129,109 @@ namespace WeaponAssemblage
 		event Action<IPart, IPart> OnPartDetached;
 	}
 
+	/// <summary>
+	/// 继承了 <see cref="MonoBehaviour"/> 和 <see cref="IPart"/> 的基本部件抽象类
+	/// </summary>
+	/// TODO: 写一个Editor来编辑接口
+	public abstract class MonoPart : MonoBehaviour, IPart
+	{
+		public abstract string PartName { get; }
+
+		public abstract string Description { get; }
+
+		public abstract IWeapon Weapon { get; }
+
+		public abstract PartType Type { get; }
+
+		public abstract IPort RootPort { get; }
+
+		public abstract IEnumerable<IPort> Ports { get; }
+
+		public abstract int PortCount { get; }
+
+		public abstract WeaponAttributes Attributes { get; }
+
+		public abstract event Action<IPart, IPart> OnPartAttached;
+		public abstract event Action<IPart, IPart> OnPartDetached;
+
+		public abstract void RecollectPorts();
+
+		public abstract bool AddPort(IPort port, bool isRootPart = false);
+
+		public abstract bool CanAttachTo(IPort port);
+
+		public abstract bool RemovePort(IPort port);
+	}
 
 	/// <summary>
-	/// 基本部件类
+	/// 基本部件类，对 <see cref="MonoPart"/> 的简单实现
 	/// </summary>
-	public class BasicPart : MonoBehaviour, IPart
+	public class BasicPart : MonoPart
 	{
 		[SerializeField, Tooltip("部件的名称")]
 		protected string partName;
-		public string PartName => partName;
+		public override string PartName => partName;
 
 		[SerializeField, Tooltip("部件的描述信息")]
 		protected string description;
-		public string Description => description;
-
-		[SerializeField, Tooltip("部件所属的武器")]
-		protected IWeapon weapon;
-		public IWeapon Weapon { get; }
+		public override string Description => description;
 
 		[SerializeField, Tooltip("部件的类型")]
 		protected PartType type;
-		public PartType Type => type;
+		public override PartType Type => type;
 
 		[SerializeField, Tooltip("部件的根端口")]
-		protected IPartPort rootPort;
-		public IPartPort RootPort => rootPort;
+		protected MonoPort rootPort;
+		public override IPort RootPort => rootPort;
+
+		[SerializeField, Tooltip("部件所属的武器")]
+		protected IWeapon weapon;
+		public override IWeapon Weapon => weapon;
 
 		[SerializeField, Tooltip("部件的各项属性")]
 		protected WeaponAttributes attributes;
-		public WeaponAttributes Attributes => attributes;
+		public override WeaponAttributes Attributes => attributes;
 
 		[SerializeField, Tooltip("部件的各个端口")]
-		protected List<IPartPort> ports = new List<IPartPort>();
-		public IEnumerable<IPartPort> Ports => ports.AsEnumerable();
+		protected List<MonoPort> monoports = new List<MonoPort>();
+		protected List<IPort> ports = new List<IPort>();
+		public override IEnumerable<IPort> Ports => ports.AsEnumerable<IPort>();
+		public override int PortCount => ports.Count;
 
 		Action<IPart, IPart> onPartAttached;
-		event Action<IPart, IPart> IPart.OnPartAttached
+		public override event Action<IPart, IPart> OnPartAttached
 		{
 			add { onPartAttached += value; }
 			remove { onPartAttached -= value; }
 		}
 
 		Action<IPart, IPart> onPartDetached;
-		event Action<IPart, IPart> IPart.OnPartDetached
+		public override event Action<IPart, IPart> OnPartDetached
 		{
 			add { onPartDetached += value; }
 			remove { onPartDetached -= value; }
+		}
+
+		protected void Awake()
+		{
+			RecollectPorts();
+		}
+
+		protected void Start()
+		{
+			// 如果根节点不存在
+			if (rootPort == null)
+			{
+				// 报错并终止该MonoBehaviour
+				Debug.LogError($"该部件 {this.name} 缺少RootPort！");
+				this.enabled = false;
+				return;
+				// 创建一个新节点
+				//var port = new GameObject("RootPort").AddComponent<BasicPort>();
+				//port.transform.parent = this.transform;
+				//rootPort = port;
+				//rootPort.Part = this;
+			}
 		}
 
 		/// <summary>
@@ -177,9 +239,41 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		public virtual bool CanAttachTo(IPartPort port)
+		public override bool CanAttachTo(IPort port)
 		{
 			return port.CanAttachBy(this);
+		}
+
+		/// <summary>
+		/// 重新收集和同步接口，由于Unity无法序列化接口，所以需要另外一个可以序列化的接口列表来处理
+		/// </summary>
+		public override void RecollectPorts()
+		{
+			if (ports.Count <= monoports.Count)
+			{
+				ports.Clear();
+
+				for (int i = 0; i < monoports.Count; i ++)
+				{
+					if (monoports[i].IsExists())
+						ports.Add(monoports[i]);
+					else
+						monoports.RemoveAt(i);
+				}
+			}
+
+			if (ports.Count > monoports.Count)
+			{
+				monoports.Clear();
+
+				for (int i = 0; i < ports.Count; i++)
+				{
+					if (ports[i].IsExists())
+						monoports.Add((MonoPort)ports[i]);
+					else
+						ports.RemoveAt(i);
+				}
+			}
 		}
 
 		/// <summary>
@@ -187,9 +281,25 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		public virtual bool AddPort(IPartPort port)
+		public override bool AddPort(IPort port, bool isRootPart = false)
 		{
-			if (port == null) throw new NullReferenceException();
+			if (port == null) return false;
+
+			if (isRootPart)
+			{
+				if (rootPort == null)
+				{
+					// Casting.. Dirty?
+					rootPort = (MonoPort)port;
+					rootPort.Part = this;
+					return true;
+				}
+				else
+				{
+					Debug.LogWarning("尝试重复添加rootPort！");
+					return false;
+				}
+			}
 
 			if (ports.Contains(port))
 			{
@@ -197,6 +307,7 @@ namespace WeaponAssemblage
 				return false;
 			}
 
+			monoports.Add(port as MonoPort);
 			ports.Add(port);
 			port.Part = this;
 			// 挂接事件
@@ -210,9 +321,9 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="port"></param>
 		/// <returns></returns>
-		public virtual bool RemovePort(IPartPort port)
+		public override bool RemovePort(IPort port)
 		{
-			if (port == null) throw new NullReferenceException();
+			if (port == null) return false;
 
 			if (!port.Part.Equals(this))
 			{
@@ -220,6 +331,7 @@ namespace WeaponAssemblage
 				return false;
 			}
 
+			monoports.Remove(port as MonoPort);
 			ports.Remove(port);
 			port.Part = null;
 			// 取消事件
@@ -233,7 +345,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="callerport"></param>
 		/// <param name="calleeport"></param>
-		protected virtual void PartAttached(IPartPort callerport, IPartPort calleeport)
+		protected virtual void PartAttached(IPort callerport, IPort calleeport)
 		{
 			if (!callerport.Part.Equals(this)) return;
 
@@ -245,7 +357,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="callerport"></param>
 		/// <param name="calleeport"></param>
-		protected virtual void PartDetached(IPartPort callerport, IPartPort calleeport)
+		protected virtual void PartDetached(IPort callerport, IPort calleeport)
 		{
 			if (!callerport.Part.Equals(this)) return;
 

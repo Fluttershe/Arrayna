@@ -8,7 +8,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 部件接口的Interface，用于代表部件上的接口
 	/// </summary>
-	public interface IPartPort
+	public interface IPort
 	{
 		/// <summary>
 		/// 该接口可接纳的部件类型
@@ -28,7 +28,7 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 目前该端口所连接的端口
 		/// </summary>
-		IPartPort AttachedPort { get; }
+		IPort AttachedPort { get; }
 
 		/// <summary>
 		/// 判断一个部件是否可以接到该端口上
@@ -59,39 +59,77 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 当有部件与该接口连接时触发该事件
 		/// </summary>
-		event Action<IPartPort, IPartPort> OnPortAttached;
+		event Action<IPort, IPort> OnPortAttached;
 
 		/// <summary>
 		/// 当有部件与该接口解除时触发该事件
 		/// </summary>
-		event Action<IPartPort, IPartPort> OnPortDetached;
+		event Action<IPort, IPort> OnPortDetached;
 	}
 
 	/// <summary>
-	/// 基本部件接口类
+	/// 继承了 <see cref="MonoBehaviour"/> 和 <see cref="IPort"/> 的抽象类
 	/// </summary>
 	/// TODO: 写一个Editor来编辑接口
-	public class BasicPort : MonoBehaviour, IPartPort
+	public abstract class MonoPort : MonoBehaviour, IPort
+	{
+		public abstract MultiSelectablePartType SuitableType { get; }
+
+		public abstract Vector3 Position { get; set; }
+		public abstract IPart Part { get; set; }
+
+		public abstract IPort AttachedPort { get; }
+
+		public abstract event Action<IPort, IPort> OnPortAttached;
+		public abstract event Action<IPort, IPort> OnPortDetached;
+
+		public abstract bool AttachPart(IPart part);
+
+		public abstract bool CanAttachBy(IPart part);
+
+		public abstract IPart DetachFrom();
+
+		public abstract IPart DetachPart();
+	}
+
+	/// <summary>
+	/// 基本接口类，对 <see cref="MonoPort"/> 的简单实现
+	/// </summary>
+	public class BasicPort : MonoPort
 	{
 		[SerializeField]
 		protected MultiSelectablePartType suitableType;
-		public MultiSelectablePartType SuitableType => suitableType;
+		public override MultiSelectablePartType SuitableType => suitableType;
 
-		public Vector3 Position { get; set; }
+		[SerializeField]
+		protected Vector3 position;
+		public override Vector3 Position
+		{
+			get => position;
+			set => position = value;
+		}
 
-		public IPart Part { get; set; }
+		[SerializeField]
+		protected MonoPart part;
+		public override IPart Part
+		{
+			get => part;
+			set => part = (MonoPart)value;
+		}
 
-		public IPartPort AttachedPort { get; private set; }
+		[SerializeField]
+		protected MonoPort attachedPort;
+		public override IPort AttachedPort => attachedPort;
 
-		Action<IPartPort, IPartPort> onPortAttached;
-		public event Action<IPartPort, IPartPort> OnPortAttached
+		Action<IPort, IPort> onPortAttached;
+		public override event Action<IPort, IPort> OnPortAttached
 		{
 			add => onPortAttached += value;
 			remove => onPortAttached -= value;
 		}
 
-		Action<IPartPort, IPartPort> onPortDetached;
-		public event Action<IPartPort, IPartPort> OnPortDetached
+		Action<IPort, IPort> onPortDetached;
+		public override event Action<IPort, IPort> OnPortDetached
 		{
 			add => onPortDetached += value;
 			remove => onPortDetached -= value;
@@ -102,7 +140,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		public bool CanAttachBy(IPart part)
+		public override bool CanAttachBy(IPart part)
 		{
 			return suitableType[part.Type];
 		}
@@ -112,7 +150,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		public bool AttachPart(IPart part)
+		public override bool AttachPart(IPart part)
 		{
 			if (!CanAttachBy(part))
 			{
@@ -123,7 +161,8 @@ namespace WeaponAssemblage
 			if (AttachedPort != null && DetachPart() == null)
 				return false;
 
-			AttachedPort = part.RootPort;
+			// Casting.. Dirty?
+			attachedPort = (MonoPort)part.RootPort;
 
 			onPortAttached?.Invoke(this, part.RootPort);
 
@@ -134,10 +173,10 @@ namespace WeaponAssemblage
 		/// 从连接接口上移除部件
 		/// </summary>
 		/// <returns></returns>
-		public IPart DetachPart()
+		public override IPart DetachPart()
 		{
 			var port = AttachedPort;
-			AttachedPort = null;
+			attachedPort = null;
 			onPortDetached?.Invoke(this, port);
 			return port.Part;
 		}
@@ -146,7 +185,7 @@ namespace WeaponAssemblage
 		/// 把自身从所连接的部件上移除
 		/// </summary>
 		/// <returns></returns>
-		public IPart DetachFrom()
+		public override IPart DetachFrom()
 		{
 			return AttachedPort.DetachPart();
 		}

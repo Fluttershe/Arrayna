@@ -71,7 +71,7 @@ namespace WeaponAssemblage
 
 			var ports = part.Ports;
 
-			foreach (IPartPort p in ports)
+			foreach (IPort p in ports)
 			{
 				ContainedPart[p.Part.Type] = true;
 				GetPartAttributes(attr, p.Part);

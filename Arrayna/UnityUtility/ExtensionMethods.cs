@@ -5,10 +5,26 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
 
-namespace UnityUtility.Editor
+namespace UnityUtility
 {
 	public static class ExtensionMethods
 	{
+		public static bool IsExists(this object obj)
+		{
+			if (obj == null)
+				return false;
+			bool exists = false;
+			var o = obj as UnityEngine.Object;
+			if ((object)o != null)
+				try
+				{
+					o.hideFlags.Equals(null);
+					exists = true;
+				}
+				catch { }
+			return exists;
+		}
+
 		// From TOMS...
 		// TODO: Figure out those 'reflection' stuffs.
 		static readonly char[] dotSplit = { '.' };

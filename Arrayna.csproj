@@ -295,6 +295,9 @@
     <Reference Include="UnityUtility.Editor">
       <HintPath>Assets\Assemblies\Editor\UnityUtility.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="WeaponAssemblage.Editor">
+      <HintPath>Assets\Assemblies\Editor\WeaponAssemblage.Editor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\NewBehaviourScript.cs" />

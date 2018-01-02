@@ -5,10 +5,11 @@ using UnityEngine;
 public class oneAI : MonoBehaviour
 {
     public int speed;
-    public GameObject Player;
+    public Transform Player;
+    public Transform AI;
 
     private void FixedUpdate()
     {
-        transform.Translate((Player.transform.position - transform.position) * speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(AI.position, Player.position, speed * Time.deltaTime);
     }
 }

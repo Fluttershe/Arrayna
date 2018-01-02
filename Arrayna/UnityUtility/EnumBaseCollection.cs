@@ -12,7 +12,6 @@ namespace UnityUtility
 	public abstract class EnumBaseCollection
 	{
 		public abstract void Init();
-		public abstract void EditorUpdate();
 	}
 	
 	/// <summary>
@@ -79,6 +78,7 @@ namespace UnityUtility
 		{
 			if (dict != null || dict.Count > 0) return;
 
+			Debug.Log("Clear");
 			Clear();
 			var eValues = Enum.GetValues(typeof(E));
 			int enumNum = eValues.Length;
@@ -93,19 +93,6 @@ namespace UnityUtility
 			}
 		}
 
-		/// <summary>
-		/// 仅用于编辑器更新数值
-		/// </summary>
-		public override void EditorUpdate()
-		{
-			Debug.Log("EditorUpdate");
-			if (!Application.isEditor) return;
-			for (int i = 0; i < keys.Count; i++)
-			{
-				dict[keys[i]] = vals[i];
-			}
-		}
-
 		public IEnumerator<V> GetEnumerator()
 		{
 			return ((IEnumerable<V>)vals).GetEnumerator();
@@ -115,6 +102,23 @@ namespace UnityUtility
 		{
 			return ((IEnumerable<V>)vals).GetEnumerator();
 		}
+
+		public virtual V this[E key]
+		{
+			get
+			{
+				Init();
+				return dict[key];
+			}
+
+			set
+			{
+				Init();
+				dict[key] = value;
+			}
+		}
+
+		////// Unity Serialization //////
 
 		public void OnBeforeSerialize()
 		{
@@ -133,21 +137,6 @@ namespace UnityUtility
 			for (int i = 0; i < keys.Count; i++)
 			{
 				dict[keys[i]] = vals[i];
-			}
-		}
-
-		public virtual V this[E key]
-		{
-			get
-			{
-				Init();
-				return dict[key];
-			}
-
-			set
-			{
-				Init();
-				dict[key] = value;
 			}
 		}
 	}

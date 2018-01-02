@@ -64,6 +64,9 @@ namespace UnityUtility
 			}
 		}
 
+		/// <summary>
+		/// 清空内容
+		/// </summary>
 		public void Clear()
 		{
 			dict.Clear();
@@ -72,11 +75,28 @@ namespace UnityUtility
 		}
 
 		/// <summary>
+		/// 把所有值恢复到默认值
+		/// </summary>
+		public void SetDefault()
+		{
+			var eValues = Enum.GetValues(type);
+
+			Clear();
+
+			for (int i = 0; i < eValues.Length; i++)
+			{
+				dict.Add((E)eValues.GetValue(i), default(V));
+				keys.Add((E)eValues.GetValue(i));
+				vals.Add(default(V));
+			}
+		}
+
+		/// <summary>
 		/// 如果没有初始化过该对象，初始化它
 		/// </summary>
 		public override void Init()
 		{
-			if (dict != null || dict.Count > 0) return;
+			if (keys != null && keys.Count > 0) return;
 
 			Debug.Log("Clear");
 			Clear();
@@ -122,12 +142,23 @@ namespace UnityUtility
 
 		public void OnBeforeSerialize()
 		{
-			if (dict == null) dict = new Dictionary<E, V>();
 			var values = Enum.GetValues(type);
-			for (int i = 0; i < values.Length; i ++)
+			if (dict == null)
 			{
-				keys[i] = (E)values.GetValue(i);
-				vals[i] = dict[keys[i]];
+				dict = new Dictionary<E, V>();
+				for (int i = 0; i < values.Length; i++)
+				{
+					dict[(E)values.GetValue(i)] = default(V);
+				}
+			}
+
+			while (keys.Count < values.Length) keys.Add(default(E));
+			while (vals.Count < values.Length) vals.Add(default(V));
+			
+			for (int i = 0; i < values.Length; i++)
+			{
+				keys[i] = ((E)values.GetValue(i));
+				vals[i] = (dict[keys[i]]);
 			}
 		}
 

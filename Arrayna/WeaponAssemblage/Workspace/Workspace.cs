@@ -1,104 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace WeaponAssemblage
 {
-	/// <summary>
-	/// 用于附加到位于Workspace内的武器部件上，处理各种Workspace相关的part操作
-	/// </summary>
-	public class PartAgent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
-	{
-		public MonoPart Part { get; private set; }
-		public MonoPort RootPort { get; private set; }
-
-		private Vector3 lastPointerPos;
-
-		private void Awake()
-		{
-			Part = GetComponent<MonoPart>();
-			RootPort = (MonoPort)Part?.RootPort;
-			if (Part == null || RootPort == null)
-			{
-				Debug.LogWarning($"This GameObject {this.name} isn't a complete weapon part, this agent will be disabled.");
-				this.enabled = false;
-			}
-		}
-
-		public void OnDrag(PointerEventData eventData)
-		{
-			if (Workspace.HeldPart != this) Workspace.HeldPart = this;
-			if (RootPort.AttachedPort != null)
-			{
-				Debug.Log("Try to detach part...");
-				MonoPart part = (MonoPart)RootPort.Detach();
-				if (part == null)
-					Debug.Log($"解除部件失败？{RootPort.AttachedPort?.Part?.PartName}");
-				else
-					part.transform.parent = null;
-			}
-
-			MovePart(eventData);
-
-			Workspace.ReadyToConnect = Workspace.CheckForNearPort((MonoPort)Part.RootPort);
-			if (Workspace.ReadyToConnect != null)
-				Workspace.DrawLine(RootPort, Workspace.ReadyToConnect);
-			else
-				Workspace.CancelLine();
-		}
-
-		public void OnPointerDown(PointerEventData eventData)
-		{
-			if (Workspace.HeldPart != null)
-			{
-				Debug.Log($"Already holding {Workspace.HeldPart.name}!");
-			}
-			Workspace.HeldPart = this;
-			lastPointerPos = Camera.main.ScreenToWorldPoint(eventData.position);
-		}
-
-		public void OnPointerEnter(PointerEventData eventData)
-		{
-			Workspace.DrawHighLight(Part);
-		}
-
-		public void OnPointerExit(PointerEventData eventData)
-		{
-			Workspace.CancelHighLight(Part);
-		}
-
-		public void OnPointerUp(PointerEventData eventData)
-		{
-			if (Workspace.HeldPart != this) return;
-
-			Workspace.CancelLine();
-			if (Workspace.ReadyToConnect != null)
-			{
-				if (!Workspace.CombineParts(Workspace.ReadyToConnect, Part))
-				{
-					Workspace.Bump(this);
-				}
-				else
-				{
-					Workspace.ReadyToConnect = null;
-				}
-			}
-
-			Workspace.HeldPart = null;
-		}
-
-		void MovePart(PointerEventData eventData)
-		{
-			var currentPointerPos = Camera.main.ScreenToWorldPoint(eventData.position);
-			
-			this.transform.position += currentPointerPos - lastPointerPos;
-			lastPointerPos = currentPointerPos;
-		}
-	}
-
+	
 	/// <summary>
 	/// 代表武器部件组装成武器的地方，管理武器的组装过程
 	/// </summary>
@@ -121,6 +27,9 @@ namespace WeaponAssemblage
 			}
 		}
 
+		/// <summary>
+		/// What the tooltip says
+		/// </summary>
 		[SerializeField, Tooltip("For tests in editor only!")]
 		MonoPart[] PartToAdd;
 
@@ -130,6 +39,17 @@ namespace WeaponAssemblage
 		public static int PartCount => Instance.partCount;
 		[SerializeField]
 		int partCount;
+		
+		/// <summary>
+		/// 当前正在操作的武器
+		/// </summary>
+		public static MonoWeapon OperatingWeapon
+		{
+			get => Instance.operatingWeapon;
+			set => Instance.operatingWeapon = value;
+		}
+		[SerializeField]
+		MonoWeapon operatingWeapon;
 
 		/// <summary>
 		/// 当前正在操作的部件
@@ -166,7 +86,8 @@ namespace WeaponAssemblage
 		[SerializeField]
 		List<MonoPort> portsInWorkspace = new List<MonoPort>();
 
-		public LineRenderer linkingLine;
+		[SerializeField]
+		protected LineRenderer linkingLine;
 
 		private void Awake()
 		{
@@ -175,25 +96,86 @@ namespace WeaponAssemblage
 
 		private void Start()
 		{
+			EnterWorkspace();
+		}
+
+		/// <summary>
+		/// 进入Workspace
+		/// </summary>
+		public static void EnterWorkspace()
+		{
+			Instance._EnterWorkSpace(null);
+		}
+
+		/// <summary>
+		/// 进入Workspace
+		/// </summary>
+		public static void EnterWorkspace(IWeapon weapon)
+		{
+			Instance._EnterWorkSpace(weapon);
+		}
+
+		void _EnterWorkSpace(IWeapon weapon)
+		{
+			// If there's a weapon, add it in, otherwise, create one.
+			operatingWeapon = (MonoWeapon)weapon;
+			if (operatingWeapon == null)
+			{
+				operatingWeapon = new GameObject("Weapon").AddComponent<BasicWeapon>();
+			}
+
+			operatingWeapon.CompileWeaponAttribute();
+			
+			// Editor only
 			foreach (MonoPart p in PartToAdd)
 				AddPart(p);
 		}
 
-		public static void EnterWorkspace() { }
-		public static void EnterWorkspace(IWeapon weapon) { }
-		public static void ExitWorkspace() { }
+		/// <summary>
+		/// 退出Workspace
+		/// </summary>
+		public static void ExitWorkspace()
+		{
+			Instance._ExitWorkspace();
+		}
+
+		void _ExitWorkspace()
+		{
+			// If the weapon isn't complete, send a warning.
+			if (!operatingWeapon.IsCompleted)
+			{
+				Debug.LogWarning("This weapon isn't complete!");
+			}
+
+			// Destory every agent we created when adding parts
+			var count = partsInWorkspace.Count;
+			for (int i = 0; i < count; i ++)
+			{
+				Destroy(partsInWorkspace[i]);
+			}
+
+			// Clear the lists
+			partsInWorkspace.Clear();
+			portsInWorkspace.Clear();
+		}
 
 		/// <summary>
 		/// 给部件绘制高光
 		/// </summary>
 		/// <param name="part"></param>
-		public static void DrawHighLight(MonoPart part) { print($"{part.name} High light!"); }
+		public static void DrawHighLight(MonoPart part)
+		{
+			//print($"{part.name} High light!"); 
+		}
 
 		/// <summary>
 		/// 给部件取消高光
 		/// </summary>
 		/// <param name="part"></param>
-		public static void CancelHighLight(MonoPart part) { print($"{part.name} no High light!"); }
+		public static void CancelHighLight(MonoPart part)
+		{
+			//print($"{part.name} no High light!"); 
+		}
 
 		/// <summary>
 		/// 给两个接口间绘制连接线
@@ -204,11 +186,10 @@ namespace WeaponAssemblage
 		{
 			Instance.linkingLine.SetPosition(0, port1.transform.position);
 			Instance.linkingLine.SetPosition(1, port2.transform.position);
-			print($"{port1.name} nad {port2.name} linked!");
 		}
 
 		/// <summary>
-		/// 给两个接口间取消连接线
+		/// 取消连接线
 		/// </summary>
 		/// <param name="port1"></param>
 		/// <param name="port2"></param>
@@ -279,28 +260,32 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		public static bool AddPart(IPart part)
+		public static bool AddPart(MonoPart part)
 		{
 			return Instance._addPart(part);
 		}
 
-		bool _addPart(IPart part)
+		bool _addPart(MonoPart part)
 		{
 			if (part == null) throw new ArgumentNullException();
-			MonoPart mPart = part as MonoPart;
-			if (mPart == null)
-			{
-				Debug.LogWarning($"This part {part.PartName} isn't inherited from Monobehaviour.");
-				return false;
-			}
 			
-			var agent = mPart.gameObject.AddComponent<PartAgent>();
+			var agent = part.gameObject.AddComponent<PartAgent>();
 			partsInWorkspace.Add(agent);
 			partCount++;
 
+			// Add ports from the part.
 			foreach (MonoPort mp in part.Ports)
 			{
 				portsInWorkspace.Add(mp);
+			}
+
+			// If the root part of operating weapon is still empty and
+			// we're adding a reciever, set the reciever as the root part.
+			if (operatingWeapon.RootPart == null && part.Type == PartType.Reciever)
+			{
+				operatingWeapon.RootPart = part;
+				part.transform.parent = operatingWeapon.transform;
+				Debug.Log($"Part {part.PartName} is set as the root part of operating weapon.");
 			}
 
 			return true;
@@ -339,6 +324,14 @@ namespace WeaponAssemblage
 				return false;
 			}
 
+			// Remove ports from the part.
+			foreach (MonoPort mp in agent.Part.Ports)
+			{
+				portsInWorkspace.Remove(mp);
+			}
+
+			// Remove the part from list and destroy 
+			// the agent attached to it.
 			partsInWorkspace.Remove(agent);
 			Destroy(agent);
 			return true;

@@ -145,12 +145,14 @@ namespace WeaponAssemblage
 		/// <returns></returns>
 		public override bool Attach(IPart part)
 		{
+			// 如果部件类型不合适
 			if (!CanAttachBy(part))
 			{
 				Debug.LogWarning($"该端口不兼容 {part.Type} 类型的部件！");
 				return false;
 			}
 
+			// 如果该接口接有部件且无法接触..
 			if (AttachedPort != null && Detach() == null)
 				return false;
 

@@ -112,7 +112,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1798525045219502}
   m_LocalRotation: {x: -0, y: -0, z: 1, w: -0.00000004371139}
-  m_LocalPosition: {x: 0, y: -0.10052562, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4038050853298878}
@@ -124,8 +124,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1226839906447340}
-  m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
-  m_LocalPosition: {x: 0.00035855174, y: 0.09902492, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 1, w: -0.00000004371139}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4038050853298878}
@@ -169,8 +169,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0000000000000100
-  position: {x: 0.00035855174, y: 0.09902492, z: 180}
+    vals: 0000000000000000
+  position: {x: 0, y: 0.1, z: 180}
   part: {fileID: 114758537095185420}
   attachedPort: {fileID: 0}
 --- !u!114 &114194927653156876
@@ -187,7 +187,7 @@ MonoBehaviour:
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals: 0000000000000100
-  position: {x: 0, y: -0.10052562, z: 180}
+  position: {x: 0, y: -0.1, z: 180}
   part: {fileID: 114758537095185420}
   attachedPort: {fileID: 0}
 --- !u!114 &114758537095185420
@@ -205,25 +205,28 @@ MonoBehaviour:
   description: 
   type: 6
   rootPort: {fileID: 114182748236106746}
-  attributes:
+  baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
+    - 0
+    - 0
+    - 100
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  modValue:
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
+    vals:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
   monoports:
   - {fileID: 114194927653156876}
 --- !u!212 &212390497358738740

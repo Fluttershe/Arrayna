@@ -48,8 +48,6 @@ namespace WeaponAssemblage
 				// 将根部件加入到部件上
 				part.AddPort(rootPort, true);
 			}
-
-			part.RecollectPorts();
 		}
 
 		private void OnSceneGUI()
@@ -90,6 +88,7 @@ namespace WeaponAssemblage
 					}
 					else
 					{
+						Destroy(selectedPort);
 						selectedPort = null;
 					}
 				}
@@ -102,9 +101,14 @@ namespace WeaponAssemblage
 			}
 		}
 
+		/// <summary>
+		/// 获取端口信息
+		/// </summary>
 		void GetSelectedPortInfo()
 		{
 			serializedPort = new SerializedObject(selectedPort);
+
+			// 获取端口适用类型并转换为文字
 			portAcceptedType = "";
 			var i = 0;
 			foreach (bool b in selectedPort.SuitableType)
@@ -117,13 +121,19 @@ namespace WeaponAssemblage
 				i++;
 			}
 
+			// 获取端口位置
 			var position = selectedPort.transform.localPosition;
 			position.z = selectedPort.transform.eulerAngles.z;
 			selectedPort.Position = position;
 		}
 
+		/// <summary>
+		/// 绘制端口
+		/// </summary>
+		/// <param name="port"></param>
 		void DrawPort(MonoPort port)
 		{
+			if (port == null) return;
 			if (port == rootPort) Handles.color = kRootPortColor;
 			else Handles.color = kPortColor;
 			Vector3 position = port.transform.position;
@@ -142,10 +152,10 @@ namespace WeaponAssemblage
 				var rotation = port.transform.rotation;
 				
 				Handles.Label(position + new Vector3(-0.05f, 0.05f), $"接口名称：{port.name}\n可接纳部件类型：{portAcceptedType}");
+
 				EditorGUI.BeginChangeCheck();
 				rotation = Handles.DoRotationHandle(rotation, position);
 				position = Handles.FreeMoveHandle(position, rotation, kPortPickSize, Vector3.one * 0.1f, Handles.DotHandleCap);
-				
 				if (EditorGUI.EndChangeCheck())
 				{
 					Undo.RecordObject(port, "Move port");
@@ -160,13 +170,18 @@ namespace WeaponAssemblage
 			}
 		}
 
+		/// <summary>
+		/// 如果选中一个端口，显示端口信息
+		/// </summary>
 		void DrawSelectedPortInspector()
 		{
+			// 显示端口名称
 			GUILayout.BeginHorizontal();
 			GUILayout.Label($"当前选中的接口:");
 			selectedPort.name = GUILayout.TextField(selectedPort.name);
 			GUILayout.EndHorizontal();
 
+			// 显示端口位置
 			EditorGUI.BeginChangeCheck();
 			selectedPort.Position = EditorGUILayout.Vector3Field("位置：", selectedPort.Position);
 			if (EditorGUI.EndChangeCheck())
@@ -180,6 +195,7 @@ namespace WeaponAssemblage
 				selectedPort.transform.rotation = newRot;
 			}
 
+			// 显示端口类型
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.PropertyField(serializedPort.FindProperty("suitableType"));
 			if (EditorGUI.EndChangeCheck())
@@ -191,6 +207,12 @@ namespace WeaponAssemblage
 
 		}
 
+		/// <summary>
+		/// 绘制端口方向箭头
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="rotation"></param>
+		/// <param name="length"></param>
 		void DrawDirectionArrow(Vector3 position, Quaternion rotation, float length)
 		{
 			var dir = rotation * Vector3.up * length;

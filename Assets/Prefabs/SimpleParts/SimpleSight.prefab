@@ -112,7 +112,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1494815519965154}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.002737388, y: -0.05780977, z: 0}
+  m_LocalPosition: {x: 0, y: -0.06, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4498853326222540}
@@ -176,25 +176,28 @@ MonoBehaviour:
   description: 
   type: 4
   rootPort: {fileID: 114809710152574338}
-  attributes:
+  baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 100
+    - 0
+  modValue:
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
+    vals:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
   monoports: []
 --- !u!114 &114809710152574338
 MonoBehaviour:
@@ -209,8 +212,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0001000000000000
-  position: {x: -0.002737388, y: -0.05780977, z: 0}
+    vals: 0000000000000000
+  position: {x: 0, y: -0.06, z: 0}
   part: {fileID: 114052177923291656}
   attachedPort: {fileID: 0}
 --- !u!212 &212460128853917666

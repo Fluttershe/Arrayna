@@ -124,8 +124,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1488189322882688}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0.32203367, y: 0.022402316, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0.32682872, y: 0.022402287, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4161303983077292}
@@ -176,25 +176,28 @@ MonoBehaviour:
   description: 
   type: 3
   rootPort: {fileID: 114373838287281174}
-  attributes:
+  baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
-    - BaseValue: 0
-      MODValue: 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 100
+  modValue:
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
+    vals:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
   monoports: []
 --- !u!114 &114373838287281174
 MonoBehaviour:
@@ -209,8 +212,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0000000100000000
-  position: {x: 0, y: 0, z: 0}
+    vals: 0000000000000000
+  position: {x: 0.32682872, y: 0.022402287, z: 90}
   part: {fileID: 114102093856694696}
   attachedPort: {fileID: 0}
 --- !u!212 &212696055409884586

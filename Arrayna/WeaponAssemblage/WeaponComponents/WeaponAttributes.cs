@@ -18,7 +18,7 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 射速（发每分）
 		/// </summary>
-		RPM,
+		FireRate,
 		/// <summary>
 		/// 弹容量
 		/// </summary>
@@ -49,7 +49,7 @@ namespace WeaponAssemblage
 	/// 武器属性的集合类
 	/// </summary>
 	[Serializable]
-	public class WeaponAttributes : EnumBaseCollection<AttributeType, AttributeValue>
+	public class WeaponAttributes : EnumBaseCollection<AttributeType, float>
 	{
 		public void Add(WeaponAttributes wa)
 		{
@@ -64,6 +64,22 @@ namespace WeaponAssemblage
 			for (int i = 0; i < keys.Count; i++)
 			{
 				this[keys[i]] -= wa[keys[i]];
+			}
+		}
+
+		public void Mul(WeaponAttributes wa)
+		{
+			for (int i = 0; i < keys.Count; i++)
+			{
+				this[keys[i]] *= wa[keys[i]];
+			}
+		}
+
+		public void Div(WeaponAttributes wa)
+		{
+			for (int i = 0; i < keys.Count; i++)
+			{
+				this[keys[i]] /= wa[keys[i]];
 			}
 		}
 	}

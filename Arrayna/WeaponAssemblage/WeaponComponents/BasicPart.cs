@@ -93,9 +93,14 @@ namespace WeaponAssemblage
 		int PortCount { get; }
 
 		/// <summary>
-		/// 该武器部件的属性
+		/// 该武器部件的数值属性
 		/// </summary>
-		WeaponAttributes Attributes { get; }
+		WeaponAttributes BaseValue { get; }
+
+		/// <summary>
+		/// 该武器部件的倍值属性
+		/// </summary>
+		WeaponAttributes ModValue { get; }
 
 		/// <summary>
 		/// 判断这个部件是否可以安装到一个端口上
@@ -148,12 +153,11 @@ namespace WeaponAssemblage
 
 		public abstract int PortCount { get; }
 
-		public abstract WeaponAttributes Attributes { get; }
+		public abstract WeaponAttributes BaseValue { get; }
+		public abstract WeaponAttributes ModValue { get; }
 
 		public abstract event Action<IPart, IPart> OnPartAttached;
 		public abstract event Action<IPart, IPart> OnPartDetached;
-
-		public abstract void RecollectPorts();
 
 		public abstract bool AddPort(IPort port, bool isRootPart = false);
 
@@ -191,34 +195,22 @@ namespace WeaponAssemblage
 		protected IWeapon weapon;
 		public override IWeapon Weapon => weapon;
 
-		[SerializeField, Tooltip("部件的各项属性")]
-		protected WeaponAttributes attributes;
-		public override WeaponAttributes Attributes => attributes;
+		[SerializeField, Tooltip("部件的数值属性")]
+		protected WeaponAttributes baseValue;
+		public override WeaponAttributes BaseValue => baseValue;
+		
+		[SerializeField, Tooltip("部件的倍值属性")]
+		protected WeaponAttributes modValue;
+		public override WeaponAttributes ModValue => modValue;
 
 		[SerializeField, Tooltip("部件的各个端口")]
 		protected List<MonoPort> monoports = new List<MonoPort>();
 		protected List<IPort> ports = new List<IPort>();
 		public override IEnumerable<IPort> Ports => ports.AsEnumerable<IPort>();
 		public override int PortCount => ports.Count;
-
-		Action<IPart, IPart> onPartAttached;
-		public override event Action<IPart, IPart> OnPartAttached
-		{
-			add { onPartAttached += value; }
-			remove { onPartAttached -= value; }
-		}
-
-		Action<IPart, IPart> onPartDetached;
-		public override event Action<IPart, IPart> OnPartDetached
-		{
-			add { onPartDetached += value; }
-			remove { onPartDetached -= value; }
-		}
-
-		protected void Awake()
-		{
-			RecollectPorts();
-		}
+		
+		public override event Action<IPart, IPart> OnPartAttached;
+		public override event Action<IPart, IPart> OnPartDetached;
 
 		protected void Start()
 		{
@@ -245,38 +237,6 @@ namespace WeaponAssemblage
 		public override bool CanAttachTo(IPort port)
 		{
 			return port.CanAttachBy(this);
-		}
-
-		/// <summary>
-		/// 重新收集和同步接口，由于Unity无法序列化接口，所以需要另外一个可以序列化的接口列表来处理
-		/// </summary>
-		public override void RecollectPorts()
-		{
-			if (ports.Count <= monoports.Count)
-			{
-				ports.Clear();
-
-				for (int i = 0; i < monoports.Count; i ++)
-				{
-					if (monoports[i].IsExists())
-						ports.Add(monoports[i]);
-					else
-						monoports.RemoveAt(i);
-				}
-			}
-
-			if (ports.Count > monoports.Count)
-			{
-				monoports.Clear();
-
-				for (int i = 0; i < ports.Count; i++)
-				{
-					if (ports[i].IsExists())
-						monoports.Add((MonoPort)ports[i]);
-					else
-						ports.RemoveAt(i);
-				}
-			}
 		}
 
 		/// <summary>
@@ -352,7 +312,7 @@ namespace WeaponAssemblage
 		{
 			if (!callerport.Part.Equals(this)) return;
 
-			onPartAttached?.Invoke(this, calleeport.Part);
+			OnPartAttached?.Invoke(this, calleeport.Part);
 		}
 
 		/// <summary>
@@ -364,7 +324,7 @@ namespace WeaponAssemblage
 		{
 			if (!callerport.Part.Equals(this)) return;
 
-			onPartDetached?.Invoke(this, calleeport.Part);
+			OnPartDetached?.Invoke(this, calleeport.Part);
 		}
 
 		////// Unity Serialization //////
@@ -375,10 +335,6 @@ namespace WeaponAssemblage
 			for (int i = 0; i < ports.Count; i ++)
 			{
 				monoports.Add((MonoPort)ports[i]);
-				if (monoports[i] == null)
-				{
-					Debug.Log("端口异常，有非继承于MonoPort的端口");
-				}
 			}
 		}
 
@@ -388,10 +344,6 @@ namespace WeaponAssemblage
 			for (int i = 0; i < monoports.Count; i++)
 			{
 				ports.Add(monoports[i]);
-				if (ports[i] == null)
-				{
-					Debug.Log("端口异常，有端口为空");
-				}
 			}
 		}
 	}

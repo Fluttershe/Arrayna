@@ -54,9 +54,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreatAI.cs" />
+    <Compile Include="black.cs" />
     <Compile Include="oneAI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCreat.cs" />
     <Compile Include="TestPlayer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

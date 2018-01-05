@@ -6,7 +6,8 @@ public class TestCreat : MonoBehaviour
     public int row = 30;
     public int col = 35;
     private bool[,] mapArray;
-    public GameObject cube1, cube2;
+	public GameObject black, white;
+	public GameObject hEdge, vEdge, wall;
     GameObject cubes;
     public static int times;
     int a;
@@ -107,20 +108,55 @@ public class TestCreat : MonoBehaviour
             {
                 if (!array[i, j])
                 {
-                    GameObject go = Instantiate(cube1, new Vector2(i, j), Quaternion.identity) as GameObject;
+                    GameObject go = Instantiate(black, new Vector2(i, j), Quaternion.identity) as GameObject;
                     go.transform.SetParent(cubes.transform);
                 }
                 else
                 {
-                    GameObject go = Instantiate(cube2, new Vector2(i, j), Quaternion.identity) as GameObject;
+                    GameObject go = Instantiate(white, new Vector2(i, j), Quaternion.identity) as GameObject;
                     go.transform.SetParent(cubes.transform);
                 }
             }
         }
     }
 
+	/// <summary>
+	/// 造墙
+	/// </summary>
+	/// <param name="array"></param>
+	void CreateWalls(bool[,] array)
+	{
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				// 如果是白的，略过
+				if (array[i, j]) continue;
+				if (j+1 < col && array[i, j + 1]) {
+					var go = Instantiate(vEdge, new Vector2(i, j), Quaternion.Euler(0, 0, 180)) as GameObject;
+					go.transform.SetParent(cubes.transform);
+				}
 
-    public void Update()
+				if (j > 0 && array[i, j - 1]) {
+					var go = Instantiate(vEdge, new Vector2(i, j), Quaternion.identity) as GameObject;
+					go.transform.SetParent(cubes.transform);
+					go = Instantiate(wall, new Vector2(i, j), Quaternion.identity) as GameObject;
+					go.transform.SetParent(cubes.transform);
+				}
+
+				if (i+1 < row && array[i + 1, j]) {
+					var go = Instantiate(hEdge, new Vector2(i, j), Quaternion.identity) as GameObject;
+					go.transform.SetParent(cubes.transform);
+				}
+
+				if (i > 0 && array[i - 1, j]) {
+					var go = Instantiate(hEdge, new Vector2(i, j), Quaternion.Euler(0, 0, 180)) as GameObject;
+					go.transform.SetParent(cubes.transform);
+				}
+			}
+		}
+	}
+
+
+	public void Update()
     {
         if (times < 7)
         {
@@ -130,5 +166,13 @@ public class TestCreat : MonoBehaviour
             mapArray = SmoothMapArray(mapArray);
             CreateMap(mapArray);
         }
+
+		// 造地面完之后
+		if (times == 7)
+		{
+			// 造墙
+			CreateWalls(mapArray);
+			times++;
+		}
     }
 }

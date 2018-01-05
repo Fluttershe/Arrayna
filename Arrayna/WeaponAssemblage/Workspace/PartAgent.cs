@@ -33,7 +33,6 @@ namespace WeaponAssemblage
 			if (Workspace.HeldPart != this) Workspace.HeldPart = this;
 			if (RootPort.AttachedPort != null)
 			{
-				Debug.Log("Try to detach part...");
 				MonoPart part = (MonoPart)RootPort.Detach();
 				if (part == null)
 					Debug.Log($"解除部件失败？{RootPort.AttachedPort?.Part?.PartName}");

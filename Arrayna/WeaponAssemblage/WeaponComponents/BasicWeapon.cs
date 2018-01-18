@@ -8,7 +8,7 @@ using UnityEngine;
 namespace WeaponAssemblage
 {
 	public delegate void WeaponEvent(IWeapon weapon);
-
+	
 	/// <summary>
 	/// 武器接口，代表一把完整的武器
 	/// </summary>
@@ -45,37 +45,104 @@ namespace WeaponAssemblage
 		IPart RootPart { get; set; }
 
 		/// <summary>
+		/// 获得特定类型的武器部件
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		T GetPartOfType<T>();
+
+		/// <summary>
+		/// 获得特定类型的武器部件
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		T[] GetPartsOfType<T>();
+
+		/// <summary>
+		/// 获得特定类型的武器部件
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		IPart GetPartOfType(PartType type);
+
+		/// <summary>
+		/// 获得特定类型的所有武器部件
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		IPart[] GetPartsOfType(PartType type);
+
+		/// <summary>
 		/// 计算武器的数值
 		/// </summary>
 		void CompileWeaponAttribute();
 
 		/// <summary>
-		/// 切换武器
+		/// 拔出武器
 		/// </summary>
-		/// <param name="weapon"></param>
-		void Change(IWeapon weapon);
-		void PrimaryFireUp();
-		void PrimaryFireDown();
-		void SecondaryFireUp();
-		void SecondaryFireDown();
-		void TertiaryFireUp();
-		void TertiaryFireDown();
-		void Reload();
+		void Draw();
 
 		/// <summary>
-		/// 切换武器
+		/// 收起武器
 		/// </summary>
-		/// <param name="weapon"></param>
-		event Action<IWeapon, IWeapon> OnChange;
-		event WeaponEvent OnPrimaryFireUp;
-		event WeaponEvent OnPrimaryFireDown;
-		event WeaponEvent OnSecondaryFireUp;
-		event WeaponEvent OnSecondaryFireDown;
-		event WeaponEvent OnTertiaryFireUp;
-		event WeaponEvent OnTertiaryFireDown;
-		event WeaponEvent OnReload;
+		void Holster();
+
+		/// <summary>
+		/// 一级开火（主要攻击）
+		/// </summary>
+		void PrimaryFireUp();
+
+		/// <summary>
+		/// 一级停火（主要攻击）
+		/// </summary>
+		void PrimaryFireDown();
+
+		/// <summary>
+		/// 二级开火（次要攻击）
+		/// </summary>
+		void SecondaryFireUp();
+
+		/// <summary>
+		/// 二级停火（次要攻击）
+		/// </summary>
+		void SecondaryFireDown();
+		
+		/// <summary>
+		/// 重装武器弹药
+		/// </summary>
+		void Reload();
 	}
 
+	public interface IDrawHandler
+	{
+		void OnDraw(IWeapon weapon);
+	}
+
+	public interface IHolsterHandler
+	{
+		void OnHolster(IWeapon weapon);
+	}
+
+	public interface IPrimaryFireHandler
+	{
+		void OnFireDown(IWeapon weapon);
+		void OnFireUp(IWeapon weapon);
+	}
+
+	public interface ISecondaryFireHandler
+	{
+		void OnFireDown(IWeapon weapon);
+		void OnFireUp(IWeapon weapon);
+	}
+
+	public interface IReloadHandler
+	{
+		void OnReload(IWeapon weapon);
+	}
+
+	/// <summary>
+	/// 继承了 <see cref="MonoBehaviour"/> 和 <see cref="IWeapon"/> 的基本武器抽象类
+	/// </summary>
 	public abstract class MonoWeapon : MonoBehaviour, IWeapon
 	{
 		public abstract MultiSelectablePartType ContainedPartType { get; }
@@ -85,20 +152,49 @@ namespace WeaponAssemblage
 		public abstract WeaponAttributes ModValue { get; }
 		public abstract WeaponAttributes FinalValue { get; }
 
-		public virtual event Action<IWeapon, IWeapon> OnChange;
-		public virtual event WeaponEvent OnPrimaryFireUp;
-		public virtual event WeaponEvent OnPrimaryFireDown;
-		public virtual event WeaponEvent OnSecondaryFireUp;
-		public virtual event WeaponEvent OnSecondaryFireDown;
-		public virtual event WeaponEvent OnTertiaryFireUp;
-		public virtual event WeaponEvent OnTertiaryFireDown;
-		public virtual event WeaponEvent OnReload;
+		protected virtual event WeaponEvent OnDraw;
+		protected virtual event WeaponEvent OnHolster;
+		protected virtual event WeaponEvent OnPrimaryFireUp;
+		protected virtual event WeaponEvent OnPrimaryFireDown;
+		protected virtual event WeaponEvent OnSecondaryFireUp;
+		protected virtual event WeaponEvent OnSecondaryFireDown;
+		//protected virtual event WeaponEvent OnTertiaryFireUp;
+		//protected virtual event WeaponEvent OnTertiaryFireDown;
+		protected virtual event WeaponEvent OnReload;
+
+		/// <summary>
+		/// 清空Weapon里的Event
+		/// </summary>
+		protected virtual void ClearEvents()
+		{
+			OnDraw = null;
+			OnHolster = null;
+			OnPrimaryFireDown = null;
+			OnPrimaryFireUp = null;
+			OnSecondaryFireDown = null;
+			OnSecondaryFireUp = null;
+			OnReload = null;
+		}
+
+		[SerializeField]
+		protected List<MonoPart> partList = new List<MonoPart>();
 
 		public abstract void CompileWeaponAttribute();
 
-		public virtual void Change(IWeapon weapon)
+		public virtual void Draw()
 		{
-			OnChange?.Invoke(this, weapon);
+			OnDraw?.Invoke(this);
+		}
+		
+		public abstract T GetPartOfType<T>();
+		public abstract T[] GetPartsOfType<T>();
+
+		public abstract IPart GetPartOfType(PartType type);
+		public abstract IPart[] GetPartsOfType(PartType type);
+
+		public virtual void Holster()
+		{
+			OnHolster?.Invoke(this);
 		}
 
 		public virtual void PrimaryFireDown()
@@ -125,20 +221,10 @@ namespace WeaponAssemblage
 		{
 			OnSecondaryFireUp?.Invoke(this);
 		}
-
-		public virtual void TertiaryFireDown()
-		{
-			OnTertiaryFireDown?.Invoke(this);
-		}
-
-		public virtual void TertiaryFireUp()
-		{
-			OnTertiaryFireUp?.Invoke(this);
-		}
 	}
 
 	/// <summary>
-	/// 代表一把完整的武器
+	/// 基本武器类，对 <see cref="MonoWeapon"/> 的简单实现
 	/// </summary>
 	public class BasicWeapon : MonoWeapon
 	{
@@ -147,7 +233,12 @@ namespace WeaponAssemblage
 		public override IPart RootPart
 		{
 			get => rootPart;
-			set => rootPart = (MonoPart)value;
+			set
+			{
+				rootPart = (MonoPart)value;
+				if (rootPart == null) return;
+				rootPart.SetAsRootPart(this);
+			}
 		}
 
 		[SerializeField]
@@ -166,6 +257,22 @@ namespace WeaponAssemblage
 		protected WeaponAttributes finalValue = new WeaponAttributes();
 		public override WeaponAttributes FinalValue => finalValue;
 
+		protected virtual void OnEnable()
+		{
+			foreach (IPart p in partList)
+			{
+				((MonoPart)p).enabled = true;
+			}
+		}
+
+		protected virtual void OnDisable()
+		{
+			foreach (IPart p in partList)
+			{
+				((MonoPart)p).enabled = false;
+			}
+		}
+
 		public override bool IsCompleted
 		{
 			get
@@ -183,11 +290,20 @@ namespace WeaponAssemblage
 		/// </summary>
 		public override void CompileWeaponAttribute()
 		{
+			// 清除该武器中的各项数值和事件记录
 			containedPartType.SetDefault();
 			baseValue.SetDefault();
 			modValue.SetDefault();
 			finalValue.SetDefault();
+			partList.Clear();
+			ClearEvents();
+
+			// 获取值
 			GetPartAttributes(baseValue, modValue, containedPartType, rootPart);
+			
+			// 计算武器的最终数值
+			finalValue.Add(baseValue);
+			finalValue.Mul(modValue);
 		}
 
 		/// <summary>
@@ -200,16 +316,98 @@ namespace WeaponAssemblage
 			if (bVal == null || mVal == null) throw new ArgumentNullException();
 			if (part == null) return;
 
+			// 将该部件加入部件列表中
+			partList.Add((MonoPart)part);
+
+			// 将该部件的值加入总和中
 			bVal.Add(part.BaseValue);
 			mVal.Add(part.ModValue);
+
+			// 记录该部件类型为该武器所拥有的部件类型
 			type[part.Type] = true;
 
+			// 如果该部件可处理武器拔出事件，加入
+			var draw = part as IDrawHandler;
+			if (draw != null) OnDraw += draw.OnDraw;
+
+			// 如果该部件可处理武器收起事件，加入
+			var holster = part as IHolsterHandler;
+			if (holster != null) OnHolster += holster.OnHolster;
+
+			// 如果该部件可处理武器主要攻击，加入
+			var primary = part as IPrimaryFireHandler;
+			if (primary != null)
+			{
+				OnPrimaryFireDown += primary.OnFireDown;
+				OnPrimaryFireUp += primary.OnFireUp;
+			}
+
+			// 如果该部件可处理武器次要攻击，加入
+			var secondary = part as ISecondaryFireHandler;
+			if (secondary != null)
+			{
+				OnSecondaryFireDown += secondary.OnFireDown;
+				OnSecondaryFireUp += secondary.OnFireUp;
+			}
+
+			// 如果该部件可处理武器重装，加入
+			var reload = part as IReloadHandler;
+			if (reload != null)
+			{
+				OnReload += reload.OnReload;
+			}
+
+			// 遍历该部件上的所有接口，如果接口上接有部件则进行处理
 			var ports = part.Ports;
 			foreach (IPort p in ports)
 			{
 				if (p.AttachedPort == null) continue;
 				GetPartAttributes(bVal, mVal, type, p.AttachedPort.Part);
 			}
+		}
+
+		public override IPart GetPartOfType(PartType type)
+		{
+			foreach (IPart p in partList)
+			{
+				if (p.Type == type) return p;
+			}
+
+			return null;
+		}
+
+		public override IPart[] GetPartsOfType(PartType type)
+		{
+			var list = new List<IPart>();
+
+			foreach (IPart p in partList)
+			{
+				if (p.Type == type) list.Add(p);
+			}
+
+			return list.ToArray();
+		}
+
+		public override T GetPartOfType<T>()
+		{
+			foreach (IPart p in partList)
+			{
+				if (p is T) return (T)p;
+			}
+
+			return default(T);
+		}
+
+		public override T[] GetPartsOfType<T>()
+		{
+			var list = new List<T>();
+
+			foreach (IPart p in partList)
+			{
+				if (p is T) list.Add((T)p);
+			}
+
+			return list.ToArray();
 		}
 	}
 }

@@ -55,13 +55,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WeaponComponents\Barrel.cs" />
     <Compile Include="WeaponComponents\BasicPart.cs" />
     <Compile Include="WeaponComponents\BasicPort.cs" />
     <Compile Include="WeaponComponents\BasicWeapon.cs" />
+    <Compile Include="WeaponComponents\Bullet.cs" />
     <Compile Include="WeaponComponents\WeaponAttributes.cs" />
     <Compile Include="BPart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Workspace\PartAgent.cs" />
+    <Compile Include="Workspace\PartPanel.cs" />
     <Compile Include="Workspace\Workspace.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -1,225 +1,624 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 public class TestCreat : MonoBehaviour
 {
-	public bool Regen;
-	public int row = 30;
+    public bool Regen;
+
+    public int row = 30;
     public int col = 35;
-	[Tooltip("密集探测范围，直接影响转生限值的有效性")]
-	public int denseRange = 1;
-	[Tooltip("疏松探测范围，直接影响转生限值的有效性")]
-	public int sparseRange = 2;
-	[Tooltip("密集转生限值，密集探测内的黑块大于此数时转生。\n此值越大越容易形成密集的块")]
-	public int denseLimit = 5;
-	[Tooltip("疏松转生限值，疏松探测内的黑块小于此数时转生。\n此值越小越容易形成零散的块")]
-	public int sparseLimit = 2;
-	private bool[,] mapArray;
-	public GameObject black, white;
-	public GameObject hEdge, vEdgeL, vEdgeR, vEdgeB, vEdge, wall;
+
+    public string seed;
+    public bool useRandomSeed;
+
+    [Range(0, 100)]
+    public int randomFillPercent;
+
+    int[,] mapArray;
+
+    public GameObject black, white;
+    public GameObject hEdge, vEdgeL, vEdgeR, vEdgeB, vEdge, wall;
     GameObject cubes;
-    public static int times;
 
 
     void Awake()
     {
         cubes = new GameObject();
-        mapArray = InitMapArray();
-        CreateMap(mapArray);
+        Regen = true;
     }
 
 
-    bool[,] InitMapArray()
+    public void Update()
     {
-        bool[,] array = new bool[row, col];
-        for (int i = 0; i < row; i++)
+        if (Regen)
         {
-            for (int j = 0; j < col; j++)
-            {
-                array[i, j] = Random.Range(0, 100) < 60;
-                if (i == 0 || i == row - 1 || j == 0 || j == col - 1)
-                {
-                    array[i, j] = false;
-                }
-            }
+            Regen = false;
+            InitMapArray();
+        }
+    }
+
+
+    void InitMapArray()
+    {
+        Destroy(cubes);
+        cubes = new GameObject();
+
+        mapArray = new int[row, col];
+        RandomFilMap();
+
+        for (int x = 0; x < 5; x++)
+        {
+            SmoothMapArray();
         }
 
-
-        return array;
+        ProcessMap();
+        CreateMap(mapArray);
+        CreateWalls(mapArray);
     }
 
 
-    bool[,] SmoothMapArray(bool[,] array)
+    void RandomFilMap()
     {
-        bool[,] newArray = new bool[row, col];
-        int count1, count2;
+        if (useRandomSeed)
+        {
+            seed = Time.time.ToString();
+        }
+
+        System.Random pseudoRandom = new System.Random(seed.GetHashCode());
 
         for (int i = 0; i < row; i++)
         {
             for (int j = 0; j < col; j++)
             {
-                count1 = CheckNeighborWalls(array, i, j, denseRange);
-                count2 = CheckNeighborWalls(array, i, j, sparseRange);
-
-				// 如果一定范围内的黑块太多或太少，生成黑块（生），否则成为白块（死）
-                if (count1 >= denseLimit || count2 <= sparseLimit)
+                if (i == 0 || i == row - 1 || j == 0 || j == col - 1)
                 {
-                    newArray[i, j] = false;
+                    mapArray[i, j] = 1;
                 }
                 else
                 {
-                    newArray[i, j] = true;
+                    mapArray[i, j] = (pseudoRandom.Next(0, 100) < randomFillPercent) ? 1 : 0;
                 }
+            }
+        }
+    }
 
 
-                if (i == 0 || i == row - 1 || j == 0 || j == col - 1)
+    void SmoothMapArray()
+    {
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < col; j++)
+            {
+                int neighbourWallTiles = CheckNeighborWalls(i, j);
+                if (neighbourWallTiles > 4)
                 {
-                    newArray[i, j] = false;
+                    mapArray[i, j] = 1;
+                }
+                else if (neighbourWallTiles < 4)
+                {
+                    mapArray[i, j] = 0;
+                }
+            }
+        }
+    }
+
+
+    void ProcessMap()
+    {
+        List<List<Coord>> wallRegions = GetRegions(1);
+
+        int wallThresholdSize = 20;
+
+        foreach (List<Coord> wallRegion in wallRegions)
+        {
+            if (wallRegion.Count < wallThresholdSize)
+            {
+                foreach (Coord tile in wallRegion)
+                {
+                    mapArray[tile.tileX, tile.tileY] = 0;
                 }
             }
         }
 
+        List<List<Coord>> roomRegions = GetRegions(0);
 
-        return newArray;
+        int roomThresholdSize = 20;
+
+        List<Room> survivingRooms = new List<Room>();
+
+        foreach (List<Coord> roomRegion in roomRegions)
+        {
+            if (roomRegion.Count < roomThresholdSize)
+            {
+                foreach (Coord tile in roomRegion)
+                {
+                    mapArray[tile.tileX, tile.tileY] = 1;
+                }
+            }
+            else
+            {
+                survivingRooms.Add(new Room(roomRegion, mapArray));
+            }
+        }
+
+        survivingRooms.Sort();
+        survivingRooms[0].isMainRoom = true;
+        survivingRooms[0].isAccessiblerromMainRoom = true;
+
+        ConnectClosestRooms(survivingRooms);
     }
 
-	/// <summary>
-	/// 寻找一定范围内的黑块数量
-	/// </summary>
-	/// <param name="array"></param>
-	/// <param name="x"></param>
-	/// <param name="y"></param>
-	/// <param name="range"></param>
-	/// <returns></returns>
-    int CheckNeighborWalls(bool[,] array, int x, int y, int range)
+
+    void ConnectClosestRooms(List<Room> allRooms,bool forceAccessibilityFromMainRoom = false)
     {
-        int count = 0;
-		
-        for (int i2 = x - range; i2 < x + range + 1; i2++)
+        List<Room> roomListA = new List<Room>();
+        List<Room> roomListB = new List<Room>();
+
+        if (forceAccessibilityFromMainRoom)
         {
-            for (int j2 = y - range; j2 < y + range + 1; j2++)
+            foreach(Room room in allRooms)
             {
-                if (i2 > 0 && i2 < row && j2 >= 0 && j2 < col)
+                if (room.isAccessiblerromMainRoom)
                 {
-                    if (!array[i2, j2])
+                    roomListB.Add(room);
+                }
+                else
+                {
+                    roomListA.Add(room);
+                }
+            }
+        }
+        else
+        {
+            roomListA = allRooms;
+            roomListB = allRooms;
+        }
+
+        int bestDistance = 0;
+        Coord bestTileA = new Coord();
+        Coord bestTileB = new Coord();
+        Room bestRoomA = new Room();
+        Room bestRoomB = new Room();
+        bool possibleConnectionFound = false;
+
+        foreach (Room roomA in roomListA)
+        {
+            if (!forceAccessibilityFromMainRoom)
+            {
+                possibleConnectionFound = false;
+                if (roomA.connectedRooms.Count > 0)
+                {
+                    continue;
+                }
+            }
+
+            foreach(Room roomB in roomListB)
+            {
+                if (roomA==roomB || roomA.IsConnected(roomB))
+                {
+                    continue;
+                }
+
+                for(int tileIndexA = 0; tileIndexA < roomA.edgeTiles.Count; tileIndexA++)
+                {
+                    for (int tileIndexB = 0; tileIndexB < roomB.edgeTiles.Count; tileIndexB++)
                     {
-                        count++;
+                        Coord tileA = roomA.edgeTiles[tileIndexA];
+                        Coord tileB = roomB.edgeTiles[tileIndexB];
+                        int distanceBetweenRooms = (int)(Mathf.Pow(tileA.tileX - tileB.tileX, 2) + Mathf.Pow(tileA.tileY - tileB.tileY, 2));
+
+                        if (distanceBetweenRooms<bestDistance||!possibleConnectionFound)
+                        {
+                            bestDistance = distanceBetweenRooms;
+                            possibleConnectionFound = true;
+                            bestTileA = tileA;
+                            bestTileB = tileB;
+                            bestRoomA = roomA;
+                            bestRoomB = roomB;
+                        }
+                    }
+                }
+            }
+            if (possibleConnectionFound&&!forceAccessibilityFromMainRoom)
+            {
+                CreatePassage(bestRoomA,bestRoomB,bestTileA,bestTileB);
+            }
+        }
+
+        if (possibleConnectionFound && forceAccessibilityFromMainRoom)
+        {
+            CreatePassage(bestRoomA, bestRoomB, bestTileA, bestTileB);
+            ConnectClosestRooms(allRooms, true);
+        }
+
+        if (!forceAccessibilityFromMainRoom)
+        {
+            ConnectClosestRooms(allRooms, true);
+        }
+    }
+
+    void CreatePassage(Room roomA,Room roomB,Coord tileA,Coord tileB)
+    {
+        Room.ConnectRooms(roomA, roomB);
+        Debug.DrawLine(CoordToWorldPoint(tileA), CoordToWorldPoint(tileB), Color.green,100);
+
+        List<Coord> line = GetLine(tileA, tileB);
+        foreach(Coord c in line)
+        {
+            DrawCircle(c, 2);
+        }
+    }
+
+    void DrawCircle(Coord c,int r)
+    {
+        for(int x = -r; x <= r; x++)
+        {
+            for (int y = -r; y <= r; y++)
+            {
+                if (x * x + y * y <= r * r)
+                {
+                    int drawX = c.tileX + x;
+                    int drawY = c.tileY + y;
+                    if (IsInMapRange(drawX, drawY))
+                    {
+                        mapArray[drawX, drawY] = 0;
                     }
                 }
             }
         }
-        if (!array[x, y])
-            count--;
-        return count;
     }
 
-
-    void CreateMap(bool[,] array)
+    List<Coord> GetLine(Coord from,Coord to)
     {
+        List<Coord> line = new List<Coord>();
+
+        int x = from.tileX;
+        int y = from.tileY;
+
+        int dx = to.tileX - from.tileX;
+        int dy = to.tileY - from.tileY;
+
+        bool inverted = false;
+        int step = Math.Sign(dx);
+        int gradientStep = Math.Sign(dy);
+
+        int longest = Mathf.Abs(dx);
+        int shortest = Mathf.Abs(dy);
+
+        if (longest<shortest)
+        {
+            inverted = true;
+            longest= Mathf.Abs(dy);
+            shortest= Mathf.Abs(dx);
+
+            step = Math.Sign(dy);
+            gradientStep = Math.Sign(dx);
+        }
+
+        int gradientAccumulation = longest / 2;
+        for (int i=0;i<longest;i++)
+        {
+            line.Add(new Coord(x, y));
+
+            if (inverted)
+            {
+                y += step;
+            }
+            else
+            {
+                x += step;
+            }
+
+            gradientAccumulation += shortest;
+            if (gradientAccumulation >= longest)
+            {
+                if (inverted)
+                {
+                    x += gradientStep;
+                }
+                else
+                {
+                    y += gradientStep;
+                }
+                gradientAccumulation -= longest;
+            }
+        }
+        return line;
+    }
+
+    Vector2 CoordToWorldPoint(Coord tile)
+    {
+        return new Vector2(-row / 2 + .5f + tile.tileX,  -col / 2 + .5f + tile.tileY);
+    }
+
+    List<List<Coord>> GetRegions(int tileType)
+    {
+        List<List<Coord>> regions = new List<List<Coord>>();
+        int[,] mapFlags = new int[row, col];
+
         for (int i = 0; i < row; i++)
         {
             for (int j = 0; j < col; j++)
             {
-                if (!array[i, j])
+                if (mapFlags[i, j] == 0 && mapArray[i, j] == tileType)
                 {
-                    GameObject go = Instantiate(black, new Vector2(i, j), Quaternion.identity) as GameObject;
-                    go.transform.SetParent(cubes.transform);
+                    List<Coord> newRegion = GetRegionTiles(i, j);
+                    regions.Add(newRegion);
+
+                    foreach (Coord tile in newRegion)
+                    {
+                        mapFlags[tile.tileX, tile.tileY] = 1;
+                    }
+                }
+            }
+        }
+        return regions;
+    }
+
+    List<Coord> GetRegionTiles(int startX, int startY)
+    {
+        List<Coord> tiles = new List<Coord>();
+        int[,] mapFlags = new int[row, col];
+        int tileType = mapArray[startX, startY];
+
+        Queue<Coord> queue = new Queue<Coord>();
+        queue.Enqueue(new Coord(startX, startY));
+        mapFlags[startX, startY] = 1;
+
+        while (queue.Count > 0)
+        {
+            Coord tile = queue.Dequeue();
+            tiles.Add(tile);
+
+            for (int i = tile.tileX - 1; i <= tile.tileX + 1; i++)
+            {
+                for (int j = tile.tileY - 1; j <= tile.tileY + 1; j++)
+                {
+                    if (IsInMapRange(i, j) && (j == tile.tileY || i == tile.tileX))
+                    {
+                        if (mapFlags[i, j] == 0 && mapArray[i, j] == tileType)
+                        {
+                            mapFlags[i, j] = 1;
+                            queue.Enqueue(new Coord(i, j));
+                        }
+                    }
+                }
+            }
+        }
+        return tiles;
+    }
+
+    bool IsInMapRange(int i, int j)
+    {
+        return i >= 0 && i < row && j >= 0 && j < col;
+    }
+
+
+    /// <summary>
+    /// 寻找一定范围内的黑块数量
+    /// </summary>
+    /// <param name="array"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    int CheckNeighborWalls(int gx, int gy)
+    {
+        int count = 0;
+
+        for (int ni = gx - 1; ni <= gx + 1; ni++)
+        {
+            for (int nj = gy - 1; nj <= gy + 1; nj++)
+            {
+                if (IsInMapRange(ni, nj))
+                {
+                    if (ni != gx || nj != gy)
+                    {
+                        count += mapArray[ni, nj];
+                    }
                 }
                 else
                 {
-                    GameObject go = Instantiate(white, new Vector2(i, j), Quaternion.identity) as GameObject;
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+
+    void CreateMap(int[,] array)
+    {
+        if (mapArray != null)
+        {
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    Vector2 pos = new Vector2(-row/2+i+.5f,-col/2+j+.5f);
+
+                    if (!(array[i, j] == 0))
+                    {
+                        GameObject go = Instantiate(black, pos, Quaternion.identity) as GameObject;
+                        go.transform.SetParent(cubes.transform);
+                    }
+                    else
+                    {
+                        GameObject go = Instantiate(white, pos, Quaternion.identity) as GameObject;
+                        go.transform.SetParent(cubes.transform);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 造墙
+    /// </summary>
+    /// <param name="array"></param>
+    void CreateWalls(int[,] array)
+    {
+        GameObject go = null;
+
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < col; j++)
+            {
+                // 如果是白的，略过
+                if (array[i, j] == 0) continue;
+
+                Vector2 pos = new Vector2(-row / 2 + i + .5f, -col / 2 + j + .5f);
+
+                // 如果上方是白块
+                if (j + 1 < col && array[i, j + 1] == 0)
+                {
+                    // 如果左上方是黑块
+                    if (i + 1 < row && !(array[i + 1, j + 1] == 0))
+                    {
+                        go = Instantiate(vEdgeR, pos, Quaternion.Euler(0, 0, 180)) as GameObject;
+                        // 如果右上方是黑块
+                    }
+                    else if (i > 0 && !(array[i - 1, j + 1] == 0))
+                    {
+                        go = Instantiate(vEdgeL, pos, Quaternion.Euler(0, 0, 180)) as GameObject;
+                        // 如果上方左右都没有黑块
+                    }
+                    else
+                    {
+                        go = Instantiate(vEdge, pos, Quaternion.Euler(0, 0, 180)) as GameObject;
+                    }
+                    go.transform.SetParent(cubes.transform);
+                }
+
+                // 如果下方是白块
+                if (j > 0 && array[i, j - 1] == 0)
+                {
+                    // 如果左下方是黑块
+                    if (i + 1 < row && !(array[i + 1, j - 1] == 0))
+                    {
+                        go = Instantiate(vEdgeL, pos, Quaternion.identity) as GameObject;
+                        // 如果右下方是黑块
+                    }
+                    else if (i > 0 && !(array[i - 1, j - 1] == 0))
+                    {
+                        go = Instantiate(vEdgeR, pos, Quaternion.identity) as GameObject;
+                        // 如果下方左右都没有黑块
+                    }
+                    else
+                    {
+                        go = Instantiate(vEdge, pos, Quaternion.identity) as GameObject;
+                    }
+                    go.transform.SetParent(cubes.transform);
+
+                    // 造墙壁
+                    go = Instantiate(wall,pos, Quaternion.identity) as GameObject;
+                    go.transform.SetParent(cubes.transform);
+                }
+
+                // 如果左方是白块
+                if (i + 1 < row && array[i + 1, j] == 0)
+                {
+                    go = Instantiate(hEdge, pos, Quaternion.identity) as GameObject;
+                    go.transform.SetParent(cubes.transform);
+                }
+
+                // 如果右方是白块
+                if (i > 0 && array[i - 1, j] == 0)
+                {
+                    go = Instantiate(hEdge, pos, Quaternion.Euler(0, 0, 180)) as GameObject;
                     go.transform.SetParent(cubes.transform);
                 }
             }
         }
     }
 
-	/// <summary>
-	/// 造墙
-	/// </summary>
-	/// <param name="array"></param>
-	void CreateWalls(bool[,] array)
-	{
-		GameObject go = null;
 
-		for (int i = 0; i < row; i++) {
-			for (int j = 0; j < col; j++) {
-				// 如果是白的，略过
-				if (array[i, j]) continue;
-
-				// 如果上方是白块
-				if (j+1 < col && array[i, j + 1]) {
-					// 如果左上方是黑块
-					if (i + 1 < row && !array[i + 1, j + 1]) {
-						go = Instantiate(vEdgeR, new Vector2(i, j), Quaternion.Euler(0, 0, 180)) as GameObject;
-					// 如果右上方是黑块
-					} else if (i > 0 && !array[i - 1, j + 1]) {
-						go = Instantiate(vEdgeL, new Vector2(i, j), Quaternion.Euler(0, 0, 180)) as GameObject;
-					// 如果上方左右都没有黑块
-					} else {
-						go = Instantiate(vEdge, new Vector2(i, j), Quaternion.Euler(0, 0, 180)) as GameObject;
-					}
-					go.transform.SetParent(cubes.transform);
-				}
-
-				// 如果下方是白块
-				if (j > 0 && array[i, j - 1]) {
-					// 如果左下方是黑块
-					if (i + 1 < row && !array[i + 1, j - 1]) {
-						go = Instantiate(vEdgeL, new Vector2(i, j), Quaternion.identity) as GameObject;
-					// 如果右下方是黑块
-					} else if (i > 0 && !array[i - 1, j - 1]) {
-						go = Instantiate(vEdgeR, new Vector2(i, j), Quaternion.identity) as GameObject;
-					// 如果下方左右都没有黑块
-					} else {
-						go = Instantiate(vEdge, new Vector2(i, j), Quaternion.identity) as GameObject;
-					}
-					go.transform.SetParent(cubes.transform);
-
-					// 造墙壁
-					go = Instantiate(wall, new Vector2(i, j), Quaternion.identity) as GameObject;
-					go.transform.SetParent(cubes.transform);
-				}
-
-				// 如果左方是白块
-				if (i+1 < row && array[i + 1, j]) {
-					go = Instantiate(hEdge, new Vector2(i, j), Quaternion.identity) as GameObject;
-					go.transform.SetParent(cubes.transform);
-				}
-
-				// 如果右方是白块
-				if (i > 0 && array[i - 1, j]) {
-					go = Instantiate(hEdge, new Vector2(i, j), Quaternion.Euler(0, 0, 180)) as GameObject;
-					go.transform.SetParent(cubes.transform);
-				}
-			}
-		}
-	}
-
-
-	public void Update()
+    struct Coord
     {
-		if (Regen)
-		{
-			Regen = false;
-			mapArray = InitMapArray();
-			times = Random.Range(3, 8);
-		}
-        if (times > 1)
-        {
-            times--;
-			Destroy(cubes);
-			cubes = new GameObject();
-			mapArray = SmoothMapArray(mapArray);
-			CreateMap(mapArray);
-		}
+        public int tileX;
+        public int tileY;
 
-		// 造地面完之后
-		if (times == 1)
-		{
-			// 造墙
-			CreateWalls(mapArray);
-			times--;
-		}
+        public Coord(int i, int j)
+        {
+            tileX = i;
+            tileY = j;
+        }
+    }
+
+
+    class Room:IComparable<Room>
+    {
+        public List<Coord> tiles;
+        public List<Coord> edgeTiles;
+        public List<Room> connectedRooms;
+        public int roomSize;
+        public bool isAccessiblerromMainRoom;
+        public bool isMainRoom;
+
+        public Room()
+        {
+
+        }
+
+        public Room(List<Coord> roomTiles, int[,] map)
+        {
+            tiles = roomTiles;
+            roomSize = tiles.Count;
+            connectedRooms = new List<Room>();
+
+            edgeTiles = new List<Coord>();
+            foreach (Coord tile in tiles)
+            {
+                for (int x = tile.tileX - 1; x <= tile.tileX + 1; x++)
+                {
+                    for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++)
+                    {
+                        if (x == tile.tileX || y == tile.tileY)
+                        {
+                            if (map[x, y] == 1)
+                            {
+                                edgeTiles.Add(tile);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SetAccessibleFromMainRoom()
+        {
+            if (!isAccessiblerromMainRoom)
+            {
+                isAccessiblerromMainRoom = true;
+                foreach (Room connectedRoom in connectedRooms)
+                {
+                    connectedRoom.SetAccessibleFromMainRoom();
+                }
+            }
+        }
+
+        public static void ConnectRooms(Room roomA,Room roomB)
+        {
+            if (roomA.isAccessiblerromMainRoom)
+            {
+                roomB.SetAccessibleFromMainRoom();
+            }
+            else if (roomB.isAccessiblerromMainRoom)
+            {
+                roomA.SetAccessibleFromMainRoom();
+            }
+            roomA.connectedRooms.Add(roomB);
+            roomB.connectedRooms.Add(roomA);
+        }
+        public bool IsConnected(Room otherRoom)
+        {
+            return connectedRooms.Contains(otherRoom);
+        }
+        public int CompareTo(Room otherRoom)
+        {
+            return otherRoom.roomSize.CompareTo(roomSize);
+        }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace WeaponAssemblage
 {
-	
 	/// <summary>
 	/// 代表武器部件组装成武器的地方，管理武器的组装过程
 	/// </summary>
@@ -99,6 +98,15 @@ namespace WeaponAssemblage
 
 		private void Awake()
 		{
+			if (_instance != null)
+			{
+				Debug.LogWarning("Multiple workspace!");
+				this.enabled = false;
+			}
+			else
+			{
+				_instance = this;
+			}
 			linkingLine = this.gameObject.GetComponent<LineRenderer>();
 		}
 

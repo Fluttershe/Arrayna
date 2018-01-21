@@ -141,3 +141,23 @@
 		HeldPart.Parent = MasterPort.Part;
 		slavePort.Parent = HeldPart;
 	
+PartMenu.Functions:
+	Scrolling(Horizontal loop?)
+	Comparing two parts(Same type, properties)
+	Categorizing by Type
+	// Sorting by: Name, Type, Property
+	Displaying infos of part(Name, Type, Properties, Attachable Types)
+	// Searching by name
+	
+PartMenu.Components:
+	Scroll view -> Browsing parts, held Panel
+	Tag -> Switch categorization
+	Panel -> Held parts. When pointer hovers for (x) second, display Info
+	Info -> Display infos of corresponding part, with "compare" button below, which triggers Compare // This should be included in PartAgent
+	Compare -> Display Info to Upperleft corner(or any place that won't be in the way yet also noticable enough), when pointer enter any part, show comparison of Infos
+	
+PartMenu.Scroll:
+	Input -> mouse.scroll(x and/or y) -> 
+	smooth speed -> 
+	Move panels
+	

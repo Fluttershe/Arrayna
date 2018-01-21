@@ -17,7 +17,8 @@ public class NewBehaviourScript : MonoBehaviour {
 	public PartType Ttypes;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 		
 	}
 	

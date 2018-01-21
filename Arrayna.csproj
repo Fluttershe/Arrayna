@@ -300,8 +300,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AlwaysUnitSize.cs" />
+    <Compile Include="Assets\LoopScroll.cs" />
     <Compile Include="Assets\NewBehaviourScript.cs" />
-    <Compile Include="Assets\Pingtai.cs" />
     <Compile Include="Assets\RaycastTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

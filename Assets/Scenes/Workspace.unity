@@ -113,6 +113,76 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &232593418
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1038785266}
+    m_Modifications:
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 2.2514
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0.6299
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1 &314766860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 314766861}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &314766861
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 314766860}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &929795796
 GameObject:
   m_ObjectHideFlags: 0
@@ -185,6 +255,7 @@ GameObject:
   - component: {fileID: 1004739699}
   - component: {fileID: 1004739701}
   - component: {fileID: 1004739700}
+  - component: {fileID: 1004739702}
   m_Layer: 5
   m_Name: PartScrollView
   m_TagString: Untagged
@@ -244,6 +315,36 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1004739698}
+--- !u!114 &1004739702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1004739698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a37f513694c07064087c7af7c58c9aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontalSpace: 20
+  verticalSpace: 5
+  panelWidth: 150
+  damp: 0.8
+  scrollSensitiveness: 100
+  panelPrefab: {fileID: 1038785270}
+  panelList:
+  - {fileID: 1038785270}
+  LeftMostIndex: 0
+  firstDummyIndex: -1
+  lastSpeed: 0
+  LeftBoundary: 0
+  RightBoundary: 0
+  minNumberofPanels: 0
+--- !u!4 &1025435306 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4858304262512928, guid: 4b80023d50ac6c24695ae6856d21ccfe,
+    type: 2}
+  m_PrefabInternal: {fileID: 232593418}
 --- !u!1 &1038785265
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,8 +355,10 @@ GameObject:
   - component: {fileID: 1038785266}
   - component: {fileID: 1038785268}
   - component: {fileID: 1038785267}
+  - component: {fileID: 1038785269}
+  - component: {fileID: 1038785270}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: PartPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -270,14 +373,15 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1025435306}
   m_Father: {fileID: 1004739699}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 180, y: 120}
+  m_SizeDelta: {x: 150, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1038785267
 MonoBehaviour:
@@ -291,7 +395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.047}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -312,6 +416,29 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1038785265}
+--- !u!114 &1038785269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1038785265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c59fb979e3a4c64428b194f496a72c19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1038785270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1038785265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 654edd621322f5d4d9d7d3fb978438c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DummyMaster: {fileID: 0}
 --- !u!1 &1236768951
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +491,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 3
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -458,7 +585,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 1236768954}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 20
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0

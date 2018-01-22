@@ -158,6 +158,6 @@ PartMenu.Components:
 	
 PartMenu.Scroll:
 	Input -> mouse.scroll(x and/or y) -> 
-	smooth speed -> 
+	smooth speed -> Lerp
 	Move panels
 	

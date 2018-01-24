@@ -18,20 +18,42 @@ public class TestCreat : MonoBehaviour
 
     int[,] mapArray;
 
-    public GameObject black, white;
+    public GameObject black;
     public GameObject hEdge, vEdgeL, vEdgeR, vEdgeB, vEdge, wall;
-    GameObject cubes;
+    public GameObject cubes;
+    public GameObject box;
+    public GameObject key;
+    public GameObject dianti;
+
+    //控制数量
+    public static int bn;
+    public static int dn;
+    public static int kn;
+
+    public int ran;
+
+    bool creatbox;
 
 
     void Awake()
     {
         cubes = new GameObject();
         Regen = true;
+        creatbox = false;
+
+        bn = 0;
+        dn = 0;
+        kn = 0;
     }
 
 
     public void Update()
     {
+        if (creatbox)
+        {
+            CreateBox(mapArray);
+        }
+
         if (Regen)
         {
             Regen = false;
@@ -44,6 +66,7 @@ public class TestCreat : MonoBehaviour
     {
         Destroy(cubes);
         cubes = new GameObject();
+        cubes.transform.SetParent(transform);
 
         mapArray = new int[row, col];
         RandomFilMap();
@@ -242,7 +265,6 @@ public class TestCreat : MonoBehaviour
     void CreatePassage(Room roomA,Room roomB,Coord tileA,Coord tileB)
     {
         Room.ConnectRooms(roomA, roomB);
-        Debug.DrawLine(CoordToWorldPoint(tileA), CoordToWorldPoint(tileB), Color.green,100);
 
         List<Coord> line = GetLine(tileA, tileB);
         foreach(Coord c in line)
@@ -444,11 +466,6 @@ public class TestCreat : MonoBehaviour
                         GameObject go = Instantiate(black, pos, Quaternion.identity) as GameObject;
                         go.transform.SetParent(cubes.transform);
                     }
-                    else
-                    {
-                        GameObject go = Instantiate(white, pos, Quaternion.identity) as GameObject;
-                        go.transform.SetParent(cubes.transform);
-                    }
                 }
             }
         }
@@ -466,10 +483,10 @@ public class TestCreat : MonoBehaviour
         {
             for (int j = 0; j < col; j++)
             {
+                Vector3 pos = new Vector3(-row / 2 + i + .5f, -col / 2 + j + .5f, -2);
+
                 // 如果是白的，略过
                 if (array[i, j] == 0) continue;
-
-                Vector2 pos = new Vector2(-row / 2 + i + .5f, -col / 2 + j + .5f);
 
                 // 如果上方是白块
                 if (j + 1 < col && array[i, j + 1] == 0)
@@ -513,7 +530,7 @@ public class TestCreat : MonoBehaviour
                     go.transform.SetParent(cubes.transform);
 
                     // 造墙壁
-                    go = Instantiate(wall,pos, Quaternion.identity) as GameObject;
+                    go = Instantiate(wall, new Vector3(pos.x, pos.y, pos.z + .5f), Quaternion.identity) as GameObject;
                     go.transform.SetParent(cubes.transform);
                 }
 
@@ -531,6 +548,48 @@ public class TestCreat : MonoBehaviour
                     go.transform.SetParent(cubes.transform);
                 }
             }
+            var random = new System.Random();
+            ran = random.Next(1, 4);
+            creatbox = true;
+        }
+    }
+
+
+    /// <summary>
+    /// 造宝箱
+    /// </summary>
+    /// <param name="array"></param>
+    void CreateBox(int[,] array)
+    {
+        //随机位置
+        var random = new System.Random();
+        int ra = random.Next(-row/2,row/2);
+        int co = random.Next(-col/2,col/2);
+
+        //随机宝箱
+        if(bn < ran)
+        {
+            Instantiate(box,new Vector2(ra,co), Quaternion.identity);
+             ra = random.Next(-row / 2, row / 2);
+             co = random.Next(-col / 2, col / 2);
+            bn++;
+        }
+
+        //随机电梯
+        if( dn < 1)
+        {
+            Instantiate(dianti, new Vector2(ra, co), Quaternion.identity);
+             ra = random.Next(-row / 2, row / 2);
+             co = random.Next(-col / 2, col / 2);
+            dn++;
+        }
+        //随机钥匙
+        if( kn < 1)
+        {
+            Instantiate(key, new Vector2(ra, co), Quaternion.identity);
+            ra = random.Next(-row / 2, row / 2);
+            co = random.Next(-col / 2, col / 2);
+            kn++;
         }
     }
 

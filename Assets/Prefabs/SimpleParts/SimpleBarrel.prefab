@@ -37,7 +37,7 @@ GameObject:
   - component: {fileID: 4178387242874710}
   - component: {fileID: 114877452784913192}
   m_Layer: 0
-  m_Name: port0
+  m_Name: FirePort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,8 +51,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4613929444814362}
-  - component: {fileID: 114963803775205806}
   - component: {fileID: 61555855358603842}
+  - component: {fileID: 114646495864879186}
   m_Layer: 0
   m_Name: SimpleBarrel
   m_TagString: Untagged
@@ -171,26 +171,9 @@ MonoBehaviour:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals: 0000000000000000
   position: {x: -0.25, y: 0, z: 270}
-  part: {fileID: 114963803775205806}
+  part: {fileID: 114646495864879186}
   attachedPort: {fileID: 0}
---- !u!114 &114877452784913192
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1560979409538148}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 969445862, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  suitableType:
-    keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0001000000000000
-  position: {x: 0.25, y: 0, z: 270}
-  part: {fileID: 114963803775205806}
-  attachedPort: {fileID: 0}
---- !u!114 &114963803775205806
+--- !u!114 &114646495864879186
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -198,13 +181,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1848093838517264}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1883164860, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
+  m_Script: {fileID: -1882205532, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   partName: "\u7B80\u6613\u67AA\u7BA1"
   description: 
   type: 1
   rootPort: {fileID: 114266754419091758}
+  weapon: {fileID: 0}
   baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:
@@ -229,6 +213,24 @@ MonoBehaviour:
     - 0
   monoports:
   - {fileID: 114877452784913192}
+  FirePort: {fileID: 114877452784913192}
+--- !u!114 &114877452784913192
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1560979409538148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 969445862, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  suitableType:
+    keys: 0000000001000000020000000300000004000000050000000600000007000000
+    vals: 0000000000000000
+  position: {x: 0.25, y: 0, z: 270}
+  part: {fileID: 0}
+  attachedPort: {fileID: 0}
 --- !u!212 &212924817331679788
 SpriteRenderer:
   m_ObjectHideFlags: 1

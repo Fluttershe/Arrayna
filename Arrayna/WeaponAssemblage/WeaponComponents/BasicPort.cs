@@ -152,7 +152,7 @@ namespace WeaponAssemblage
 				return false;
 			}
 
-			// 如果该接口接有部件且无法接触..
+			// 如果该接口接有部件且无法移除..
 			if (AttachedPort != null && Detach() == null)
 				return false;
 
@@ -160,11 +160,17 @@ namespace WeaponAssemblage
 			attachedPort = (MonoPort)part.RootPort;
 			((BasicPort)attachedPort).AttachRoot(this);
 
+			// 调用连接事件
 			onPortAttached?.Invoke(this, part.RootPort);
 
 			return true;
 		}
 
+		/// <summary>
+		/// 连接根接口
+		/// </summary>
+		/// <param name="port"></param>
+		/// <returns></returns>
 		protected override bool AttachRoot(IPort port)
 		{
 			if (!this.part.RootPort.Equals(this))
@@ -183,17 +189,25 @@ namespace WeaponAssemblage
 		/// <returns></returns>
 		public override IPart Detach()
 		{
-			if (Part.RootPort.Equals(this))
+			// 暂存并清除连接接口
+			var port = this.attachedPort;
+			this.attachedPort = null;
+
+			// 如果连接接口的接口未清理
+			if (port.AttachedPort != null)
 			{
-				var part = AttachedPort.Detach();
-				this.attachedPort = null;
-				return part;
+				// 对连接接口调用一次解除
+				port.Detach();
 			}
-			if (attachedPort == null) return null;
-			var port = AttachedPort;
-			attachedPort = null;
-			onPortDetached?.Invoke(this, port);
+
+			// 如果该接口不是根接口
+			if (!Part.RootPort.Equals(this))
+			{
+				// 调用移除事件
+				onPortDetached?.Invoke(this, port);
+			}
 			
+			// 返回移除的部件
 			return port.Part;
 		}
 	}

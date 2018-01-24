@@ -74,7 +74,7 @@ namespace WeaponAssemblage
 				if (!part.AddPort(port))
 				{
 					Debug.LogWarning("添加新接口失败！");
-					Destroy(port.gameObject);
+					DestroyImmediate(port.gameObject);
 				}
 			}
 
@@ -88,7 +88,7 @@ namespace WeaponAssemblage
 					}
 					else
 					{
-						Destroy(selectedPort);
+						DestroyImmediate(selectedPort);
 						selectedPort = null;
 					}
 				}

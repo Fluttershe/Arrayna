@@ -244,7 +244,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1113346645132954}
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: -0.7071068}
-  m_LocalPosition: {x: 0.15246701, y: 0.05, z: 0}
+  m_LocalPosition: {x: 0.15692401, y: 0.049999893, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4858304262512928}
@@ -283,7 +283,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1083281445128362}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.276, y: 0.631, z: 0}
+  m_LocalPosition: {x: 2.2514, y: 0.6299, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4427685515492466}
@@ -374,11 +374,12 @@ MonoBehaviour:
   description: 
   type: 0
   rootPort: {fileID: 114684899192744196}
+  weapon: {fileID: 0}
   baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:
     - 0
-    - 100
+    - 1
     - 0
     - 0
     - 0
@@ -450,7 +451,7 @@ MonoBehaviour:
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals: 0000000000000001
-  position: {x: 0.15246701, y: 0.05, z: 270}
+  position: {x: 0.15692401, y: 0.049999893, z: 270}
   part: {fileID: 114670734533261772}
   attachedPort: {fileID: 0}
 --- !u!114 &114928707395577092

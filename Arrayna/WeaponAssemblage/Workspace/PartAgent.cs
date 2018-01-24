@@ -10,6 +10,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 用于附加到位于Workspace内的武器部件上，处理各种Workspace相关的part操作
 	/// </summary>
+	[RequireComponent(typeof(Collider2D))]
 	public class PartAgent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
 	{
 		public MonoPart Part { get; private set; }

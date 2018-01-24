@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace WeaponAssemblage
 {
-	
 	/// <summary>
 	/// 代表武器部件组装成武器的地方，管理武器的组装过程
 	/// </summary>
@@ -28,10 +27,18 @@ namespace WeaponAssemblage
 		}
 
 		/// <summary>
+		/// Workspace是否在使用中
+		/// </summary>
+		public static bool Active
+		{
+			get { return Instance.enabled; }
+		}
+
+		/// <summary>
 		/// What the tooltip says
 		/// </summary>
 		[SerializeField, Tooltip("For tests in editor only!")]
-		MonoPart[] PartToAdd;
+		MonoPart[] PartToAdd = new MonoPart[0];
 
 		/// <summary>
 		/// 当前部件的数量
@@ -91,12 +98,34 @@ namespace WeaponAssemblage
 
 		private void Awake()
 		{
+			if (_instance != null)
+			{
+				Debug.LogWarning("Multiple workspace!");
+				this.enabled = false;
+			}
+			else
+			{
+				_instance = this;
+			}
 			linkingLine = this.gameObject.GetComponent<LineRenderer>();
 		}
 
 		private void Start()
 		{
 			EnterWorkspace();
+		}
+
+		private void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.P))
+			{
+				OperatingWeapon.PrimaryFireDown();
+			}
+
+			if (Input.GetKeyUp(KeyCode.P))
+			{
+				OperatingWeapon.PrimaryFireUp();
+			}
 		}
 
 		/// <summary>
@@ -117,18 +146,21 @@ namespace WeaponAssemblage
 
 		void _EnterWorkSpace(IWeapon weapon)
 		{
+			Instance.enabled = true;
+
 			// If there's a weapon, add it in, otherwise, create one.
 			operatingWeapon = (MonoWeapon)weapon;
 			if (operatingWeapon == null)
 			{
 				operatingWeapon = new GameObject("Weapon").AddComponent<BasicWeapon>();
+				operatingWeapon.enabled = false;
 			}
-
-			operatingWeapon.CompileWeaponAttribute();
 			
 			// Editor only
 			foreach (MonoPart p in PartToAdd)
 				AddPart(p);
+			
+			operatingWeapon.CompileWeaponAttribute();
 		}
 
 		/// <summary>
@@ -141,6 +173,8 @@ namespace WeaponAssemblage
 
 		void _ExitWorkspace()
 		{
+			Instance.enabled = false;
+
 			// If the weapon isn't complete, send a warning.
 			if (!operatingWeapon.IsCompleted)
 			{

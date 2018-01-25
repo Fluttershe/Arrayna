@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 61628173343645014}
   m_Layer: 0
   m_Name: VEdge
-  m_TagString: wall
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 61205761597200072}
   m_Layer: 0
   m_Name: Square (2)
-  m_TagString: wall
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

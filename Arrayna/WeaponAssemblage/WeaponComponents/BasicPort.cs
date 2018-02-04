@@ -175,10 +175,10 @@ namespace WeaponAssemblage
 		{
 			if (!this.part.RootPort.Equals(this))
 			{
-				Debug.Log($"This function should be called by root port only! \nthis part is:{part.PartName}\n The attach port is from {port.Part.PartName}");
+				Debug.Log($"This function should be called by root port only! \nthis part is:{part.PartName}\n The attaching port is from {port.Part.PartName}");
 				return false;
 			}
-			if (this.attachedPort != null) Debug.LogWarning($"This rootport isn't empty! this is part {this.part.PartName}");
+			if (this.attachedPort != null) Debug.LogWarning($"This rootport isn't empty! this part is {this.part.PartName}");
 			this.attachedPort = (MonoPort)port;
 			return true;
 		}

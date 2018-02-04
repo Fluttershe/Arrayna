@@ -19,7 +19,6 @@ namespace WeaponAssemblage
 					bulletPrefab = Weapon?.GetPartOfType<Bullet>()?.BulletPrefab;
 				}
 
-				if (bulletPrefab == null) print("Cannot find bullet.");
 				return bulletPrefab;
 			}
 		}
@@ -65,7 +64,10 @@ namespace WeaponAssemblage
 			if (fireTimer > 0) fireTimer -= Time.deltaTime;
 			if (!firing || fireTimer > 0) return;
 
-			Instantiate(BulletPrefab, FirePort.transform.position, FirePort.transform.rotation);
+			if (bulletPrefab == null)
+				print("Cannot find bullet.");
+			else
+				Instantiate(BulletPrefab, FirePort.transform.position, FirePort.transform.rotation);
 			fireTimer = 1/fireRate;
 		}
 

@@ -530,75 +530,60 @@ public class TestCreat : MonoBehaviour
                 }
             }
         }
-        CreateBox(mapArray);
+        CreateBox();
     }
 
 
     /// <summary>
     /// 造宝箱
     /// </summary>
-    /// <param name="array"></param>
-    void CreateBox(int[,] array)
+    void CreateBox()
     { 
-    //随机位置
-    var random = new System.Random();
-    int ran = random.Next(1, 4);
-    int ra = random.Next(0, row - 1);
-    int co = random.Next(0, col - 1);
-
-        int bn=0;
-        int dn=0;
-        int kn=0;
+		//随机位置
+		var random = new System.Random();
+		int ran = random.Next(1, 4);
+		int ra, co;
 
         //随机宝箱
-        while (bn < ran)
+        while (ran > 0)
         {
-            ra = random.Next(0, row);
-            co = random.Next(0, col);
-            if (array[ra, co] == 0&& array[ra+1, co] == 0 && array[ra-1, co] == 0 && array[ra, co+1] == 0 && array[ra, co-1] == 0)
-            {
-                if (array[ra + 1, co + 1] == 0 && array[ra + 1, co - 1] == 0 && array[ra - 1, co - 1] == 0 && array[ra - 1, co + 1] == 0)
-                {
-                    ra = -(row / 2 - ra);
-                    co = -(col / 2 - co);
-                    Instantiate(box, new Vector2(ra, co), Quaternion.identity);
-                    bn++;
-                }
-            }
-        }
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+			if (CheckNeighborWalls(ra, co) == 0)
+			{
+				ra -= row / 2;
+				co -= col / 2;
+				Instantiate(box, new Vector2(ra, co), Quaternion.identity);
+				ran--;
+			}
+		}
 
         //随机电梯
-        while (dn < 1)
+        while (true)
         {
-            ra = random.Next(0, row);
-            co = random.Next(0, col);
-            if (array[ra, co] == 0 && array[ra + 1, co] == 0 && array[ra - 1, co] == 0 && array[ra, co + 1] == 0 && array[ra, co - 1] == 0)
-            {
-                if (array[ra+1, co+1] == 0 && array[ra + 1, co-1] == 0&&array[ra-1, co-1] == 0 && array[ra - 1, co+1] == 0)
-                {
-                    ra = -(row / 2 - ra);
-                    co = -(col / 2 - co);
-                    Instantiate(dianti, new Vector2(ra, co), Quaternion.identity);
-                    dn++;
-                }
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+			if (CheckNeighborWalls(ra, co) == 0)
+			{
+				ra -= row / 2;
+				co -= col / 2;
+				Instantiate(dianti, new Vector2(ra, co), Quaternion.identity);
+				break;
             }
         }
 
         //随机钥匙
-        while (kn < 1)
+        while (true)
         {
-            ra = random.Next(0, row);
-            co = random.Next(0, col);
-            if (array[ra, co] == 0 && array[ra + 1, co] == 0 && array[ra - 1, co] == 0 && array[ra, co + 1] == 0 && array[ra, co - 1] == 0)
-            {
-                if (array[ra + 1, co + 1] == 0 && array[ra + 1, co - 1] == 0 && array[ra - 1, co - 1] == 0 && array[ra - 1, co + 1] == 0)
-                {
-                    ra = -(row / 2 - ra);
-                    co = -(col / 2 - co);
-                    Instantiate(key, new Vector2(ra, co), Quaternion.identity);
-                    kn++;
-                }
-            }
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+			if (CheckNeighborWalls(ra, co) == 0)
+			{
+                ra = -(row / 2 - ra);
+                co = -(col / 2 - co);
+                Instantiate(key, new Vector2(ra, co), Quaternion.identity);
+				break;
+			}
         }
     }
 

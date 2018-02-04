@@ -88,6 +88,11 @@ namespace WeaponAssemblage
 		float linkDistance = 1;
 
 		[SerializeField]
+		LinkFlash linkFlashPrefab;
+		LinkFlash linkFlashA;
+		LinkFlash linkFlashB;
+
+		[SerializeField]
 		List<PartAgent> partsInWorkspace = new List<PartAgent>();
 
 		[SerializeField]
@@ -108,6 +113,15 @@ namespace WeaponAssemblage
 				_instance = this;
 			}
 			linkingLine = this.gameObject.GetComponent<LineRenderer>();
+
+			if (linkFlashA == null)
+				linkFlashA = Instantiate(linkFlashPrefab.gameObject, this.transform).GetComponent<LinkFlash>();
+			
+			if (linkFlashB == null)
+				linkFlashB = Instantiate(linkFlashPrefab.gameObject, this.transform).GetComponent<LinkFlash>();
+
+			linkFlashA.gameObject.SetActive(false);
+			linkFlashB.gameObject.SetActive(false);
 		}
 
 		private void Start()
@@ -218,8 +232,14 @@ namespace WeaponAssemblage
 		/// <param name="port2"></param>
 		public static void DrawLine(MonoPort port1, MonoPort port2)
 		{
-			Instance.linkingLine.SetPosition(0, port1.transform.position);
-			Instance.linkingLine.SetPosition(1, port2.transform.position);
+			Instance.linkFlashA.transform.position = port1.transform.position;
+			Instance.linkFlashB.transform.position = port2.transform.position;
+			Instance.linkFlashA.transform.SetParent(port1.transform);
+			Instance.linkFlashB.transform.SetParent(port2.transform);
+			Instance.linkFlashA.gameObject.SetActive(true);
+			Instance.linkFlashB.gameObject.SetActive(true);
+			//Instance.linkingLine.SetPosition(0, port1.transform.position);
+			//Instance.linkingLine.SetPosition(1, port2.transform.position);
 		}
 
 		/// <summary>
@@ -227,9 +247,14 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="port1"></param>
 		/// <param name="port2"></param>
-		public static void CancelLine() {
-			Instance.linkingLine.SetPosition(0, Vector3.zero);
-			Instance.linkingLine.SetPosition(1, Vector3.zero);
+		public static void CancelLine()
+		{
+			Instance.linkFlashA.transform.SetParent(Instance.transform);
+			Instance.linkFlashB.transform.SetParent(Instance.transform);
+			Instance.linkFlashA.gameObject.SetActive(false);
+			Instance.linkFlashB.gameObject.SetActive(false);
+			//Instance.linkingLine.SetPosition(0, Vector3.zero);
+			//Instance.linkingLine.SetPosition(1, Vector3.zero);
 			//print($"{port1.name} nad {port2.name} dislinked!");
 		}
 

@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arrayna", "Arrayna.csproj", "{B91BE285-054D-064A-85FD-EEB91BEB7B6B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arrayna.Editor", "Arrayna.Editor.csproj", "{08DF65C4-A795-9C91-BE4E-1C3D75B56E50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{B91BE285-054D-064A-85FD-EEB91BEB7B6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B91BE285-054D-064A-85FD-EEB91BEB7B6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B91BE285-054D-064A-85FD-EEB91BEB7B6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08DF65C4-A795-9C91-BE4E-1C3D75B56E50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08DF65C4-A795-9C91-BE4E-1C3D75B56E50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08DF65C4-A795-9C91-BE4E-1C3D75B56E50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08DF65C4-A795-9C91-BE4E-1C3D75B56E50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

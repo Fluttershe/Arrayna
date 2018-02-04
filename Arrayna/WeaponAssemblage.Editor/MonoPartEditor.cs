@@ -19,7 +19,7 @@ namespace WeaponAssemblage
 		readonly static Color kPortColor = new Color(1, 0.92f, 0.016f, 0.5f);
 		readonly static Color kRootPortColor = new Color(1, 0, 0, 0.5f);
 		readonly static float kPortSize = 0.04f;
-		readonly static float kPortPickSize = 0.06f;
+		readonly static float kPortPickSize = 0.045f;
 		
 
 		private void OnEnable()

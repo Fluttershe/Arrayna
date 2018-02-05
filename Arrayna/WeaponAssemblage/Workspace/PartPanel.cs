@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace WeaponAssemblage
+namespace WeaponAssemblage.Workspace
 {
 	public class PartPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
 	{
@@ -28,7 +28,7 @@ namespace WeaponAssemblage
 
 		public void OnPointerDown(PointerEventData eventData)
 		{
-			Workspace.AddPart(part);
+			Workspace.AddPartToWorkspace(part);
 			part = null;
 			print("Pointer down");
 		}

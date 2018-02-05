@@ -49,7 +49,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1123014225510804}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1624438519, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
+  m_Script: {fileID: 1481417636, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rate: 2.5

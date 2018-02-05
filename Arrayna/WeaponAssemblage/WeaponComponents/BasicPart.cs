@@ -50,7 +50,7 @@ namespace WeaponAssemblage
 	/// 可多选的部件类型类
 	/// </summary>
 	[Serializable]
-	public class MultiSelectablePartType : EnumBaseCollection<PartType, bool> { }
+	public class MultiSelectablePartType : EnumBasedCollection<PartType, bool> { }
 
 	/// <summary>
 	/// 基本的部件interface，用于部件本身

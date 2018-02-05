@@ -49,7 +49,7 @@ namespace WeaponAssemblage
 	/// 武器属性的集合类
 	/// </summary>
 	[Serializable]
-	public class WeaponAttributes : EnumBaseCollection<AttributeType, float>
+	public class WeaponAttributes : EnumBasedCollection<AttributeType, float>
 	{
 		public void Add(WeaponAttributes wa)
 		{
@@ -83,44 +83,4 @@ namespace WeaponAssemblage
 			}
 		}
 	}
-
-	/// <summary>
-	/// 属性值，用于存放一个属性对应的数值
-	/// </summary>
-	[Serializable]
-	public struct AttributeValue
-	{
-		/// <summary>
-		/// 基本值
-		/// </summary>
-		public float BaseValue;
-
-		/// <summary>
-		/// 比例值
-		/// </summary>
-		public float MODValue;
-
-		public AttributeValue(AttributeValue av)
-		{
-			BaseValue = av.BaseValue;
-			MODValue = av.MODValue;
-		}
-
-		public static AttributeValue operator +(AttributeValue av1, AttributeValue av2)
-		{
-			av1.BaseValue += av2.BaseValue;
-			av1.MODValue += av2.MODValue;
-
-			return av1;
-		}
-
-		public static AttributeValue operator -(AttributeValue av1, AttributeValue av2)
-		{
-			av1.BaseValue -= av2.BaseValue;
-			av1.MODValue -= av2.MODValue;
-
-			return av1;
-		}
-	}
-
 }

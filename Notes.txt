@@ -150,14 +150,49 @@ PartMenu.Functions:
 	// Searching by name
 	
 PartMenu.Components:
-	Scroll view -> Browsing parts, held Panel
+	Scroll view -> Browsing parts, held @Panel
 	Tag -> Switch categorization
-	Panel -> Held parts. When pointer hovers for (x) second, display Info
-	Info -> Display infos of corresponding part, with "compare" button below, which triggers Compare // This should be included in PartAgent
-	Compare -> Display Info to Upperleft corner(or any place that won't be in the way yet also noticable enough), when pointer enter any part, show comparison of Infos
+	Panel -> Held parts. When pointer hovers for (x) second, display @Info
+	Info -> Display infos of corresponding part, with "compare" button below, which triggers @Compare // This should be included in @PartAgent
+	Compare -> Display @Info to Upperleft corner(or any place that won't be in the way yet noticable enough), when pointer enter any part, show comparison of @Infos
 	
 PartMenu.Scroll:
 	Input -> mouse.scroll(x and/or y) -> 
 	smooth speed -> Lerp
 	Move panels
 	
+PartAgent -> two work mode(too much, divide them to two components or something) ->
+	Workspace ->
+		Drag ->
+			...
+			From Workspace to Partlist -> 
+				Switch to Workspace mode;
+		Up ->
+			...
+			Addin Workspace
+	Partlist ->
+		Init ->
+			GetComponent<Part>();
+			Get Info ->
+				Name;
+				Type;
+				Description;
+				Attributes;
+				Ports' type & number?;
+		Enter ->
+			if Hover for (x) sec..
+			Display infos;
+		Exit ->
+			Hide infos;
+		Drag ->
+			Move
+			From Partlist to Workspace -> 
+				Switch to Workspace mode;
+		Up ->
+			Addin Partlist;
+		Down ->
+			Be ready for drag
+		Hover ->
+			Display Info;
+		
+		

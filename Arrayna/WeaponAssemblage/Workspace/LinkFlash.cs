@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace WeaponAssemblage
+namespace WeaponAssemblage.Workspace
 {
 	[RequireComponent(typeof(SpriteRenderer))]
 	public class LinkFlash : MonoBehaviour

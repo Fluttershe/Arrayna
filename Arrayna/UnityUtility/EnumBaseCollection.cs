@@ -20,7 +20,7 @@ namespace UnityUtility
 	/// <typeparam name="E"></typeparam>
 	/// TODO: Figure out how to make a serializable Dictionary
 	[Serializable]
-	public abstract class EnumBaseCollection<E, V> : EnumBaseCollection, ISerializationCallbackReceiver, IEnumerable<V> where E : struct, IConvertible where V : struct
+	public abstract class EnumBasedCollection<E, V> : EnumBaseCollection, ISerializationCallbackReceiver, IEnumerable<V> where E : struct, IConvertible where V : struct
 	{
 		[NonSerialized]
 		protected Dictionary<E, V> dict = new Dictionary<E, V>();
@@ -33,9 +33,10 @@ namespace UnityUtility
 
 		public Type type { get; private set; }
 
-		public EnumBaseCollection()
+		public EnumBasedCollection()
 		{
-			if (!typeof(E).IsEnum) throw new ArgumentException($"{typeof(E)} 不是枚举类型！");
+			if (!typeof(E).IsEnum)
+				throw new ArgumentException($"{typeof(E)} 不是枚举类型！");
 			type = typeof(E);
 			var eValues = Enum.GetValues(type);
 			int enumNum = eValues.Length;
@@ -50,7 +51,7 @@ namespace UnityUtility
 			}
 		}
 
-		public EnumBaseCollection(EnumBaseCollection<E, V> collection)
+		public EnumBasedCollection(EnumBasedCollection<E, V> collection)
 		{
 			var length = collection.keys.Count;
 

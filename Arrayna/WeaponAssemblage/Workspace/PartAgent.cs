@@ -18,12 +18,12 @@ namespace WeaponAssemblage.Workspace
 		/// </summary>
 		abstract class WorkMode : IAgentWorkMode
 		{
+			protected PartAgent agent;
+
 			public WorkMode(PartAgent _agent)
 			{
 				this.agent = _agent;
 			}
-
-			protected PartAgent agent;
 
 			public virtual void OnDrag(PointerEventData eventData)
 			{
@@ -84,8 +84,8 @@ namespace WeaponAssemblage.Workspace
 						Debug.Log($"解除部件失败？{agent.RootPort.AttachedPort?.Part?.PartName}");
 					else
 					{
-						part.transform.parent = null;
-						Debug.Log($"Set {part.name}'s parent to {part.transform.parent}");
+						agent.transform.parent = null;
+						Debug.Log($"Set {agent.name}'s parent to {agent.transform.parent}");
 						Debug.Log("解除成功");
 						Workspace.OperatingWeapon.CompileWeaponAttribute();
 					}
@@ -110,6 +110,8 @@ namespace WeaponAssemblage.Workspace
 			{
 				if (Workspace.HeldPart != agent) return;
 				Workspace.CancelLink();
+				Workspace.RemovePartFromPartlist(agent);
+				Workspace.AddPartToWorkspace(agent);
 
 				if (Workspace.ReadyToConnect != null)
 				{
@@ -126,9 +128,6 @@ namespace WeaponAssemblage.Workspace
 				}
 
 				Workspace.HeldPart = null;
-
-				Workspace.RemovePartFromPartlist(agent);
-				Workspace.AddPartToWorkspace(agent.Part);
 			}
 		}
 
@@ -139,16 +138,6 @@ namespace WeaponAssemblage.Workspace
 		{
 			public PartListMode(PartAgent _agent) : base(_agent) { }
 
-			public override void OnPointerUp(PointerEventData eventData)
-			{
-				if (Workspace.HeldPart != agent) return;
-				Workspace.HeldPart = null;
-				Workspace.CancelLink();
-
-				Workspace.RemovePartFromWorkspace(agent);
-				Workspace.AddPartToPartlist(agent.Part);
-			}
-
 			public override void OnDrag(PointerEventData eventData)
 			{
 				base.OnDrag(eventData);
@@ -158,6 +147,50 @@ namespace WeaponAssemblage.Workspace
 					print("Switch to workspace mode.");
 					agent.currentMode = agent.workspaceMode;
 				}
+			}
+
+			public override void OnPointerUp(PointerEventData eventData)
+			{
+				var parts = GetAttachedPart(agent.Part);
+				
+				Workspace.RemovePartFromWorkspace(agent);
+				Workspace.AddPartToPartlist(agent);
+
+				foreach (MonoPart p in parts)
+				{
+					p.RootPort.Detach();
+					var a = p.GetComponent<PartAgent>();
+					Workspace.RemovePartFromWorkspace(a);
+					Workspace.AddPartToPartlist(a);
+				}
+				Workspace.OperatingWeapon.CompileWeaponAttribute();
+
+				ResetPosition();
+
+				if (Workspace.HeldPart != agent) return;
+				Workspace.HeldPart = null;
+				Workspace.CancelLink();
+			}
+
+			private void ResetPosition()
+			{
+				var pos = agent.transform.localPosition;
+				pos.x = pos.y = 0;
+				agent.transform.localPosition = pos;
+			}
+
+			private IPart[] GetAttachedPart(IPart part)
+			{
+				List<IPart> parts = new List<IPart>();
+				foreach (IPort p in part.Ports)
+				{
+					if (p.AttachedPort != null)
+					{
+						parts.Add(p.AttachedPort.Part);
+					}
+				}
+
+				return parts.ToArray();
 			}
 		}
 

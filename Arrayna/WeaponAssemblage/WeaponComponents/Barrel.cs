@@ -65,7 +65,7 @@ namespace WeaponAssemblage
 			if (!firing || fireTimer > 0) return;
 
 			if (bulletPrefab == null)
-				print("Cannot find bullet.");
+				print("Bullet is null.");
 			else
 				Instantiate(BulletPrefab, FirePort.transform.position, FirePort.transform.rotation);
 			fireTimer = 1/fireRate;

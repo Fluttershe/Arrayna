@@ -327,7 +327,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		protected override void UpdateWeapon()
 		{
-			Debug.Log($"Update: {PartName}, RootPart: {weapon?.RootPart.Equals(this)}, Root attached: {rootPort.AttachedPort}");
+			Debug.Log($"Update: {PartName}, RootPart: {weapon?.RootPart?.Equals(this)}, Root attached: {rootPort.AttachedPort}");
 			if ((weapon?.RootPart?.Equals(this)) != true)
 				weapon = null;
 

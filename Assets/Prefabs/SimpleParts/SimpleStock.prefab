@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4161303983077292}
   - component: {fileID: 114102093856694696}
   - component: {fileID: 60477186368074718}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SimpleStock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,6 +176,7 @@ MonoBehaviour:
   description: 
   type: 3
   rootPort: {fileID: 114373838287281174}
+  weapon: {fileID: 0}
   baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:

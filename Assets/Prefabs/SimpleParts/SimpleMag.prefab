@@ -37,7 +37,7 @@ GameObject:
   - component: {fileID: 4038050853298878}
   - component: {fileID: 114758537095185420}
   - component: {fileID: 61498510839647166}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SimpleMag
   m_TagString: Untagged
   m_Icon: {fileID: 0}

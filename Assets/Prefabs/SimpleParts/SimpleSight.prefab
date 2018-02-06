@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4498853326222540}
   - component: {fileID: 114052177923291656}
   - component: {fileID: 60714239368109138}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SimpleSight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,6 +176,7 @@ MonoBehaviour:
   description: 
   type: 4
   rootPort: {fileID: 114809710152574338}
+  weapon: {fileID: 0}
   baseValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:

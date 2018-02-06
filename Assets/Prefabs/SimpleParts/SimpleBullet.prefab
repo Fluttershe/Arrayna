@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 4104657792095312}
   - component: {fileID: 114017469603548200}
   - component: {fileID: 61583436013447980}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SimpleBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

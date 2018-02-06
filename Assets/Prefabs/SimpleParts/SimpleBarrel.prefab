@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4613929444814362}
   - component: {fileID: 61555855358603842}
   - component: {fileID: 114646495864879186}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: SimpleBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

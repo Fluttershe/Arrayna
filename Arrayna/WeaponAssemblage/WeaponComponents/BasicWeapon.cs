@@ -278,7 +278,7 @@ namespace WeaponAssemblage
 			get
 			{
 				return 
-					ContainedPartType[PartType.Reciever]
+					ContainedPartType[PartType.Receiver]
 				 && ContainedPartType[PartType.Barrel]
 				 && ContainedPartType[PartType.Magazine]
 				 && ContainedPartType[PartType.Bullet];
@@ -303,6 +303,7 @@ namespace WeaponAssemblage
 			
 			// 计算武器的最终数值
 			finalValue.Add(baseValue);
+			modValue.Add(1);
 			finalValue.Mul(modValue);
 		}
 

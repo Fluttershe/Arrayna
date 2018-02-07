@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4858304262512928}
   - component: {fileID: 114670734533261772}
   - component: {fileID: 60585776607151328}
-  - component: {fileID: 114169833622900708}
   m_Layer: 8
   m_Name: SimpleReciever
   m_TagString: Untagged
@@ -343,17 +342,6 @@ PolygonCollider2D:
       - {x: -0.13236868, y: -0.090962306}
       - {x: 0.5323055, y: -0.08818844}
       - {x: 0.535265, y: 0.32069966}
---- !u!114 &114169833622900708
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1083281445128362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1190838562, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114652773672347208
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -409,12 +397,13 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  monoports:
+  monoPorts:
   - {fileID: 114762700045910738}
   - {fileID: 114928707395577092}
   - {fileID: 114951664970547104}
   - {fileID: 114652773672347208}
   - {fileID: 114895213913732710}
+  monoAsstPorts: []
 --- !u!114 &114684899192744196
 MonoBehaviour:
   m_ObjectHideFlags: 1

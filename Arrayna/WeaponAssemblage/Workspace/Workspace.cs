@@ -62,6 +62,9 @@ namespace WeaponAssemblage.Workspace
 		[SerializeField]
 		private List<MonoPort> portsInWorkspace = new List<MonoPort>();
 
+		[SerializeField]
+		private WeaponStatePanel statePanel;
+
 		#endregion
 
 		#region Public static properties
@@ -360,6 +363,12 @@ namespace WeaponAssemblage.Workspace
 			return Instance._removePartFromPartlist(part);
 		}
 
+		public static void UpdateWeaponStates()
+		{
+			OperatingWeapon.CompileWeaponAttribute();
+			Instance.statePanel?.UpdateState(OperatingWeapon);
+		}
+
 		#endregion
 
 		#region Unity methods
@@ -435,6 +444,8 @@ namespace WeaponAssemblage.Workspace
 				operatingWeapon.enabled = false;
 			}
 
+			statePanel = FindObjectOfType<WeaponStatePanel>();
+
 			// Editor only
 			foreach (MonoPart p in PartToAdd)
 				AddPartToPartlist(p);
@@ -446,7 +457,7 @@ namespace WeaponAssemblage.Workspace
 				MonoPart receiver = null;
 				foreach (MonoPart p in partsInPartlist)
 				{
-					if (p.Type == PartType.Reciever)
+					if (p.Type == PartType.Receiver)
 					{
 						receiver = p;
 						break;
@@ -461,6 +472,7 @@ namespace WeaponAssemblage.Workspace
 				{
 					RemovePartFromPartlist(receiver);
 					AddPartToWorkspace(receiver);
+					UpdateWeaponStates();
 				}
 			}
 		}
@@ -556,14 +568,14 @@ namespace WeaponAssemblage.Workspace
 
 			// If the root part of operating weapon is still empty and
 			// we're adding a reciever, set the reciever as the root part.
-			if (operatingWeapon.RootPart == null && part.Type == PartType.Reciever)
+			if (operatingWeapon.RootPart == null && part.Type == PartType.Receiver)
 			{
 				operatingWeapon.RootPart = part;
 				part.transform.SetParent(operatingWeapon.transform);
 				part.transform.position = this.transform.position;
 				Debug.Log($"Part {part.PartName} is set as the root part of operating weapon.");
 			}
-
+			Debug.Log($"Add part {part.name} to Workspace.");
 			return true;
 		}
 
@@ -579,6 +591,7 @@ namespace WeaponAssemblage.Workspace
 
 			if (operatingWeapon?.RootPart?.Equals(part) == true)
 			{
+				Debug.Log("Removing root part");
 				operatingWeapon.RootPart = null;
 			}
 
@@ -621,12 +634,14 @@ namespace WeaponAssemblage.Workspace
 			for (int i = 0; partsInWorkspace.Count > 1; i ++)
 			{
 				var p = partsInWorkspace[i];
-				if (p.Type == PartType.Reciever) continue;
+				if (p.Type == PartType.Receiver) continue;
 				p.RootPort.Detach();
 				_removePartFromWorkspace(p);
 				_addPartToPartlist(p);
 				i--;
 			}
+
+			UpdateWeaponStates();
 		}
 		#endregion
 	}

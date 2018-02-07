@@ -51,7 +51,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 100.29, y: 231.46}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &114941141738688336
 MonoBehaviour:
@@ -64,10 +64,25 @@ MonoBehaviour:
   m_Script: {fileID: -1489109734, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  content: {fileID: 0}
+  scrollViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  contents:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   partPanel: {fileID: 1671616545636960, guid: a4e6ea667082bd342966f51bd2c8251f, type: 2}
   dragndropArea: {fileID: 61971149258668670}
-  partAgentList: []
+  partList: []
   partPanelList: []
 --- !u!224 &224779275712229690
 RectTransform:
@@ -84,6 +99,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 291.48, y: -0.0017881976}
-  m_SizeDelta: {x: 100.29, y: 231.46}
+  m_AnchoredPosition: {x: 371.61264, y: -0.020522632}
+  m_SizeDelta: {x: 100.4, y: 277.92}
   m_Pivot: {x: 0.5, y: 0.5}

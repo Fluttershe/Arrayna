@@ -15,7 +15,7 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 枪身
 		/// </summary>
-		Reciever,
+		Receiver,
 		/// <summary>
 		/// 枪管
 		/// </summary>
@@ -86,6 +86,11 @@ namespace WeaponAssemblage
 		/// 部件的各个接口
 		/// </summary>
 		IEnumerable<IPort> Ports { get; }
+		
+		/// <summary>
+		/// 部件的各个辅助接口
+		/// </summary>
+		IEnumerable<IPort> AsstPorts { get; }
 
 		/// <summary>
 		/// 部件的接口数量(不包括root port)
@@ -156,6 +161,7 @@ namespace WeaponAssemblage
 		public abstract IPort RootPort { get; }
 
 		public abstract IEnumerable<IPort> Ports { get; }
+		public abstract IEnumerable<IPort> AsstPorts { get; }
 
 		public abstract int PortCount { get; }
 
@@ -172,7 +178,7 @@ namespace WeaponAssemblage
 
 		public abstract bool RemovePort(IPort port);
 
-		protected abstract void UpdateWeapon();
+		protected abstract void UpdateBelongingWeapon();
 
 		public abstract void OnBeforeSerialize();
 
@@ -217,9 +223,15 @@ namespace WeaponAssemblage
 		public override WeaponAttributes ModValue => modValue;
 
 		[SerializeField, Tooltip("部件的各个端口")]
-		protected List<MonoPort> monoports = new List<MonoPort>();
+		protected List<MonoPort> monoPorts = new List<MonoPort>();
+		
+		[SerializeField, Tooltip("部件的辅助端口")]
+		protected List<MonoPort> monoAsstPorts = new List<MonoPort>();
+
 		protected List<IPort> portList = new List<IPort>();
-		public override IEnumerable<IPort> Ports => portList.AsEnumerable<IPort>();
+		protected List<IPort> asstPortList = new List<IPort>();
+		public override IEnumerable<IPort> Ports => portList.AsEnumerable();
+		public override IEnumerable<IPort> AsstPorts => asstPortList.AsEnumerable();
 		public override int PortCount => portList.Count;
 		
 		public override event Action<IPart, IPart> OnPartAttached;
@@ -234,11 +246,6 @@ namespace WeaponAssemblage
 				Debug.LogError($"该部件 {this.name} 缺少RootPort！");
 				this.enabled = false;
 				return;
-				// 创建一个新节点
-				//var port = new GameObject("RootPort").AddComponent<BasicPort>();
-				//port.transform.parent = this.transform;
-				//rootPort = port;
-				//rootPort.Part = this;
 			}
 
 			foreach (IPort port in portList)
@@ -283,13 +290,25 @@ namespace WeaponAssemblage
 				}
 			}
 
+			if (port.IsAssistantPort)
+			{
+				if (asstPortList.Contains(port))
+				{
+					Debug.LogWarning($"{this.name} 已经包含此接口");
+					return false;
+				}
+
+				asstPortList.Add(port);
+				port.Part = this;
+				return true;
+			}
+
 			if (portList.Contains(port))
 			{
 				Debug.LogWarning($"{this.name} 已经包含此接口");
 				return false;
 			}
-
-			monoports.Add(port as MonoPort);
+			
 			portList.Add(port);
 			port.Part = this;
 			// 挂接事件
@@ -313,19 +332,28 @@ namespace WeaponAssemblage
 				return false;
 			}
 
-			monoports.Remove(port as MonoPort);
-			portList.Remove(port);
 			port.Part = null;
-			// 取消事件
-			port.OnPortDetached -= PartDetached;
-			port.OnPortAttached -= PartAttached;
+
+			if (port.IsAssistantPort)
+			{
+				asstPortList.Remove(port);
+			}
+			else
+			{
+				portList.Remove(port);
+
+				// 取消事件
+				port.OnPortDetached -= PartDetached;
+				port.OnPortAttached -= PartAttached;
+			}
+
 			return true;
 		}
 
 		/// <summary>
 		/// 更新所属武器
 		/// </summary>
-		protected override void UpdateWeapon()
+		protected override void UpdateBelongingWeapon()
 		{
 			Debug.Log($"Update: {PartName}, RootPart: {weapon?.RootPart?.Equals(this)}, Root attached: {rootPort.AttachedPort}");
 			if ((weapon?.RootPart?.Equals(this)) != true)
@@ -337,7 +365,7 @@ namespace WeaponAssemblage
 			foreach(IPort p in portList)
 			{
 				if (p.AttachedPort == null) continue;
-				((BasicPart)p.AttachedPort.Part).UpdateWeapon();
+				((BasicPart)p.AttachedPort.Part).UpdateBelongingWeapon();
 			}
 		}
 
@@ -351,7 +379,7 @@ namespace WeaponAssemblage
 			Debug.Log($"Part attached: {callerport.Part.PartName} -> {calleeport.Part.PartName}");
 			if (!callerport.Part.Equals(this)) return;
 			OnPartAttached?.Invoke(this, calleeport.Part);
-			((BasicPart)calleeport.Part).UpdateWeapon();
+			((BasicPart)calleeport.Part).UpdateBelongingWeapon();
 		}
 
 		/// <summary>
@@ -364,26 +392,38 @@ namespace WeaponAssemblage
 			Debug.Log($"Part detached: {callerport.Part.PartName} -> {calleeport.Part.PartName}");
 			if (!callerport.Part.Equals(this)) return;
 			OnPartDetached?.Invoke(this, calleeport.Part);
-			((BasicPart)calleeport.Part).UpdateWeapon();
+			((BasicPart)calleeport.Part).UpdateBelongingWeapon();
 		}
 
 		////// Unity Serialization //////
 		
 		public override void OnBeforeSerialize()
 		{
-			monoports.Clear();
+			monoPorts.Clear();
 			for (int i = 0; i < portList.Count; i ++)
 			{
-				monoports.Add((MonoPort)portList[i]);
+				monoPorts.Add((MonoPort)portList[i]);
+			}
+
+			monoAsstPorts.Clear();
+			for (int i = 0; i < asstPortList.Count; i++)
+			{
+				monoAsstPorts.Add((MonoPort)asstPortList[i]);
 			}
 		}
 
 		public override void OnAfterDeserialize()
 		{
 			portList.Clear();
-			for (int i = 0; i < monoports.Count; i++)
+			for (int i = 0; i < monoPorts.Count; i++)
 			{
-				portList.Add(monoports[i]);
+				portList.Add(monoPorts[i]);
+			}
+
+			asstPortList.Clear();
+			for (int i = 0; i < monoAsstPorts.Count; i++)
+			{
+				asstPortList.Add(monoAsstPorts[i]);
 			}
 		}
 

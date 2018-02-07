@@ -92,7 +92,7 @@ namespace WeaponAssemblage.Workspace
 						agent.transform.parent = null;
 						Debug.Log($"Set {agent.name}'s parent to {agent.transform.parent}");
 						Debug.Log("解除成功");
-						Workspace.OperatingWeapon.CompileWeaponAttribute();
+						Workspace.UpdateWeaponStates();
 					}
 				}
 
@@ -115,8 +115,22 @@ namespace WeaponAssemblage.Workspace
 			{
 				if (Workspace.HeldPart != agent) return;
 				Workspace.CancelLink();
-				Workspace.RemovePartFromPartlist(agent);
-				Workspace.AddPartToWorkspace(agent);
+
+				// If this part is a receiver..
+				if (agent.Part.Type == PartType.Receiver)
+				{
+					// We need to swap it with the receiver already inside Workspace
+					var prevReceiver = (MonoPart)Workspace.OperatingWeapon.RootPart;
+					if ((prevReceiver?.Equals(agent.Part)) == false)
+					{
+						SwapReceiver(prevReceiver);
+					}
+				}
+				else
+				{
+					Workspace.RemovePartFromPartlist(agent);
+					Workspace.AddPartToWorkspace(agent);
+				}
 
 				if (Workspace.ReadyToConnect != null)
 				{
@@ -128,11 +142,58 @@ namespace WeaponAssemblage.Workspace
 					{
 						Workspace.ReadyToConnect = null;
 						Debug.Log("安装成功");
-						Workspace.OperatingWeapon.CompileWeaponAttribute();
+						Workspace.UpdateWeaponStates();
+					}
+				}
+					
+
+				Workspace.HeldPart = null;
+			}
+
+			private void SwapReceiver(MonoPart prevReceiver)
+			{
+				// If this receiver is inside Partlist and being click..
+				// Swap the receiver inside Workspace with this one
+				print("Switch receiver.");
+
+				// Detach all the parts that is attached to the receiver inside Workspace
+				List<MonoPart> partsFromPrevReceiver = new List<MonoPart>();
+				foreach (MonoPort p in prevReceiver.Ports)
+				{
+					if (p.AttachedPort == null) continue;
+					partsFromPrevReceiver.Add((MonoPart)p.AttachedPort.Part);
+					((MonoPart)p.AttachedPort.Part).transform.SetParent(null);
+					p.Detach();
+				}
+				
+				var prevPosition = prevReceiver.transform.position;
+
+				// Move the old receiver to Partlist
+				Workspace.RemovePartFromWorkspace(prevReceiver);
+				Workspace.AddPartToPartlist(prevReceiver);
+
+				// Move the new one to Workspace
+				Workspace.RemovePartFromPartlist(agent.Part);
+				Workspace.AddPartToWorkspace(agent.Part);
+
+				agent.transform.position = prevPosition;
+
+				// Try to connect the parts from previous receiver to the new one
+				foreach (MonoPart p in partsFromPrevReceiver)
+				{
+					var port = Workspace.CheckForNearPort((MonoPort)p.RootPort);
+					if (port != null)
+					{
+						Workspace.InstallPart(port, p);
+					}
+					else
+					{
+						var dir = (p.transform.position - prevPosition).normalized;
+						p.transform.position += dir * 0.5f;
 					}
 				}
 
-				Workspace.HeldPart = null;
+				Workspace.UpdateWeaponStates();
 			}
 		}
 
@@ -156,6 +217,18 @@ namespace WeaponAssemblage.Workspace
 
 			public override void OnPointerUp(PointerEventData eventData)
 			{
+				if (Workspace.HeldPart != agent) return;
+
+				// 如果该部件是当前的根部件
+				if (agent.Part.Equals(Workspace.OperatingWeapon.RootPart))
+				{
+					// 不允许删除，并复位
+					Debug.Log("You cannot remove the root part of the weapon!");
+					agent.transform.position = Workspace.Instance.transform.position;
+					Workspace.HeldPart = null;
+					return;
+				}
+
 				var parts = GetAttachedPart(agent.Part);
 				
 				Workspace.RemovePartFromWorkspace(agent);
@@ -168,11 +241,10 @@ namespace WeaponAssemblage.Workspace
 					Workspace.RemovePartFromWorkspace(a);
 					Workspace.AddPartToPartlist(a);
 				}
-				Workspace.OperatingWeapon.CompileWeaponAttribute();
+				Workspace.UpdateWeaponStates();
 
 				ResetPosition();
 
-				if (Workspace.HeldPart != agent) return;
 				Workspace.HeldPart = null;
 				Workspace.CancelLink();
 			}
@@ -206,7 +278,7 @@ namespace WeaponAssemblage.Workspace
 		{
 			public ReceiverMode(PartAgent _agent) : base(_agent) { }
 
-			public override void OnDrag(PointerEventData eventData) { }
+			//public override void OnDrag(PointerEventData eventData) { }
 			public override void OnPointerUp(PointerEventData eventData)
 			{
 				base.OnPointerUp(eventData);
@@ -274,11 +346,11 @@ namespace WeaponAssemblage.Workspace
 				this.enabled = false;
 			}
 
-			if (Part.Type == PartType.Reciever)
-			{
-				currentMode = new ReceiverMode(this);
-			}
-			else
+			//if (Part.Type == PartType.Reciever)
+			//{
+			//	currentMode = new ReceiverMode(this);
+			//}
+			//else
 			{
 				workspaceMode = new WorkspaceMode(this);
 				partlistMode = new PartListMode(this);

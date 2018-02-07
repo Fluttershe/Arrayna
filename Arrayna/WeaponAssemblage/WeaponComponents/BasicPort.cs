@@ -21,6 +21,11 @@ namespace WeaponAssemblage
 		Vector3 Position { get; set; }
 
 		/// <summary>
+		/// 该端口是否为辅助性端口
+		/// </summary>
+		bool IsAssistantPort { get; }
+
+		/// <summary>
 		/// 目前该端口所隶属的部件
 		/// </summary>
 		IPart Part { get; set; }
@@ -68,6 +73,7 @@ namespace WeaponAssemblage
 	{
 		public abstract MultiSelectablePartType SuitableType { get; }
 
+		public virtual bool IsAssistantPort => false;
 		public abstract Vector3 Position { get; set; }
 		public abstract IPart Part { get; set; }
 
@@ -212,5 +218,85 @@ namespace WeaponAssemblage
 			// 返回移除的部件
 			return port.Part;
 		}
+	}
+
+	/// <summary>
+	/// 辅助接口类，没有与其它接口连接的能力
+	/// </summary>
+	public class AssistantPort : MonoPort
+	{
+		public override bool IsAssistantPort => true;
+
+		[SerializeField]
+		protected Vector3 position;
+		public override Vector3 Position
+		{
+			get => position;
+			set => position = value;
+		}
+
+		[SerializeField]
+		protected MonoPart part;
+		public override IPart Part
+		{
+			get => part;
+			set => part = (MonoPart)value;
+		}
+
+		/// <summary>
+		/// Always be null
+		/// </summary>
+		[Obsolete]
+		public override MultiSelectablePartType SuitableType => null;
+
+		/// <summary>
+		/// Always be null
+		/// </summary>
+		[Obsolete]
+		public override IPort AttachedPort => null;
+
+		/// <summary>
+		/// Wont be used
+		/// </summary>
+		[Obsolete]
+		public override event Action<IPort, IPort> OnPortAttached = null;
+
+		/// <summary>
+		/// Wont be used
+		/// </summary>
+		[Obsolete]
+		public override event Action<IPort, IPort> OnPortDetached = null;
+
+		/// <summary>
+		/// Always return false
+		/// </summary>
+		/// <param name="part"></param>
+		/// <returns></returns>
+		[Obsolete]
+		public override bool Attach(IPart part) { return false; }
+
+		/// <summary>
+		/// Always return false
+		/// </summary>
+		/// <param name="part"></param>
+		/// <returns></returns>
+		[Obsolete]
+		public override bool CanAttachBy(IPart part) { return false; }
+
+		/// <summary>
+		/// Always return null
+		/// </summary>
+		/// <param name="part"></param>
+		/// <returns></returns>
+		[Obsolete]
+		public override IPart Detach() { return null; }
+
+		/// <summary>
+		/// Always return false
+		/// </summary>
+		/// <param name="part"></param>
+		/// <returns></returns>
+		[Obsolete]
+		protected override bool AttachRoot(IPort port) { return false; }
 	}
 }

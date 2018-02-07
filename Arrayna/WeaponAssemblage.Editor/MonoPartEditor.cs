@@ -17,6 +17,7 @@ namespace WeaponAssemblage
 		string portAcceptedType = "";
 
 		readonly static Color kPortColor = new Color(1, 0.92f, 0.016f, 0.5f);
+		readonly static Color kAsstPortColor = new Color(1, 0, 1, 0.5f);
 		readonly static Color kRootPortColor = new Color(1, 0, 0, 0.5f);
 		readonly static float kPortSize = 0.04f;
 		readonly static float kPortPickSize = 0.045f;
@@ -54,10 +55,16 @@ namespace WeaponAssemblage
 		{
 			var ports = part.Ports;
 
-			DrawPort(rootPort);
+			DrawPort(rootPort, kRootPortColor);
 			foreach (MonoPort p in ports)
 			{
-				DrawPort(p);
+				DrawPort(p, kPortColor);
+			}
+
+			ports = part.AsstPorts;
+			foreach (MonoPort p in ports)
+			{
+				DrawPort(p, kAsstPortColor);
 			}
 		}
 
@@ -68,7 +75,20 @@ namespace WeaponAssemblage
 			if (GUILayout.Button("添加接口"))
 			{
 				var count = part.PortCount;
-				var port = new GameObject($"port{count}").AddComponent<BasicPort>();
+				var port = new GameObject($"Port{count}").AddComponent<BasicPort>();
+				port.transform.parent = part.transform;
+				port.transform.localPosition = Vector3.zero;
+				if (!part.AddPort(port))
+				{
+					Debug.LogWarning("添加新接口失败！");
+					DestroyImmediate(port.gameObject);
+				}
+			}
+
+			if (GUILayout.Button("添加辅助接口"))
+			{
+				var count = part.PortCount;
+				var port = new GameObject($"AsstPort{count}").AddComponent<AssistantPort>();
 				port.transform.parent = part.transform;
 				port.transform.localPosition = Vector3.zero;
 				if (!part.AddPort(port))
@@ -88,7 +108,7 @@ namespace WeaponAssemblage
 					}
 					else
 					{
-						DestroyImmediate(selectedPort);
+						DestroyImmediate(selectedPort.gameObject);
 						selectedPort = null;
 					}
 				}
@@ -106,7 +126,12 @@ namespace WeaponAssemblage
 		/// </summary>
 		void GetSelectedPortInfo()
 		{
-			serializedPort = new SerializedObject(selectedPort);
+			// 获取端口位置
+			var position = selectedPort.transform.localPosition;
+			position.z = selectedPort.transform.eulerAngles.z;
+			selectedPort.Position = position;
+
+			if (selectedPort.IsAssistantPort) return;
 
 			// 获取端口适用类型并转换为文字
 			portAcceptedType = "";
@@ -121,21 +146,17 @@ namespace WeaponAssemblage
 				i++;
 			}
 
-			// 获取端口位置
-			var position = selectedPort.transform.localPosition;
-			position.z = selectedPort.transform.eulerAngles.z;
-			selectedPort.Position = position;
+			serializedPort = new SerializedObject(selectedPort);
 		}
 
 		/// <summary>
 		/// 绘制端口
 		/// </summary>
 		/// <param name="port"></param>
-		void DrawPort(MonoPort port)
+		void DrawPort(MonoPort port, Color color)
 		{
 			if (port == null) return;
-			if (port == rootPort) Handles.color = kRootPortColor;
-			else Handles.color = kPortColor;
+			Handles.color = color;
 			Vector3 position = port.transform.position;
 			//float size = HandleUtility.GetHandleSize(position);
 
@@ -151,7 +172,10 @@ namespace WeaponAssemblage
 			{
 				var rotation = port.transform.rotation;
 				
-				Handles.Label(position + new Vector3(-0.05f, 0.05f), $"接口名称：{port.name}\n可接纳部件类型：{portAcceptedType}");
+				if (selectedPort.IsAssistantPort)
+					Handles.Label(position + new Vector3(-0.05f, 0.05f), $"接口名称：{port.name}");
+				else
+					Handles.Label(position + new Vector3(-0.05f, 0.05f), $"接口名称：{port.name}\n可接纳部件类型：{portAcceptedType}");
 
 				EditorGUI.BeginChangeCheck();
 				rotation = Handles.DoRotationHandle(rotation, position);
@@ -194,6 +218,9 @@ namespace WeaponAssemblage
 				selectedPort.transform.localPosition = newPos;
 				selectedPort.transform.rotation = newRot;
 			}
+
+			// 如果是辅助性接口，就此退出
+			if (selectedPort.IsAssistantPort) return;
 
 			// 显示端口类型
 			EditorGUI.BeginChangeCheck();

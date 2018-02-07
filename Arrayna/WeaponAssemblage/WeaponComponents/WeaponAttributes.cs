@@ -42,7 +42,7 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 稳定性
 		/// </summary>
-		Stabilization,
+		Stability,
 	}
 
 	/// <summary>
@@ -59,11 +59,27 @@ namespace WeaponAssemblage
 			}
 		}
 
+		public void Add(float wa)
+		{
+			for (int i = 0; i < keys.Count; i++)
+			{
+				this[keys[i]] += wa;
+			}
+		}
+
 		public void Sub(WeaponAttributes wa)
 		{
 			for (int i = 0; i < keys.Count; i++)
 			{
 				this[keys[i]] -= wa[keys[i]];
+			}
+		}
+
+		public void Sub(float wa)
+		{
+			for (int i = 0; i < keys.Count; i++)
+			{
+				this[keys[i]] -= wa;
 			}
 		}
 
@@ -75,11 +91,27 @@ namespace WeaponAssemblage
 			}
 		}
 
+		public void Mul(float wa)
+		{
+			for (int i = 0; i < keys.Count; i++)
+			{
+				this[keys[i]] *= wa;
+			}
+		}
+
 		public void Div(WeaponAttributes wa)
 		{
 			for (int i = 0; i < keys.Count; i++)
 			{
 				this[keys[i]] /= wa[keys[i]];
+			}
+		}
+
+		public void Div(float wa)
+		{
+			for (int i = 0; i < keys.Count; i++)
+			{
+				this[keys[i]] /= wa;
 			}
 		}
 	}

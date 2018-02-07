@@ -194,8 +194,9 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  monoports: []
-  bulletPrefab: {fileID: 1770732333931132}
+  monoPorts: []
+  monoAsstPorts: []
+  bulletPrefab: {fileID: 0}
 --- !u!114 &114852760571594070
 MonoBehaviour:
   m_ObjectHideFlags: 1

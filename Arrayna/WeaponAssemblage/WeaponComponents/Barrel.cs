@@ -26,25 +26,26 @@ namespace WeaponAssemblage
 		private bool firing;
 		private float fireRate;
 		private float fireTimer;
-
-		[SerializeField]
+		
 		protected MonoPort FirePort;
 
 		protected override void Awake()
 		{
 			base.Awake();
-			foreach (MonoPort port in portList)
+
+			if (asstPortList.Count <= 0)
 			{
-				if (port.name == "FirePort")
+				Debug.LogError($"该枪管 {PartName} 需要至少一个辅助接口作为射弹口.");
+				return;
+			}
+			
+			foreach (MonoPort p in asstPortList)
+			{
+				if (p != null)
 				{
-					FirePort = port;
+					FirePort = p;
 					break;
 				}
-			}
-
-			if (FirePort == null)
-			{
-				Debug.LogWarning($"该枪管 {PartName} 缺少 FirePort.");
 			}
 		}
 
@@ -64,16 +65,11 @@ namespace WeaponAssemblage
 			if (fireTimer > 0) fireTimer -= Time.deltaTime;
 			if (!firing || fireTimer > 0) return;
 
-			if (bulletPrefab == null)
+			if (BulletPrefab == null)
 				print("Bullet is null.");
 			else
 				Instantiate(BulletPrefab, FirePort.transform.position, FirePort.transform.rotation);
 			fireTimer = 1/fireRate;
-		}
-
-		protected override void PartAttached(IPort callerport, IPort calleeport)
-		{
-			base.PartAttached(callerport, calleeport);
 		}
 
 		protected override void PartDetached(IPort callerport, IPort calleeport)

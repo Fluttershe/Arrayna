@@ -25,6 +25,7 @@ public class TestCreat : MonoBehaviour
     public GameObject key;
     public GameObject dianti;
 
+    public static int level=0;
 
     void Awake()
     {
@@ -37,6 +38,7 @@ public class TestCreat : MonoBehaviour
     {
         if (Regen)
         {
+            level++;
             Regen = false;
             InitMapArray();
         }

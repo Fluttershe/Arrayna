@@ -13,7 +13,10 @@ namespace WeaponAssemblage.Workspace
 	public class Partlist : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 	{
 		[SerializeField]
-		Transform content;
+		Transform[] scrollViews;
+
+		[SerializeField]
+		Transform[] contents;
 
 		[SerializeField]
 		GameObject partPanel;
@@ -22,12 +25,14 @@ namespace WeaponAssemblage.Workspace
 		BoxCollider2D dragndropArea;
 		
 		[SerializeField]
-		List<PartAgent> partAgentList = new List<PartAgent>();
+		List<MonoPart> partList = new List<MonoPart>();
 
 		[SerializeField]
 		List<GameObject> partPanelList = new List<GameObject>();
 
-		Dictionary<PartAgent, GameObject> agentToPanel = new Dictionary<PartAgent, GameObject>();
+		Dictionary<MonoPart, GameObject> agentToPanel = new Dictionary<MonoPart, GameObject>();
+
+		int currentView = 0;
 
 		/// <summary>
 		/// true for enter, false for exit
@@ -38,6 +43,13 @@ namespace WeaponAssemblage.Workspace
 		{
 			if (dragndropArea == null)
 			dragndropArea = GetComponent<BoxCollider2D>();
+			SwitchScrollView(currentView);
+
+			contents = new Transform[scrollViews.Length];
+			for (int i = 0; i < scrollViews.Length; i ++)
+			{
+				contents[i] = scrollViews[i].Find("Viewport").Find("Content");
+			}
 		}
 
 		private void Update()
@@ -61,44 +73,58 @@ namespace WeaponAssemblage.Workspace
 			dragndropArea.enabled = show;
 		}
 
-		public void AddPart(PartAgent agent)
+		public void AddPart(MonoPart part)
 		{
-			if (agent == null) throw new ArgumentNullException();
-			if (agentToPanel.ContainsKey(agent))
+			if (part == null) throw new ArgumentNullException();
+			if (agentToPanel.ContainsKey(part))
 			{
-				Debug.Log($"Already have this part:{agent.name}");
+				Debug.Log($"Already have this part:{part.name}");
 				return;
 			}
 
-			print($"Adding part {agent.Part.PartName}.");
-			var go = Instantiate(partPanel, content);
-			agent.transform.SetParent(go.transform);
+			// BarrelAddon is categorized as Addon
+			var index = (int)(part.Type == PartType.BarrelAddon? PartType.Addon: part.Type);
 			
-			var pos = agent.transform.localPosition;
+			print($"Adding part {part.PartName}.");
+			var go = Instantiate(partPanel, contents[index]);
+			part.transform.SetParent(go.transform);
+			
+			var pos = part.transform.localPosition;
 			pos.x = pos.y = 0;
-			agent.transform.localPosition = pos;
+			part.transform.localPosition = pos;
 
-			agentToPanel.Add(agent, go);
-			partAgentList.Add(agent);
+			agentToPanel.Add(part, go);
+			partList.Add(part);
 			partPanelList.Add(go);
 		}
 
-		public void TakePart(PartAgent agent)
+		public void TakePart(MonoPart part)
 		{
-			if (agent == null) throw new ArgumentNullException();
-			if (!agentToPanel.ContainsKey(agent))
+			if (part == null) throw new ArgumentNullException();
+			if (!agentToPanel.ContainsKey(part))
 			{
-				Debug.Log($"Didn't have this part:{agent.name}");
+				Debug.Log($"Didn't have this part:{part.name}");
 				return;
 			}
 
-			print($"Taking part {agent.Part.PartName}.");
-			var go = agentToPanel[agent];
-			agent.transform.SetParent(null);
-			agentToPanel.Remove(agent);
-			partAgentList.Remove(agent);
+			print($"Taking part {part.PartName}.");
+			var go = agentToPanel[part];
+			part.transform.SetParent(null);
+			agentToPanel.Remove(part);
+			partList.Remove(part);
 			partPanelList.Remove(go);
 			Destroy(go);
+		}
+
+		public void SwitchScrollView(int index)
+		{
+			for (int i = 0; i < contents.Length; i ++)
+			{
+				if (i == index)
+					scrollViews[i].gameObject.SetActive(true);
+				else if (contents[i].gameObject.activeSelf)
+					scrollViews[i].gameObject.SetActive(false);
+			}
 		}
 	}
 }

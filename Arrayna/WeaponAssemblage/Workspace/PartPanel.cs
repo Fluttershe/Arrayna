@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace WeaponAssemblage.Workspace
 {
-	public class PartPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler
+	public class PartPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerClickHandler
 	{
 		[SerializeField]
 		List<MonoPart> AvailableParts;
@@ -46,6 +46,11 @@ namespace WeaponAssemblage.Workspace
 		public void OnPointerUp(PointerEventData eventData)
 		{
 			print("Pointer up");
+		}
+
+		public void OnPointerClick(PointerEventData eventData)
+		{
+			print("Pointer click");
 		}
 	}
 }

@@ -155,12 +155,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.17303109, y: 0.10405946}
-      - {x: -0.17273855, y: -0.199687}
-      - {x: -0.07275534, y: -0.20000076}
-      - {x: -0.0699954, y: -0.028110147}
-      - {x: 0.32740092, y: -0.024437666}
-      - {x: 0.32931542, y: 0.07989192}
+    - - {x: -0.17825389, y: 0.11102331}
+      - {x: -0.17796135, y: -0.20665073}
+      - {x: -0.05882764, y: -0.2069645}
+      - {x: 0.33436465, y: -0.029660463}
+      - {x: 0.33627915, y: 0.08511484}
 --- !u!114 &114102093856694696
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -174,7 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   partName: "\u7B80\u6613\u67AA\u6258"
   description: 
-  type: 3
+  type: 2
   rootPort: {fileID: 114373838287281174}
   weapon: {fileID: 0}
   baseValue:

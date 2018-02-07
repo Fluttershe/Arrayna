@@ -367,7 +367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0000000000000100
+    vals: 0000000001000000
   position: {x: 0.16211858, y: -0.2, z: 180}
   part: {fileID: 114670734533261772}
   attachedPort: {fileID: 0}
@@ -462,7 +462,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0000000000000001
+    vals: 0000000000010000
   position: {x: 0.15692401, y: 0.049999893, z: 270}
   part: {fileID: 114670734533261772}
   attachedPort: {fileID: 0}
@@ -479,7 +479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0000000001000000
+    vals: 0000000100000000
   position: {x: 0.011580139, y: 0.2, z: 0}
   part: {fileID: 114670734533261772}
   attachedPort: {fileID: 0}
@@ -496,7 +496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   suitableType:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
-    vals: 0000000100000000
+    vals: 0000010000000000
   position: {x: -0.4, y: 0.12043147, z: 90}
   part: {fileID: 114670734533261772}
   attachedPort: {fileID: 0}

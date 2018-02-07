@@ -21,10 +21,6 @@ namespace WeaponAssemblage
 		/// </summary>
 		Barrel,
 		/// <summary>
-		/// 枪管挂件
-		/// </summary>
-		BarrelAddon,
-		/// <summary>
 		/// 枪托
 		/// </summary>
 		Stock,
@@ -33,10 +29,6 @@ namespace WeaponAssemblage
 		/// </summary>
 		Sight,
 		/// <summary>
-		/// 挂件
-		/// </summary>
-		Addon,
-		/// <summary>
 		/// 弹夹
 		/// </summary>
 		Magazine,
@@ -44,6 +36,14 @@ namespace WeaponAssemblage
 		/// 子弹
 		/// </summary>
 		Bullet,
+		/// <summary>
+		/// 挂件
+		/// </summary>
+		Addon,
+		/// <summary>
+		/// 枪管挂件
+		/// </summary>
+		BarrelAddon,
 	}
 
 	/// <summary>

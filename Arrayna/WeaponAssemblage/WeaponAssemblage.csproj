@@ -62,7 +62,6 @@
     <Compile Include="WeaponComponents\Bullet.cs" />
     <Compile Include="WeaponComponents\WeaponAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Workspace\IAgent.cs" />
     <Compile Include="Workspace\LinkFlash.cs" />
     <Compile Include="Workspace\PartAgent.cs" />
     <Compile Include="Workspace\Partlist.cs" />

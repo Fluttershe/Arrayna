@@ -61,12 +61,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   partCount: 0
   partlist: {fileID: 0}
   operatingWeapon: {fileID: 0}
   heldPart: {fileID: 0}
   readyToConnect: {fileID: 0}
-  linkDistance: 0.08
+  linkDistance: 1
   linkFlashPrefab: {fileID: 114830911187737436, guid: c14001dcbb597c446953dbd84055511a,
     type: 2}
   partsInWorkspace: []

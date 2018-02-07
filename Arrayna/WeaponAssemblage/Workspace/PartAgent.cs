@@ -7,16 +7,19 @@ using UnityEngine.EventSystems;
 
 namespace WeaponAssemblage.Workspace
 {
+	public interface IPointerEventsHandler : IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerClickHandler
+	{ }
+
 	/// <summary>
 	/// 用于附加到位于Workspace内的武器部件上，处理各种Workspace相关的part操作
 	/// </summary>
 	[RequireComponent(typeof(Collider2D))]
-	public class PartAgent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
+	public class PartAgent : MonoBehaviour, IPointerEventsHandler
 	{
 		/// <summary>
 		/// Agent 的工作模式
 		/// </summary>
-		abstract class WorkMode : IAgentWorkMode
+		abstract class WorkMode : IPointerEventsHandler
 		{
 			protected PartAgent agent;
 
@@ -65,6 +68,8 @@ namespace WeaponAssemblage.Workspace
 				agent.transform.position += currentPointerPos - agent.lastPointerPos;
 				agent.lastPointerPos = currentPointerPos;
 			}
+
+			public virtual void OnPointerClick(PointerEventData eventData) { }
 		}
 
 		/// <summary>
@@ -93,7 +98,7 @@ namespace WeaponAssemblage.Workspace
 
 				base.OnDrag(eventData);
 
-				if (Workspace.PointerInPartlist)
+				if (Workspace.IsPointerInPartlist)
 				{
 					print("Switch to partlist mode.");
 					agent.currentMode = agent.partlistMode;
@@ -142,7 +147,7 @@ namespace WeaponAssemblage.Workspace
 			{
 				base.OnDrag(eventData);
 				
-				if (!Workspace.PointerInPartlist)
+				if (!Workspace.IsPointerInPartlist)
 				{
 					print("Switch to workspace mode.");
 					agent.currentMode = agent.workspaceMode;
@@ -194,6 +199,62 @@ namespace WeaponAssemblage.Workspace
 			}
 		}
 
+		/// <summary>
+		/// Receiver 专有模式
+		/// </summary>
+		class ReceiverMode : WorkMode
+		{
+			public ReceiverMode(PartAgent _agent) : base(_agent) { }
+
+			public override void OnDrag(PointerEventData eventData) { }
+			public override void OnPointerUp(PointerEventData eventData)
+			{
+				base.OnPointerUp(eventData);
+				
+				if (!Workspace.IsPointerInPartlist || !IsHoveringOver(eventData.position)) return;
+
+				// If this receiver is inside Partlist and being click..
+				// Swap the receiver inside Workspace with this one
+				print("Switch receiver.");
+				var prevReceiver = Workspace.OperatingWeapon.RootPart;
+
+				// Detach all the parts that attached to the receiver inside Workspace
+				List<MonoPart> partsFromPrevReceiver = new List<MonoPart>();
+				foreach (MonoPort p in prevReceiver.Ports)
+				{
+					if (p.AttachedPort == null) continue;
+					partsFromPrevReceiver.Add((MonoPart)p.AttachedPort.Part);
+					((MonoPart)p.AttachedPort.Part).transform.SetParent(null);
+					p.Detach();
+				}
+
+				// Move the old receiver to Partlist
+				Workspace.RemovePartFromWorkspace((MonoPart)prevReceiver);
+				Workspace.AddPartToPartlist((MonoPart)prevReceiver);
+
+				// Move the new one to Workspace
+				Workspace.RemovePartFromPartlist(agent.Part);
+				Workspace.AddPartToWorkspace(agent.Part);
+
+				// Try to connect the parts from previous receiver to the new one
+				foreach (MonoPart p in partsFromPrevReceiver)
+				{
+					var port = Workspace.CheckForNearPort((MonoPort)p.RootPort);
+					if (port != null)
+						Workspace.InstallPart(port, p);
+				}
+			}
+
+			bool IsHoveringOver(Vector3 pointerPos)
+			{
+				var worldPointerPos = Camera.main.ScreenToWorldPoint(pointerPos);
+
+				var hit = Physics2D.Raycast(worldPointerPos, Vector2.right, 0.001f);
+
+				return (hit.transform?.GetComponent<PartAgent>() == agent) == true;
+			}
+		}
+
 		public MonoPart Part { get; private set; }
 		public MonoPort RootPort { get; private set; }
 
@@ -213,9 +274,16 @@ namespace WeaponAssemblage.Workspace
 				this.enabled = false;
 			}
 
-			workspaceMode = new WorkspaceMode(this);
-			partlistMode = new PartListMode(this);
-			currentMode = partlistMode;
+			if (Part.Type == PartType.Reciever)
+			{
+				currentMode = new ReceiverMode(this);
+			}
+			else
+			{
+				workspaceMode = new WorkspaceMode(this);
+				partlistMode = new PartListMode(this);
+				currentMode = partlistMode;
+			}
 		}
 
 		public void OnDrag(PointerEventData eventData)
@@ -241,6 +309,11 @@ namespace WeaponAssemblage.Workspace
 		public void OnPointerUp(PointerEventData eventData)
 		{
 			currentMode.OnPointerUp(eventData);
+		}
+
+		public void OnPointerClick(PointerEventData eventData)
+		{
+			currentMode.OnPointerClick(eventData);
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace WeaponAssemblage.Workspace
 		private static Workspace _instance;
 
 		/// <summary>
-		/// Backing field of <see cref="PointerInPartlist"/>
+		/// Backing field of <see cref="IsPointerInPartlist"/>
 		/// </summary>
 		private bool pointerInPartlist;
 
@@ -54,10 +54,10 @@ namespace WeaponAssemblage.Workspace
 		private LinkFlash linkFlashB;
 
 		[SerializeField]
-		private List<PartAgent> partsInWorkspace = new List<PartAgent>();
+		private List<MonoPart> partsInWorkspace = new List<MonoPart>();
 		
 		[SerializeField]
-		private List<PartAgent> partsInPartlist = new List<PartAgent>();
+		private List<MonoPart> partsInPartlist = new List<MonoPart>();
 
 		[SerializeField]
 		private List<MonoPort> portsInWorkspace = new List<MonoPort>();
@@ -96,7 +96,7 @@ namespace WeaponAssemblage.Workspace
 		/// <summary>
 		/// 鼠标指针是否在 Partlist 内
 		/// </summary>
-		public static bool PointerInPartlist => Instance.pointerInPartlist;
+		public static bool IsPointerInPartlist => Instance.pointerInPartlist;
 
 		/// <summary>
 		/// 当前部件的数量
@@ -235,7 +235,7 @@ namespace WeaponAssemblage.Workspace
 			var slavePort = (MonoPort)slavePart.RootPort;
 
 			slavePort.transform.parent = null;
-			HeldPart.transform.parent = slavePort.transform;
+			slavePart.transform.parent = slavePort.transform;
 
 			slavePort.transform.rotation = masterPort.transform.rotation;
 			slavePort.transform.position = masterPort.transform.position;
@@ -265,8 +265,9 @@ namespace WeaponAssemblage.Workspace
 			if (part == null) throw new ArgumentNullException();
 			var agent = part.GetComponent<PartAgent>();
 			if (agent == null)
-				agent = part.gameObject.AddComponent<PartAgent>();
-			return Instance._addPartToWorkspace(agent);
+				part.gameObject.AddComponent<PartAgent>();
+
+			return Instance._addPartToWorkspace(part);
 		}
 
 		/// <summary>
@@ -276,7 +277,11 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool AddPartToWorkspace(PartAgent agent)
 		{
-			return Instance._addPartToWorkspace(agent);
+			if (agent == null) throw new ArgumentNullException();
+			var part = agent.GetComponent<MonoPart>();
+			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
+
+			return Instance._addPartToWorkspace(part);
 		}
 
 		/// <summary>
@@ -284,12 +289,9 @@ namespace WeaponAssemblage.Workspace
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		public static bool RemovePartFromWorkspace(IPart part)
+		public static bool RemovePartFromWorkspace(MonoPart part)
 		{
-			if (part == null) throw new ArgumentNullException();
-			MonoPart mPart = part as MonoPart;
-			PartAgent agent = mPart?.GetComponent<PartAgent>();
-			return Instance._removePartFromWorkspace(agent);
+			return Instance._removePartFromWorkspace(part);
 		}
 
 		/// <summary>
@@ -299,7 +301,11 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool RemovePartFromWorkspace(PartAgent agent)
 		{
-			return Instance._removePartFromWorkspace(agent);
+			if (agent == null) throw new ArgumentNullException();
+			var part = agent.GetComponent<MonoPart>();
+			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
+
+			return Instance._removePartFromWorkspace(part);
 		}
 
 		/// <summary>
@@ -312,9 +318,9 @@ namespace WeaponAssemblage.Workspace
 			if (part == null) throw new ArgumentNullException();
 			var agent = part.GetComponent<PartAgent>();
 			if (agent == null)
-				agent = part.gameObject.AddComponent<PartAgent>();
+				part.gameObject.AddComponent<PartAgent>();
 
-			return Instance._addPartToPartlist(agent);
+			return Instance._addPartToPartlist(part);
 		}
 
 		/// <summary>
@@ -324,7 +330,21 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool AddPartToPartlist(PartAgent agent)
 		{
-			return Instance._addPartToPartlist(agent);
+			if (agent == null) throw new ArgumentNullException();
+			var part = agent.GetComponent<MonoPart>();
+			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
+
+			return Instance._addPartToPartlist(part);
+		}
+
+		/// <summary>
+		/// 从Partlist移除一个部件
+		/// </summary>
+		/// <param name="agent"></param>
+		/// <returns></returns>
+		public static bool RemovePartFromPartlist(MonoPart part)
+		{
+			return Instance._removePartFromPartlist(part);
 		}
 
 		/// <summary>
@@ -335,7 +355,9 @@ namespace WeaponAssemblage.Workspace
 		public static bool RemovePartFromPartlist(PartAgent agent)
 		{
 			if (agent == null) throw new ArgumentNullException();
-			return Instance._removePartFromPartlist(agent);
+			var part = agent.GetComponent<MonoPart>();
+			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
+			return Instance._removePartFromPartlist(part);
 		}
 
 		#endregion
@@ -417,7 +439,30 @@ namespace WeaponAssemblage.Workspace
 			foreach (MonoPart p in PartToAdd)
 				AddPartToPartlist(p);
 
-			operatingWeapon.CompileWeaponAttribute();
+			// If there is no receiver in Workspace
+			if (operatingWeapon.RootPart == null)
+			{
+				// Find a receiver from partlist.
+				MonoPart receiver = null;
+				foreach (MonoPart p in partsInPartlist)
+				{
+					if (p.Type == PartType.Reciever)
+					{
+						receiver = p;
+						break;
+					}
+				}
+
+				if (receiver == null)
+				{
+					Debug.LogWarning("You have no receiver left!");
+				}
+				else // If we managed to find one, add it to Workspace
+				{
+					RemovePartFromPartlist(receiver);
+					AddPartToWorkspace(receiver);
+				}
+			}
 		}
 
 		private void _ExitWorkspace()
@@ -433,15 +478,18 @@ namespace WeaponAssemblage.Workspace
 			}
 
 			// Destory every agent we created when adding parts
-			var count = partsInWorkspace.Count;
-			for (int i = 0; i < count; i++)
+			foreach (MonoPart p in partsInWorkspace)
 			{
-				Destroy(partsInWorkspace[i]);
+				var agent = p.GetComponent<PartAgent>();
+				if (agent != null)
+					Destroy(agent);
 			}
 
-			foreach (PartAgent p in partsInPartlist)
+			foreach (MonoPart p in partsInPartlist)
 			{
-				Destroy(p);
+				var agent = p.GetComponent<PartAgent>();
+				if (agent != null)
+					Destroy(p);
 			}
 
 			// Clear the lists
@@ -474,78 +522,112 @@ namespace WeaponAssemblage.Workspace
 			return null;
 		}
 
-		private bool _addPartToPartlist(PartAgent part)
+		private bool _addPartToPartlist(MonoPart part)
 		{
-			if (part == null) throw new ArgumentNullException();
-
-			var agent = part.GetComponent<PartAgent>();
-			if (agent == null)
-				agent = part.gameObject.AddComponent<PartAgent>();
-			if (partsInPartlist.Contains(agent)) return false;
-			partsInPartlist.Add(agent);
-			partlist.AddPart(agent);
+			if (partsInPartlist.Contains(part)) return false;
+			partsInPartlist.Add(part);
+			partlist.AddPart(part);
 
 			return true;
 		}
 
-		private bool _removePartFromPartlist(PartAgent agent)
+		private bool _removePartFromPartlist(MonoPart part)
 		{
-			if (agent == null) throw new ArgumentNullException();
-			if (!partsInPartlist.Contains(agent)) return false;
+			if (!partsInPartlist.Contains(part)) return false;
 
 			// Remove the part from list
-			partsInPartlist.Remove(agent);
-			partlist.TakePart(agent);
+			partsInPartlist.Remove(part);
+			partlist.TakePart(part);
 			return true;
 		}
 
-		private bool _addPartToWorkspace(PartAgent agent)
+		private bool _addPartToWorkspace(MonoPart part)
 		{
-			if (agent == null) throw new ArgumentNullException();
+			if (partsInWorkspace.Contains(part)) return false;
 
-			if (partsInWorkspace.Contains((PartAgent)agent)) return false;
-			partsInWorkspace.Add((PartAgent)agent);
+			partsInWorkspace.Add(part);
 			partCount++;
 
 			// Add ports from the part.
-			foreach (MonoPort mp in agent.Part.Ports)
+			foreach (MonoPort mp in part.Ports)
 			{
 				portsInWorkspace.Add(mp);
 			}
 
 			// If the root part of operating weapon is still empty and
 			// we're adding a reciever, set the reciever as the root part.
-			if (operatingWeapon.RootPart == null && agent.Part.Type == PartType.Reciever)
+			if (operatingWeapon.RootPart == null && part.Type == PartType.Reciever)
 			{
-				operatingWeapon.RootPart = agent.Part;
-				agent.transform.SetParent(operatingWeapon.transform);
-				Debug.Log($"Part {agent.Part.PartName} is set as the root part of operating weapon.");
+				operatingWeapon.RootPart = part;
+				part.transform.SetParent(operatingWeapon.transform);
+				part.transform.position = this.transform.position;
+				Debug.Log($"Part {part.PartName} is set as the root part of operating weapon.");
 			}
 
 			return true;
 		}
 
-		private bool _removePartFromWorkspace(PartAgent agent)
+		private bool _removePartFromWorkspace(MonoPart part)
 		{
-			if (agent == null) throw new ArgumentNullException();
-			if (!partsInWorkspace.Contains(agent)) return false;
+			if (!partsInWorkspace.Contains(part)) return false;
 
 			// Remove ports from the part.
-			foreach (MonoPort mp in agent.Part.Ports)
+			foreach (MonoPort mp in part.Ports)
 			{
 				portsInWorkspace.Remove(mp);
 			}
 
-			if (operatingWeapon?.RootPart?.Equals(agent.Part) == true)
+			if (operatingWeapon?.RootPart?.Equals(part) == true)
 			{
 				operatingWeapon.RootPart = null;
 			}
 
 			// Remove the part from list
-			partsInWorkspace.Remove(agent);
+			partsInWorkspace.Remove(part);
 			return true;
 		}
 
+		#endregion
+
+		#region Public methods
+
+		/// <summary>
+		/// 收集所有未连接到枪身的部件
+		/// </summary>
+		public void CollectAllUnconnectedParts()
+		{
+			for (int i = 0; i < partsInWorkspace.Count; i++)
+			{
+				var p = partsInWorkspace[i];
+				while (p.RootPort.AttachedPort != null)
+					p = (MonoPart)p.RootPort.AttachedPort.Part;
+
+				if (!p.Equals(operatingWeapon.RootPart))
+				{
+					p = partsInWorkspace[i];
+					p.RootPort.Detach();
+					RemovePartFromWorkspace(p);
+					AddPartToPartlist(p);
+					i--;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 收集所有在场部件
+		/// </summary>
+		public void CollectAllParts()
+		{
+			for (int i = 0; partsInWorkspace.Count > 1; i ++)
+			{
+				var p = partsInWorkspace[i];
+				if (p.Type == PartType.Reciever) continue;
+				p.RootPort.Detach();
+				_removePartFromWorkspace(p);
+				_addPartToPartlist(p);
+				i--;
+			}
+		}
 		#endregion
 	}
 }

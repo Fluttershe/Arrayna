@@ -189,6 +189,8 @@ namespace WeaponAssemblage
 		/// <returns></returns>
 		public override IPart Detach()
 		{
+			if (this.attachedPort == null) return null;
+
 			// 暂存并清除连接接口
 			var port = this.attachedPort;
 			this.attachedPort = null;

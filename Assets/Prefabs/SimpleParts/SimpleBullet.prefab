@@ -169,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   partName: "\u7B80\u5355\u5B50\u5F39"
   description: 
-  type: 7
+  type: 5
   rootPort: {fileID: 114852760571594070}
   weapon: {fileID: 0}
   baseValue:

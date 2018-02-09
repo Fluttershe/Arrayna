@@ -6,6 +6,9 @@ public class oneAI : MonoBehaviour
     //AI速度
     public int speed;
 
+    //AI距离
+    public int chaju;
+
     //目标位置
     Transform Player;
 
@@ -22,6 +25,19 @@ public class oneAI : MonoBehaviour
 
     void Update()
     {
+        Player = GameObject.FindGameObjectWithTag("Player").transform;
+        Vector2 juli = Player.position - transform.position;
+        float julishu = juli.sqrMagnitude;
+
+        if (julishu > chaju)
+        {
+            AS = 0;
+        }
+        else if (julishu <= chaju)
+        {
+            AS = 1;
+        }
+
         switch (AS)
         {
             case 0:
@@ -30,23 +46,6 @@ public class oneAI : MonoBehaviour
             case 1:
             ZhuiJi();
                 break;
-        }
-    }
-
-     void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.tag == "Player")
-        {
-            Player = collision.transform;
-            AS = 1;
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "Player")
-        {
-            AS = 0;
         }
     }
 

@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  chaju: 70
+  chaju: 10
 --- !u!212 &212869218902254456
 SpriteRenderer:
   m_ObjectHideFlags: 1

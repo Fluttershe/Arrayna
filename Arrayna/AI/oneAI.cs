@@ -13,7 +13,7 @@ public class oneAI : MonoBehaviour
     Transform Player;
 
     //AI状态
-    int AS=0;
+    int AiSi=0;
 
     //随机方向
     int ran;
@@ -21,24 +21,25 @@ public class oneAI : MonoBehaviour
     void Awake()
     {
         InvokeRepeating("SuiJiYiXia", 0, Random.Range(1,4));
+        Player = GameObject.FindGameObjectWithTag("Player").transform;
+        chaju = chaju * chaju;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        Player = GameObject.FindGameObjectWithTag("Player").transform;
         Vector2 juli = Player.position - transform.position;
         float julishu = juli.sqrMagnitude;
 
         if (julishu > chaju)
         {
-            AS = 0;
+            AiSi = 0;
         }
         else if (julishu <= chaju)
         {
-            AS = 1;
+            AiSi= 1;
         }
 
-        switch (AS)
+        switch (AiSi)
         {
             case 0:
             YouZou();

@@ -13,11 +13,12 @@ namespace UnityUtility
 	{
 		public abstract void Init();
 	}
-	
+
 	/// <summary>
 	/// 基于枚举类型的集合类
 	/// </summary>
 	/// <typeparam name="E"></typeparam>
+	/// <typeparam name="V"></typeparam>
 	/// TODO: Figure out how to make a serializable Dictionary
 	[Serializable]
 	public abstract class EnumBasedCollection<E, V> : EnumBaseCollection, ISerializationCallbackReceiver, IEnumerable<V> where E : struct, IConvertible where V : struct
@@ -31,14 +32,14 @@ namespace UnityUtility
 		[SerializeField]
 		protected List<V> vals = new List<V>();
 
-		public Type type { get; private set; }
+		public Type EnumType { get; private set; }
 
 		public EnumBasedCollection()
 		{
 			if (!typeof(E).IsEnum)
 				throw new ArgumentException($"{typeof(E)} 不是枚举类型！");
-			type = typeof(E);
-			var eValues = Enum.GetValues(type);
+			EnumType = typeof(E);
+			var eValues = Enum.GetValues(EnumType);
 			int enumNum = eValues.Length;
 
 			dict = new Dictionary<E, V>();
@@ -80,7 +81,7 @@ namespace UnityUtility
 		/// </summary>
 		public void SetDefault()
 		{
-			var eValues = Enum.GetValues(type);
+			var eValues = Enum.GetValues(EnumType);
 
 			Clear();
 
@@ -143,7 +144,7 @@ namespace UnityUtility
 
 		public void OnBeforeSerialize()
 		{
-			var values = Enum.GetValues(type);
+			var values = Enum.GetValues(EnumType);
 			if (dict == null)
 			{
 				dict = new Dictionary<E, V>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityUtility;
 
 namespace WeaponAssemblage.Workspace
 {
@@ -22,10 +23,9 @@ namespace WeaponAssemblage.Workspace
 		private bool pointerInPartlist;
 
 		/// <summary>
-		/// For tests in editor only
+		/// Where the parts and weapons store
 		/// </summary>
-		[SerializeField, Tooltip("For tests in editor only!")]
-		private MonoPart[] PartToAdd = new MonoPart[0];
+		private WeaponAssembly assembly;
 
 		/// <summary>
 		/// Backing field of <see cref="PartCount"/>
@@ -34,8 +34,12 @@ namespace WeaponAssemblage.Workspace
 		private int partCount;
 
 		[SerializeField]
+		private float linkDistance = 1;
+
+		[SerializeField]
 		private Partlist partlist;
 
+		[Header("References")]
 		[SerializeField]
 		private MonoWeapon operatingWeapon;
 
@@ -44,9 +48,9 @@ namespace WeaponAssemblage.Workspace
 
 		[SerializeField]
 		private MonoPort readyToConnect;
-
+		
 		[SerializeField]
-		private float linkDistance = 1;
+		private WeaponStatePanel statePanel;
 
 		[SerializeField]
 		private LinkFlash linkFlashPrefab;
@@ -61,9 +65,6 @@ namespace WeaponAssemblage.Workspace
 
 		[SerializeField]
 		private List<MonoPort> portsInWorkspace = new List<MonoPort>();
-
-		[SerializeField]
-		private WeaponStatePanel statePanel;
 
 		#endregion
 
@@ -397,7 +398,7 @@ namespace WeaponAssemblage.Workspace
 
 		private void Start()
 		{
-			EnterWorkspace();
+			EnterWorkspace(operatingWeapon);
 		}
 
 		private void Update()
@@ -424,6 +425,10 @@ namespace WeaponAssemblage.Workspace
 
 		private void _EnterWorkSpace(IWeapon weapon)
 		{
+			// Enable instance..
+			Instance.enabled = true;
+
+			// Begin setting up partlist...
 			if (partlist == null
 			&& (partlist = FindObjectOfType<Partlist>()) == null)
 			{
@@ -433,21 +438,32 @@ namespace WeaponAssemblage.Workspace
 
 			partlist.OnEnterOrExit += EnterPartlist;
 			partlist.ShowDragnDrop(false);
+			// Finish setting up partlist...
 
-			Instance.enabled = true;
+			assembly = GlobalObject.GetOrAddComponent<WeaponAssembly>();
 
+			// Begin setting up operatingWeapon...
 			// If there's a weapon, add it in, otherwise, create one.
 			operatingWeapon = (MonoWeapon)weapon;
 			if (operatingWeapon == null)
 			{
 				operatingWeapon = new GameObject("Weapon").AddComponent<BasicWeapon>();
-				operatingWeapon.enabled = false;
 			}
 
-			statePanel = FindObjectOfType<WeaponStatePanel>();
+			operatingWeapon.enabled = false;
+			operatingWeapon.transform.position = transform.position;
+			foreach (MonoPart p in operatingWeapon.Parts)
+				AddPartToWorkspace(p);
 
-			// Editor only
-			foreach (MonoPart p in PartToAdd)
+			if (assembly.Weapons.Contains(operatingWeapon))
+				assembly.Weapons.Add(operatingWeapon);
+			// Finish setting up operatingWeapon...
+
+			// Setup state panel
+			statePanel = FindObjectOfType<WeaponStatePanel>();
+			
+			// Add parts from assemblage to Workspace
+			foreach (MonoPart p in assembly.Parts)
 				AddPartToPartlist(p);
 
 			// If there is no receiver in Workspace
@@ -499,6 +515,7 @@ namespace WeaponAssemblage.Workspace
 
 			foreach (MonoPart p in partsInPartlist)
 			{
+				RemovePartFromPartlist(p);
 				var agent = p.GetComponent<PartAgent>();
 				if (agent != null)
 					Destroy(p);

@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WeaponAssembly.cs" />
     <Compile Include="WeaponComponents\Barrel.cs" />
     <Compile Include="WeaponComponents\BasicPart.cs" />
     <Compile Include="WeaponComponents\BasicPort.cs" />

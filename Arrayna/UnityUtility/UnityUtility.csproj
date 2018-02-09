@@ -57,7 +57,9 @@
   <ItemGroup>
     <Compile Include="EnumBaseCollection.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="GlobalObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDictionary.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

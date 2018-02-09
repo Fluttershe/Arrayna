@@ -45,6 +45,11 @@ namespace WeaponAssemblage
 		IPart RootPart { get; set; }
 
 		/// <summary>
+		/// 该武器的各个部件
+		/// </summary>
+		IEnumerable<IPart> Parts { get; }
+
+		/// <summary>
 		/// 获得特定类型的武器部件
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -148,6 +153,7 @@ namespace WeaponAssemblage
 		public abstract MultiSelectablePartType ContainedPartType { get; }
 		public abstract bool IsCompleted { get; }
 		public abstract IPart RootPart { get; set; }
+		public abstract IEnumerable<IPart> Parts { get; }
 		public abstract WeaponAttributes BaseValue { get; }
 		public abstract WeaponAttributes ModValue { get; }
 		public abstract WeaponAttributes FinalValue { get; }
@@ -175,9 +181,6 @@ namespace WeaponAssemblage
 			OnSecondaryFireUp = null;
 			OnReload = null;
 		}
-
-		[SerializeField]
-		protected List<MonoPart> partList = new List<MonoPart>();
 
 		public abstract void CompileWeaponAttribute();
 
@@ -226,7 +229,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 基本武器类，对 <see cref="MonoWeapon"/> 的简单实现
 	/// </summary>
-	public class BasicWeapon : MonoWeapon
+	public class BasicWeapon : MonoWeapon, ISerializationCallbackReceiver
 	{
 		[SerializeField]
 		protected MonoPart rootPart;
@@ -240,6 +243,11 @@ namespace WeaponAssemblage
 				rootPart.SetAsRootPart(this);
 			}
 		}
+		
+		[SerializeField]
+		protected List<MonoPart> monoPartList = new List<MonoPart>();
+		protected List<IPart> partList = new List<IPart>();
+		public override IEnumerable<IPart> Parts => partList.AsEnumerable();
 
 		[SerializeField]
 		protected MultiSelectablePartType containedPartType = new MultiSelectablePartType();
@@ -409,6 +417,24 @@ namespace WeaponAssemblage
 			}
 
 			return list.ToArray();
+		}
+
+		public void OnBeforeSerialize()
+		{
+			monoPartList.Clear();
+			foreach (MonoPart p in partList)
+			{
+				monoPartList.Add(p);
+			}
+		}
+
+		public void OnAfterDeserialize()
+		{
+			partList.Clear();
+			foreach (IPart p in monoPartList)
+			{
+				partList.Add(p);
+			}
 		}
 	}
 }

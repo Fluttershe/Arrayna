@@ -30,7 +30,7 @@ namespace WeaponAssemblage.Workspace
 		[SerializeField]
 		List<GameObject> partPanelList = new List<GameObject>();
 
-		Dictionary<MonoPart, GameObject> agentToPanel = new Dictionary<MonoPart, GameObject>();
+		Dictionary<MonoPart, GameObject> partToPanel = new Dictionary<MonoPart, GameObject>();
 
 		int currentView = 0;
 
@@ -76,7 +76,7 @@ namespace WeaponAssemblage.Workspace
 		public void AddPart(MonoPart part)
 		{
 			if (part == null) throw new ArgumentNullException();
-			if (agentToPanel.ContainsKey(part))
+			if (partToPanel.ContainsKey(part))
 			{
 				Debug.Log($"Already have this part:{part.name}");
 				return;
@@ -93,7 +93,7 @@ namespace WeaponAssemblage.Workspace
 			pos.x = pos.y = 0;
 			part.transform.localPosition = pos;
 
-			agentToPanel.Add(part, go);
+			partToPanel.Add(part, go);
 			partList.Add(part);
 			partPanelList.Add(go);
 		}
@@ -101,16 +101,16 @@ namespace WeaponAssemblage.Workspace
 		public void TakePart(MonoPart part)
 		{
 			if (part == null) throw new ArgumentNullException();
-			if (!agentToPanel.ContainsKey(part))
+			if (!partToPanel.ContainsKey(part))
 			{
 				Debug.Log($"Didn't have this part:{part.name}");
 				return;
 			}
 
 			print($"Taking part {part.PartName}.");
-			var go = agentToPanel[part];
+			var go = partToPanel[part];
 			part.transform.SetParent(null);
-			agentToPanel.Remove(part);
+			partToPanel.Remove(part);
 			partList.Remove(part);
 			partPanelList.Remove(go);
 			Destroy(go);

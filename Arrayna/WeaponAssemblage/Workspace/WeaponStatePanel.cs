@@ -23,7 +23,7 @@ namespace WeaponAssemblage.Workspace
 
 			for (int i = 0; i < states.Length; i ++)
 			{
-				AttributeType type = (AttributeType)i;
+				WeaponAttributeType type = (WeaponAttributeType)i;
 				states[i].text = String.Format("{0:F2}", finalValue[type]);
 				if (modValue[type] != 1)
 				{

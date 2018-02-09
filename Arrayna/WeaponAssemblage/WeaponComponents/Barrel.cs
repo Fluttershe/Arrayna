@@ -51,7 +51,7 @@ namespace WeaponAssemblage
 
 		public void OnFireDown(IWeapon weapon)
 		{
-			fireRate = weapon.FinalValue[AttributeType.FireRate];
+			fireRate = weapon.FinalValue[WeaponAttributeType.FireRate];
 			firing = true;
 		}
 

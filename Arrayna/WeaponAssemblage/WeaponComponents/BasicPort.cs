@@ -119,20 +119,10 @@ namespace WeaponAssemblage
 		[SerializeField]
 		protected MonoPort attachedPort;
 		public override IPort AttachedPort => attachedPort;
+		
+		public override event Action<IPort, IPort> OnPortAttached;
 
-		Action<IPort, IPort> onPortAttached;
-		public override event Action<IPort, IPort> OnPortAttached
-		{
-			add => onPortAttached += value;
-			remove => onPortAttached -= value;
-		}
-
-		Action<IPort, IPort> onPortDetached;
-		public override event Action<IPort, IPort> OnPortDetached
-		{
-			add => onPortDetached += value;
-			remove => onPortDetached -= value;
-		}
+		public override event Action<IPort, IPort> OnPortDetached;
 
 		/// <summary>
 		/// 该接口是否可以接受一个部件
@@ -167,7 +157,7 @@ namespace WeaponAssemblage
 			((BasicPort)attachedPort).AttachRoot(this);
 
 			// 调用连接事件
-			onPortAttached?.Invoke(this, part.RootPort);
+			OnPortAttached?.Invoke(this, part.RootPort);
 
 			return true;
 		}
@@ -212,7 +202,7 @@ namespace WeaponAssemblage
 			if (!Part.RootPort.Equals(this))
 			{
 				// 调用移除事件
-				onPortDetached?.Invoke(this, port);
+				OnPortDetached?.Invoke(this, port);
 			}
 			
 			// 返回移除的部件

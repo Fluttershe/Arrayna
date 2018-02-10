@@ -24,6 +24,7 @@ public class TestCreat : MonoBehaviour
     public GameObject box;
     public GameObject key;
     public GameObject dianti;
+    public GameObject Player;
 
     public static int level=0;
 
@@ -586,6 +587,20 @@ public class TestCreat : MonoBehaviour
                 Instantiate(key, new Vector2(ra, co), Quaternion.identity);
 				break;
 			}
+        }
+
+        //随机玩家生成
+        while (true)
+        {
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+            if (CheckNeighborWalls(ra, co) == 0)
+            {
+                ra = -(row / 2 - ra);
+                co = -(col / 2 - co);
+                Instantiate(Player, new Vector3(ra, co, -4), Quaternion.identity);
+                break;
+            }
         }
     }
 

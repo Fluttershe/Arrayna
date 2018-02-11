@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4064841529501546}
   - component: {fileID: 212869218902254456}
   - component: {fileID: 50619059284409522}
-  - component: {fileID: 58710938419104150}
+  - component: {fileID: 61061001500210496}
   - component: {fileID: 114722528611883686}
   m_Layer: 10
   m_Name: threeAI
@@ -63,8 +63,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &58710938419104150
-CircleCollider2D:
+--- !u!61 &61061001500210496
+BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -76,8 +76,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.7
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!114 &114722528611883686
 MonoBehaviour:
   m_ObjectHideFlags: 1

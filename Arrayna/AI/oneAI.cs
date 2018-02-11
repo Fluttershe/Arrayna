@@ -25,13 +25,15 @@ public class oneAI : MonoBehaviour
     Transform Player;
 
     //AI状态
-    int AiSi=0;
+    int AiSi=-1;
 
     //随机方向
     int ran;
 
     //攻击时间
-    int num ;
+    int num;
+
+    bool kaishi=true;
 
     void Awake()
     {
@@ -44,28 +46,40 @@ public class oneAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector2 juli = Player.position - transform.position;
-        float julishu = juli.sqrMagnitude;
-
-        //距离检测
-        if (julishu > chaju)
+        if (kaishi)
         {
-            AiSi = 0;
-        }
-        else if (julishu <= chaju && julishu>gongjichaju)
-        {
-            AiSi= 1;
-        }
-        else if (julishu<=gongjichaju)
-        {
-            AiSi = 2;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                AiSi = 0;
+                kaishi = false;
+            }
         }
 
-        if (HP<=0)
+        if (!kaishi)
         {
-            AiSi = 3;
-        }
+            Vector2 juli = Player.position - transform.position;
+            float julishu = juli.sqrMagnitude;
 
+            //距离检测
+            if (julishu > chaju)
+            {
+                AiSi = 0;
+            }
+            else if (julishu <= chaju && julishu > gongjichaju)
+            {
+                AiSi = 1;
+            }
+            else if (julishu <= gongjichaju)
+            {
+                AiSi = 2;
+            }
+
+            if (HP <= 0)
+            {
+                AiSi = 3;
+            }
+        }
+       
         //状态检测
         switch (AiSi)
         {

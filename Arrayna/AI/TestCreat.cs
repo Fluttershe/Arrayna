@@ -7,8 +7,8 @@ public class TestCreat : MonoBehaviour
 {
     public bool Regen;
 
-    public int row = 30;
-    public int col = 35;
+    public int row;
+    public int col;
 
     public string seed;
     public bool useRandomSeed;
@@ -31,6 +31,7 @@ public class TestCreat : MonoBehaviour
     void Awake()
     {
         cubes = new GameObject();
+        useRandomSeed = true;
         Regen = true;
     }
 
@@ -40,8 +41,8 @@ public class TestCreat : MonoBehaviour
         if (Regen)
         {
             level++;
-            Regen = false;
             InitMapArray();
+            Regen = false;
         }
     }
 
@@ -253,7 +254,7 @@ public class TestCreat : MonoBehaviour
         List<Coord> line = GetLine(tileA, tileB);
         foreach(Coord c in line)
         {
-            DrawCircle(c, 2);
+            DrawCircle(c, 5);
         }
     }
 
@@ -547,61 +548,61 @@ public class TestCreat : MonoBehaviour
 		int ran = random.Next(1, 4);
 		int ra, co;
 
-        //随机宝箱
-        while (ran > 0)
-        {
-            ra = random.Next(0, row - 1);
-            co = random.Next(0, row - 1);
-			if (CheckNeighborWalls(ra, co) == 0)
-			{
-				ra -= row / 2;
-				co -= col / 2;
-				Instantiate(box, new Vector2(ra, co), Quaternion.identity);
-				ran--;
-			}
-		}
-
-        //随机电梯
-        while (true)
-        {
-            ra = random.Next(0, row - 1);
-            co = random.Next(0, row - 1);
-			if (CheckNeighborWalls(ra, co) == 0)
-			{
-				ra -= row / 2;
-				co -= col / 2;
-				Instantiate(dianti, new Vector2(ra, co), Quaternion.identity);
-				break;
-            }
-        }
-
-        //随机钥匙
-        while (true)
-        {
-            ra = random.Next(0, row - 1);
-            co = random.Next(0, row - 1);
-			if (CheckNeighborWalls(ra, co) == 0)
-			{
-                ra = -(row / 2 - ra);
-                co = -(col / 2 - co);
-                Instantiate(key, new Vector2(ra, co), Quaternion.identity);
-				break;
-			}
-        }
-
-        //随机玩家生成
-        while (true)
-        {
-            ra = random.Next(0, row - 1);
-            co = random.Next(0, row - 1);
-            if (CheckNeighborWalls(ra, co) == 0)
+            //随机宝箱
+            while (ran > 0)
             {
-                ra = -(row / 2 - ra);
-                co = -(col / 2 - co);
-                Instantiate(Player, new Vector3(ra, co, -4), Quaternion.identity);
-                break;
+                ra = random.Next(0, row - 1);
+                co = random.Next(0, row - 1);
+                if (CheckNeighborWalls(ra, co) == 0)
+                {
+                    ra -= row / 2;
+                    co -= col / 2;
+                    Instantiate(box, new Vector2(ra, co), Quaternion.identity);
+                    ran--;
+                }
             }
-        }
+
+            //随机电梯
+            while (true)
+            {
+                ra = random.Next(0, row - 1);
+                co = random.Next(0, row - 1);
+                if (CheckNeighborWalls(ra, co) == 0)
+                {
+                    ra -= row / 2;
+                    co -= col / 2;
+                    Instantiate(dianti, new Vector2(ra, co), Quaternion.identity);
+                    break;
+                }
+            }
+
+            //随机钥匙
+            while (true)
+            {
+                ra = random.Next(0, row - 1);
+                co = random.Next(0, row - 1);
+                if (CheckNeighborWalls(ra, co) == 0)
+                {
+                    ra = -(row / 2 - ra);
+                    co = -(col / 2 - co);
+                    Instantiate(key, new Vector2(ra, co), Quaternion.identity);
+                    break;
+                }
+            }
+
+            //随机玩家生成
+            while (true)
+            {
+                ra = random.Next(0, row - 1);
+                co = random.Next(0, row - 1);
+                if (CheckNeighborWalls(ra, co) == 0)
+                {
+                    ra = -(row / 2 - ra);
+                    co = -(col / 2 - co);
+                    Instantiate(Player, new Vector3(ra, co, -4), Quaternion.identity);
+                    break;
+                }
+            }
     }
 
 

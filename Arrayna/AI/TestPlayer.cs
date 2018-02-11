@@ -38,14 +38,15 @@ public class TestPlayer : MonoBehaviour
         }
 
         //转向
+        Vector3 worldPos2 = new Vector3(Screen.width / 2, Screen.height / 2, 0);
         //获取鼠标的坐标，鼠标是屏幕坐标，Z轴为0，这里不做转换  
         Vector3 mouse = Input.mousePosition;
         //当目标向量的Y轴大于等于0时候  
-        if (mouse.x >= 0)
+        if (mouse.x >= worldPos2.x)
         {
             transform.localScale = new Vector3(1, 1,1);
         }
-        else if (mouse.x < 0)
+        else if (mouse.x < worldPos2.x)
         {
             transform.localScale = new Vector3(-1, 1,1);
         }
@@ -53,7 +54,7 @@ public class TestPlayer : MonoBehaviour
         //死亡
         if (HP <= 0)
         {
-            Destroy(gameObject);
+            Application.LoadLevel(0);
         }
     }
 }

@@ -259,8 +259,8 @@ MonoBehaviour:
   Regen: 0
   row: 90
   col: 50
-  seed: 6348334
-  useRandomSeed: 0
+  seed: 
+  useRandomSeed: 1
   randomFillPercent: 51
   black: {fileID: 1634892718529478, guid: 963e4bdc9a2c5cd4dab41e0948e66189, type: 2}
   hEdge: {fileID: 1841230375646768, guid: 52003bfe920ba02468de0a31e5288f7a, type: 2}

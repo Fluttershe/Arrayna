@@ -80,7 +80,7 @@ public class TestCreat : MonoBehaviour
         {
             for (int j = 0; j < col; j++)
             {
-                if (i == 0 || i == row - 1 || j == 0 || j == col - 1)
+                if (i == 0 || i == row-1 || j == 0 || j == col-1)
                 {
                     mapArray[i, j] = 1;
                 }
@@ -456,6 +456,7 @@ public class TestCreat : MonoBehaviour
         }
     }
 
+
     /// <summary>
     /// 造墙
     /// </summary>
@@ -557,7 +558,7 @@ public class TestCreat : MonoBehaviour
                 {
                     ra -= row / 2;
                     co -= col / 2;
-                    Instantiate(box, new Vector2(ra, co), Quaternion.identity);
+                    Instantiate(box, new Vector3(ra, co,-4), Quaternion.identity);
                     ran--;
                 }
             }
@@ -571,7 +572,7 @@ public class TestCreat : MonoBehaviour
                 {
                     ra -= row / 2;
                     co -= col / 2;
-                    Instantiate(dianti, new Vector2(ra, co), Quaternion.identity);
+                    Instantiate(dianti, new Vector3(ra, co, -4), Quaternion.identity);
                     break;
                 }
             }
@@ -585,7 +586,7 @@ public class TestCreat : MonoBehaviour
                 {
                     ra = -(row / 2 - ra);
                     co = -(col / 2 - co);
-                    Instantiate(key, new Vector2(ra, co), Quaternion.identity);
+                    Instantiate(key, new Vector3(ra, co, -4), Quaternion.identity);
                     break;
                 }
             }

@@ -54,6 +54,7 @@ public class TestPlayer : MonoBehaviour
         //死亡
         if (HP <= 0)
         {
+            TestCreat.level = 0;
             Application.LoadLevel(0);
         }
     }

@@ -44,11 +44,11 @@ public class TestPlayer : MonoBehaviour
         //当目标向量的Y轴大于等于0时候  
         if (mouse.x >= worldPos2.x)
         {
-            transform.localScale = new Vector3(1, 1,1);
+            transform.localScale = new Vector3(1, 1, 1);
         }
         else if (mouse.x < worldPos2.x)
         {
-            transform.localScale = new Vector3(-1, 1,1);
+            transform.localScale = new Vector3(-1, 1, 1);
         }
 
         //死亡

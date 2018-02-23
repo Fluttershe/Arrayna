@@ -69,6 +69,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 继承了 <see cref="MonoBehaviour"/> 和 <see cref="IPort"/> 的抽象类
 	/// </summary>
+	[Serializable]
 	public abstract class MonoPort : MonoBehaviour, IPort
 	{
 		public abstract MultiSelectablePartType SuitableType { get; }
@@ -94,6 +95,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 基本接口类，对 <see cref="MonoPort"/> 的简单实现
 	/// </summary>
+	[Serializable]
 	public class BasicPort : MonoPort
 	{
 		[SerializeField]
@@ -213,6 +215,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 辅助接口类，没有与其它接口连接的能力
 	/// </summary>
+	[Serializable]
 	public class AssistantPort : MonoPort
 	{
 		public override bool IsAssistantPort => true;

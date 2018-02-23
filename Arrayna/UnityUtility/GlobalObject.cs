@@ -33,13 +33,14 @@ namespace UnityUtility
 			{
 				if (_instance != null) return _instance;
 
-				LoadState();
+				//LoadState();
 				if (_instance != null) return _instance;
 
 				_instance = FindObjectOfType<GlobalObject>();
 				if (_instance != null) return _instance;
 
 				_instance = new GameObject("GlobalObject").AddComponent<GlobalObject>();
+				
 				return _instance;
 			}
 		}
@@ -188,7 +189,7 @@ namespace UnityUtility
 
 		private void OnApplicationQuit()
 		{
-			SaveState();
+			//SaveState();
 			print("OnApplicationQuit");
 		}
 	}

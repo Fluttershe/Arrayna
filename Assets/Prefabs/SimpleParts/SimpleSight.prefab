@@ -171,6 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 1883164860, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabID: simple_sight
   partName: "\u7B80\u6613\u7784\u5177"
   description: 
   type: 3
@@ -198,7 +199,8 @@ MonoBehaviour:
     - 0
     - 0
     - 0
-  monoports: []
+  monoPorts: []
+  monoAsstPorts: []
 --- !u!114 &114809710152574338
 MonoBehaviour:
   m_ObjectHideFlags: 1

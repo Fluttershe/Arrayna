@@ -320,7 +320,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="attr"></param>
 		/// <param name="part"></param>
-		protected void GetPartAttributes(WeaponAttributes bVal, WeaponAttributes mVal, MultiSelectablePartType type, IPart part)
+		protected virtual void GetPartAttributes(WeaponAttributes bVal, WeaponAttributes mVal, MultiSelectablePartType type, IPart part)
 		{
 			if (bVal == null || mVal == null) throw new ArgumentNullException();
 			if (part == null) return;
@@ -419,7 +419,7 @@ namespace WeaponAssemblage
 			return list.ToArray();
 		}
 
-		public void OnBeforeSerialize()
+		public virtual void OnBeforeSerialize()
 		{
 			monoPartList.Clear();
 			foreach (MonoPart p in partList)
@@ -428,7 +428,7 @@ namespace WeaponAssemblage
 			}
 		}
 
-		public void OnAfterDeserialize()
+		public virtual void OnAfterDeserialize()
 		{
 			partList.Clear();
 			foreach (IPart p in monoPartList)

@@ -9,11 +9,29 @@ namespace WeaponAssemblage
 	public class Projectile : MonoBehaviour
 	{
 		[SerializeField]
-		float speed = 1;
+		public float Speed = 1;
+
+		[SerializeField]
+		public float Damage;
+
+		private void Start()
+		{
+			Invoke("SelfDsetroy", 5);
+		}
 
 		private void Update()
 		{
-			transform.Translate(0, speed * Time.deltaTime, 0, Space.Self);
+			transform.Translate(0, Speed * Time.deltaTime, 0, Space.Self);
+		}
+
+		private void OnTriggerEnter2D(Collider2D collision)
+		{
+			Destroy(this.gameObject);
+		}
+
+		void SelfDsetroy()
+		{
+			Destroy(this.gameObject);
 		}
 	}
 }

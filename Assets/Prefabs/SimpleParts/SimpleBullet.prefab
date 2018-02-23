@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: -1663148534, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabID: simple_bullet
   partName: "\u7B80\u5355\u5B50\u5F39"
   description: 
   type: 5
@@ -196,7 +197,8 @@ MonoBehaviour:
     - 0
   monoPorts: []
   monoAsstPorts: []
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 1680861877469590, guid: 0e66cea03fecf7a48883768dd672d488,
+    type: 2}
 --- !u!114 &114852760571594070
 MonoBehaviour:
   m_ObjectHideFlags: 1

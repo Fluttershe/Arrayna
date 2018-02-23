@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace WeaponAssemblage
 {
+	[Serializable]
 	public class Bullet: BasicPart
 	{
 		public override PartType Type => PartType.Bullet;

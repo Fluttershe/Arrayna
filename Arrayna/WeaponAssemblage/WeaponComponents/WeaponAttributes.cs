@@ -9,7 +9,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 武器的属性类型
 	/// </summary>
-	public enum WeaponAttributeType
+	public enum WpnAttrType
 	{
 		/// <summary>
 		/// 伤害
@@ -49,7 +49,7 @@ namespace WeaponAssemblage
 	/// 武器属性的集合类
 	/// </summary>
 	[Serializable]
-	public class WeaponAttributes : EnumBasedCollection<WeaponAttributeType, float>
+	public class WeaponAttributes : EnumBasedCollection<WpnAttrType, float>
 	{
 		public void Add(WeaponAttributes wa)
 		{

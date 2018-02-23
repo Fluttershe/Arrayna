@@ -41,6 +41,7 @@ public class TestCreat : MonoBehaviour
         if (Regen)
         {
             level++;
+			print(level);
             InitMapArray();
             Regen = false;
         }

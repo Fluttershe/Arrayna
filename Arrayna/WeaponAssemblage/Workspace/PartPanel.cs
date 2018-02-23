@@ -8,49 +8,86 @@ using UnityEngine.EventSystems;
 
 namespace WeaponAssemblage.Workspace
 {
-	public class PartPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerClickHandler
+	public class PartPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, IPointerClickHandler, IBeginDragHandler, IEndDragHandler, IDropHandler, IInitializePotentialDragHandler, ICancelHandler, ISelectHandler, IDeselectHandler, IUpdateSelectedHandler, IMoveHandler, IScrollHandler
 	{
-		[SerializeField]
-		List<MonoPart> AvailableParts;
-		
-		[SerializeField]
-		MonoPart part;
-
-		public void SetPart(MonoPart part)
-		{
-			this.part = part;
-		}
-
 		public void OnDrag(PointerEventData eventData)
 		{
-			print("Drag");
+			print(name + "Drag");
 		}
 
 		public void OnPointerDown(PointerEventData eventData)
 		{
-			Workspace.AddPartToWorkspace(part);
-			part = null;
-			print("Pointer down");
+			print(name + "Pointer down");
 		}
 
 		public void OnPointerEnter(PointerEventData eventData)
 		{
-			print("Pointer enter");
+			print(name + "Pointer enter");
 		}
 
 		public void OnPointerExit(PointerEventData eventData)
 		{
-			print("Pointer exit");
+			print(name + "Pointer exit");
 		}
 
 		public void OnPointerUp(PointerEventData eventData)
 		{
-			print("Pointer up");
+			print(name + "Pointer up");
 		}
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
-			print("Pointer click");
+			print(name + "Pointer click");
+		}
+
+		public void OnBeginDrag(PointerEventData eventData)
+		{
+			print(name + "Begin drag");
+		}
+
+		public void OnEndDrag(PointerEventData eventData)
+		{
+			print(name + "End drag");
+		}
+
+		public void OnDrop(PointerEventData eventData)
+		{
+			print(name + "Drop drag");
+		}
+
+		public void OnCancel(BaseEventData eventData)
+		{
+			print(name + "Cancel");
+		}
+
+		public void OnSelect(BaseEventData eventData)
+		{
+			print(name + "Select");
+		}
+
+		public void OnDeselect(BaseEventData eventData)
+		{
+			print(name + "Deselect");
+		}
+
+		public void OnUpdateSelected(BaseEventData eventData)
+		{
+			print(name + "Update Select");
+		}
+
+		public void OnMove(AxisEventData eventData)
+		{
+			print(name + "Move");
+		}
+
+		public void OnScroll(PointerEventData eventData)
+		{
+			print(name + "Scroll");
+		}
+
+		public void OnInitializePotentialDrag(PointerEventData eventData)
+		{
+			print(name + "Initialize Potential Drag");
 		}
 	}
 }

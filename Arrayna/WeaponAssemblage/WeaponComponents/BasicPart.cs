@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using UnityEngine;
 using UnityUtility;
@@ -57,6 +58,11 @@ namespace WeaponAssemblage
 	/// </summary>
 	public interface IPart
 	{
+		/// <summary>
+		/// 部件的 Prefab code
+		/// </summary>
+		string PrefabID { get; }
+
 		/// <summary>
 		/// 部件的名称
 		/// </summary>
@@ -133,6 +139,11 @@ namespace WeaponAssemblage
 		/// <param name="part">尝试连接的部件</param>
 		/// <returns>解除成功即返回true，否则返回false</returns>
 		bool RemovePort(IPort port);
+		
+		/// <summary>
+		/// 更新该部件所属的武器
+		/// </summary>
+		void UpdateBelongingWeapon();
 
 		/// <summary>
 		/// 当有部件连接到该部件时触发该事件
@@ -168,6 +179,10 @@ namespace WeaponAssemblage
 		public abstract WeaponAttributes BaseValue { get; }
 		public abstract WeaponAttributes ModValue { get; }
 
+		[SerializeField]
+		string prefabID;
+		public string PrefabID => prefabID;
+
 		public abstract event Action<IPart, IPart> OnPartAttached;
 		public abstract event Action<IPart, IPart> OnPartDetached;
 
@@ -178,7 +193,7 @@ namespace WeaponAssemblage
 
 		public abstract bool RemovePort(IPort port);
 
-		protected abstract void UpdateBelongingWeapon();
+		public abstract void UpdateBelongingWeapon();
 
 		public abstract void OnBeforeSerialize();
 
@@ -188,6 +203,7 @@ namespace WeaponAssemblage
 	/// <summary>
 	/// 基本部件类，对 <see cref="MonoPart"/> 的简单实现
 	/// </summary>
+	[Serializable]
 	public class BasicPart : MonoPart
 	{
 		[SerializeField, Tooltip("部件的名称")]
@@ -248,6 +264,7 @@ namespace WeaponAssemblage
 				return;
 			}
 
+			// 将连接和移除事件挂接在每个接口上
 			foreach (IPort port in portList)
 			{
 				port.OnPortDetached += PartDetached;
@@ -353,19 +370,23 @@ namespace WeaponAssemblage
 		/// <summary>
 		/// 更新所属武器
 		/// </summary>
-		protected override void UpdateBelongingWeapon()
+		public override void UpdateBelongingWeapon()
 		{
 			Debug.Log($"Update: {PartName}, RootPart: {weapon?.RootPart?.Equals(this)}, Root attached: {rootPort.AttachedPort}");
+
+			// 如果该部件不是武器的根部件，将weapon设为null
 			if ((weapon?.RootPart?.Equals(this)) != true)
 				weapon = null;
 
+			// 如果根接口所连部件不为null, 将所属武器设置为等同于根接口部件
 			if (rootPort.AttachedPort != null)
 				weapon = (MonoWeapon)rootPort.AttachedPort.Part.Weapon;
 
+			// 更新所有连接到这个部件上的其它部件
 			foreach(IPort p in portList)
 			{
 				if (p.AttachedPort == null) continue;
-				((BasicPart)p.AttachedPort.Part).UpdateBelongingWeapon();
+				p.AttachedPort.Part.UpdateBelongingWeapon();
 			}
 		}
 

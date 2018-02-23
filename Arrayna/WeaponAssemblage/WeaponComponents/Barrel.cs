@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace WeaponAssemblage
 {
+	[Serializable]
 	public class Barrel : BasicPart, IPrimaryFireHandler
 	{
 		public override PartType Type => PartType.Barrel;
@@ -51,7 +52,7 @@ namespace WeaponAssemblage
 
 		public void OnFireDown(IWeapon weapon)
 		{
-			fireRate = weapon.FinalValue[WeaponAttributeType.FireRate];
+			fireRate = weapon.FinalValue[WpnAttrType.FireRate];
 			firing = true;
 		}
 

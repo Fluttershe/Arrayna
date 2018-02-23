@@ -196,3 +196,7 @@ PartAgent -> two work mode(too much, divide them to two components or something)
 			Display Info;
 		
 		
+		Weapons -> parts -> ports
+		ports -> position, type, linkedPort, part
+		parts -> type, ports, attributes
+		weapon -> parts

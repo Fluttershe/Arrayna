@@ -55,6 +55,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PlayerWeaponStore.cs" />
+    <Compile Include="Serializations\WeaponSerializer.cs" />
+    <Compile Include="WAPrefabStore.cs" />
     <Compile Include="WeaponAssembly.cs" />
     <Compile Include="WeaponComponents\Barrel.cs" />
     <Compile Include="WeaponComponents\BasicPart.cs" />
@@ -62,6 +65,7 @@
     <Compile Include="WeaponComponents\BasicWeapon.cs" />
     <Compile Include="WeaponComponents\Bullet.cs" />
     <Compile Include="WeaponComponents\Projectile.cs" />
+    <Compile Include="WeaponComponents\TestWeapon.cs" />
     <Compile Include="WeaponComponents\WeaponAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Workspace\LinkFlash.cs" />

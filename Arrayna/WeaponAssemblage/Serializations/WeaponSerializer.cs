@@ -91,6 +91,7 @@ namespace WeaponAssemblage.Serializations
 
 			mWeapon.RootPart = DeserializeParts(weapon.containedParts[0], weapon);
 			((MonoPart)mWeapon.RootPart).transform.SetParent(mWeapon.transform);
+			((MonoPart)mWeapon.RootPart).transform.localPosition = Vector3.zero;
 			mWeapon.CompileWeaponAttribute();
 			mWeapon.RootPart.UpdateBelongingWeapon();
 

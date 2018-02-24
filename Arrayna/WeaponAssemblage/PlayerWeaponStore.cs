@@ -4,52 +4,44 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using WeaponAssemblage.Serializations;
 using UnityEngine;
+using UnityUtility;
 
 namespace WeaponAssemblage
 {
 	public class PlayerWeaponStorage : MonoBehaviour
 	{
-		[SerializeField]
-		List<MonoWeapon> _weapons;
-		[SerializeField]
-		List<MonoPart> _parts;
+		public List<MonoWeapon> weapons = new List<MonoWeapon>();
+		public List<MonoPart> spareParts = new List<MonoPart>();
 
-		[SerializeField]
-		bool test;
-
-		private void Start()
+		private static PlayerWeaponStorage _instance;
+		public static PlayerWeaponStorage Instance
 		{
-			weapons = _weapons;
-			parts = _parts;
-		}
-
-		private void Update()
-		{
-			if (test)
+			get
 			{
-				test = false;
-				SaveToFile();
-				LoadFromFile();
+				if (_instance == null)
+				{
+					_instance = GlobalObject.GetOrAddComponent<PlayerWeaponStorage>();
+					LoadFromFile();
+				}
+
+				return _instance;
 			}
 		}
-
-		public static  List<MonoWeapon> weapons = new List<MonoWeapon>();
-		public static  List<MonoPart> parts = new List<MonoPart>();
 
 		public static void SaveToFile()
 		{
 			SerializableWeaponBundle bundle = new SerializableWeaponBundle();
-			bundle.weapons = new PreserializedWeapon[weapons.Count];
-			bundle.partIDs = new string[parts.Count];
+			bundle.weapons = new PreserializedWeapon[Instance.weapons.Count];
+			bundle.partIDs = new string[Instance.spareParts.Count];
 
-			for (int i = 0; i < weapons.Count; i ++)
+			for (int i = 0; i < Instance.weapons.Count; i ++)
 			{
-				bundle.weapons[i] = WeaponPreserializer.Preserializate(weapons[i]);
+				bundle.weapons[i] = WeaponPreserializer.Preserializate(Instance.weapons[i]);
 			}
 
-			for (int i = 0; i < parts.Count; i ++)
+			for (int i = 0; i < Instance.spareParts.Count; i ++)
 			{
-				bundle.partIDs[i] = parts[i].PrefabID;
+				bundle.partIDs[i] = Instance.spareParts[i].PrefabID;
 			}
 
 			Save(bundle);
@@ -58,16 +50,19 @@ namespace WeaponAssemblage
 		public static void LoadFromFile()
 		{
 			var bundle = Load();
-			weapons.Clear();
+			if (bundle == null)
+				bundle = new SerializableWeaponBundle();
+
+			Instance.weapons.Clear();
 			for (int i = 0; i < bundle.weapons.Length; i ++)
 			{
-				weapons.Add(WeaponPreserializer.DeserializeWeapon(bundle.weapons[i]));
+				Instance.weapons.Add(WeaponPreserializer.DeserializeWeapon(bundle.weapons[i]));
 			}
 
-			parts.Clear();
+			Instance.spareParts.Clear();
 			for (int i = 0; i < bundle.partIDs.Length; i ++)
 			{
-				parts.Add(GameObject.Instantiate(WAPrefabStore.GetPartPrefab(bundle.partIDs[i]).gameObject).GetComponent<MonoPart>());
+				Instance.spareParts.Add(GameObject.Instantiate(WAPrefabStore.GetPartPrefab(bundle.partIDs[i]).gameObject).GetComponent<MonoPart>());
 			}
 		}
 
@@ -102,7 +97,7 @@ namespace WeaponAssemblage
 			}
 
 			object deserialized = null;
-			SerializableWeaponBundle bundle = new SerializableWeaponBundle();
+			SerializableWeaponBundle bundle = null;
 			try
 			{
 				deserialized = formatter.Deserialize(saveFile);
@@ -110,11 +105,27 @@ namespace WeaponAssemblage
 			}
 			catch (SerializationException)
 			{
-				if (deserialized != null)
+				if (deserialized == null)
 				{
-					var test = (PreserializedWeapon[])deserialized.GetType().GetField("weapons", System.Reflection.BindingFlags.GetField).GetValue(deserialized);
+					Debug.LogWarning("无法打开存档");
 				}
-				Debug.LogWarning("读取到旧版本存档，旧版本存档将会被覆盖");
+				else
+				{
+					Debug.LogWarning("读取到旧版本存档，尝试解析……");
+					var weapons = (PreserializedWeapon[])deserialized.GetType().GetField("weapons").GetValue(deserialized);
+					var partIDs = (string[])deserialized.GetType().GetField("partIDs").GetValue(deserialized);
+
+					if (weapons == null || partIDs == null)
+					{
+						Debug.LogWarning("无法解析出武器与部件，文件可能已经损坏");
+					}
+					else
+					{
+						Debug.LogWarning("文件解析成功，读取武器和部件信息……");
+						bundle.weapons = weapons;
+						bundle.partIDs = partIDs;
+					}
+				}
 			}
 
 			saveFile.Close();

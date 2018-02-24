@@ -23,11 +23,6 @@ namespace WeaponAssemblage.Workspace
 		private bool pointerInPartlist;
 
 		/// <summary>
-		/// Where the parts and weapons store
-		/// </summary>
-		private WeaponAssembly assembly;
-
-		/// <summary>
 		/// Backing field of <see cref="PartCount"/>
 		/// </summary>
 		[SerializeField]
@@ -59,9 +54,6 @@ namespace WeaponAssemblage.Workspace
 
 		[SerializeField]
 		private List<MonoPart> partsInWorkspace = new List<MonoPart>();
-		
-		[SerializeField]
-		private List<MonoPart> partsInPartlist = new List<MonoPart>();
 
 		[SerializeField]
 		private List<MonoPort> portsInWorkspace = new List<MonoPort>();
@@ -80,22 +72,21 @@ namespace WeaponAssemblage.Workspace
 				if (_instance == null)
 				{
 					_instance = FindObjectOfType<Workspace>();
-					if (_instance == null)
-					{
-						_instance = new GameObject("Workspace").AddComponent<Workspace>();
-					}
 				}
+
+				if (_instance == null)
+				{
+					_instance = new GameObject("Workspace").AddComponent<Workspace>();
+				}
+
 				return _instance;
 			}
 		}
-		
+
 		/// <summary>
 		/// Workspace是否在使用中
 		/// </summary>
-		public static bool Active
-		{
-			get { return Instance.enabled; }
-		}
+		public static bool Active { get; protected set; } = false;
 
 		/// <summary>
 		/// 鼠标指针是否在 Partlist 内
@@ -386,6 +377,9 @@ namespace WeaponAssemblage.Workspace
 				_instance = this;
 			}
 
+			if (linkFlashPrefab == null)
+				linkFlashPrefab = ((GameObject)Resources.Load("ConnectingFlash")).GetComponent<LinkFlash>();
+
 			if (linkFlashA == null)
 				linkFlashA = Instantiate(linkFlashPrefab.gameObject, this.transform).GetComponent<LinkFlash>();
 
@@ -394,11 +388,6 @@ namespace WeaponAssemblage.Workspace
 
 			linkFlashA.gameObject.SetActive(false);
 			linkFlashB.gameObject.SetActive(false);
-		}
-
-		private void Start()
-		{
-			EnterWorkspace(operatingWeapon);
 		}
 
 		private void Update()
@@ -414,6 +403,12 @@ namespace WeaponAssemblage.Workspace
 			}
 		}
 
+		private void OnApplicationQuit()
+		{
+			ExitWorkspace();
+			PlayerWeaponStorage.SaveToFile();
+		}
+
 		#endregion
 
 		#region Private methods
@@ -425,8 +420,9 @@ namespace WeaponAssemblage.Workspace
 
 		private void _EnterWorkSpace(IWeapon weapon)
 		{
+			if (Active) return;
 			// Enable instance..
-			Instance.enabled = true;
+			Active = true;
 
 			// Begin setting up partlist...
 			if (partlist == null
@@ -439,8 +435,6 @@ namespace WeaponAssemblage.Workspace
 			partlist.OnEnterOrExit += EnterPartlist;
 			partlist.ShowDragnDrop(false);
 			// Finish setting up partlist...
-
-			assembly = GlobalObject.GetOrAddComponent<WeaponAssembly>();
 
 			// Begin setting up operatingWeapon...
 			// If there's a weapon, add it in, otherwise, create one.
@@ -455,15 +449,16 @@ namespace WeaponAssemblage.Workspace
 			foreach (MonoPart p in operatingWeapon.Parts)
 				AddPartToWorkspace(p);
 
-			if (assembly.Weapons.Contains(operatingWeapon))
-				assembly.Weapons.Add(operatingWeapon);
+			var storage = PlayerWeaponStorage.Instance;
+			if (!storage.weapons.Contains(operatingWeapon))
+				storage.weapons.Add(operatingWeapon);
 			// Finish setting up operatingWeapon...
 
 			// Setup state panel
 			statePanel = FindObjectOfType<WeaponStatePanel>();
 			
-			// Add parts from assemblage to Workspace
-			foreach (MonoPart p in assembly.Parts)
+			// Add parts from storage to Workspace
+			foreach (MonoPart p in storage.spareParts)
 				AddPartToPartlist(p);
 
 			// If there is no receiver in Workspace
@@ -471,7 +466,7 @@ namespace WeaponAssemblage.Workspace
 			{
 				// Find a receiver from partlist.
 				MonoPart receiver = null;
-				foreach (MonoPart p in partsInPartlist)
+				foreach (MonoPart p in partlist.Parts)
 				{
 					if (p.Type == PartType.Receiver)
 					{
@@ -495,7 +490,9 @@ namespace WeaponAssemblage.Workspace
 
 		private void _ExitWorkspace()
 		{
-			Instance.enabled = false;
+			if (!Active) return;
+			// Disable this instance
+			Active = false;
 
 			partlist.OnEnterOrExit -= EnterPartlist;
 
@@ -513,16 +510,19 @@ namespace WeaponAssemblage.Workspace
 					Destroy(agent);
 			}
 
-			foreach (MonoPart p in partsInPartlist)
+			var storage = PlayerWeaponStorage.Instance;
+			storage.spareParts.Clear();
+			while (partlist.Parts.Count > 0)
 			{
+				var p = partlist.Parts[0];
+				storage.spareParts.Add(p);
 				RemovePartFromPartlist(p);
 				var agent = p.GetComponent<PartAgent>();
 				if (agent != null)
-					Destroy(p);
+					Destroy(agent);
 			}
 
 			// Clear the lists
-			partsInPartlist.Clear();
 			partsInWorkspace.Clear();
 			portsInWorkspace.Clear();
 		}
@@ -553,8 +553,9 @@ namespace WeaponAssemblage.Workspace
 
 		private bool _addPartToPartlist(MonoPart part)
 		{
-			if (partsInPartlist.Contains(part)) return false;
-			partsInPartlist.Add(part);
+			if (partlist.Parts.Contains(part)) return false;
+
+			// Add the part to partlist
 			partlist.AddPart(part);
 
 			return true;
@@ -562,10 +563,9 @@ namespace WeaponAssemblage.Workspace
 
 		private bool _removePartFromPartlist(MonoPart part)
 		{
-			if (!partsInPartlist.Contains(part)) return false;
+			if (!partlist.Parts.Contains(part)) return false;
 
-			// Remove the part from list
-			partsInPartlist.Remove(part);
+			// Remove the part from partlist
 			partlist.TakePart(part);
 			return true;
 		}

@@ -68,6 +68,7 @@
     <Compile Include="WeaponComponents\TestWeapon.cs" />
     <Compile Include="WeaponComponents\WeaponAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Workspace\EnterTest.cs" />
     <Compile Include="Workspace\LinkFlash.cs" />
     <Compile Include="Workspace\PartAgent.cs" />
     <Compile Include="Workspace\Partlist.cs" />

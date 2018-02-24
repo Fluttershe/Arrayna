@@ -39,9 +39,13 @@ namespace WeaponAssemblage.Workspace
 		/// </summary>
 		public event Action<bool> OnEnterOrExit;
 
+		/// <summary>
+		/// The parts in this part list.
+		/// </summary>
+		public List<MonoPart> Parts => partList;
+
 		private void Awake()
 		{
-			if (dragndropArea == null)
 			dragndropArea = GetComponent<BoxCollider2D>();
 			SwitchScrollView(currentView);
 
@@ -55,7 +59,8 @@ namespace WeaponAssemblage.Workspace
 		private void Update()
 		{
 			var rectTrans = transform as RectTransform;
-			dragndropArea.size = rectTrans.sizeDelta;
+			dragndropArea.size = new Vector2(rectTrans.rect.width, rectTrans.rect.height);
+			dragndropArea.offset = Vector2.left * (rectTrans.rect.width / 2);
 		}
 
 		public void OnPointerEnter(PointerEventData eventData)

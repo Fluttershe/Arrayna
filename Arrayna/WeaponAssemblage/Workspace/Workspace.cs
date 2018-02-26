@@ -386,21 +386,7 @@ namespace WeaponAssemblage.Workspace
 			if (linkFlashB == null)
 				linkFlashB = Instantiate(linkFlashPrefab.gameObject, this.transform).GetComponent<LinkFlash>();
 
-			linkFlashA.gameObject.SetActive(false);
-			linkFlashB.gameObject.SetActive(false);
-		}
-
-		private void Update()
-		{
-			if (Input.GetKeyDown(KeyCode.P))
-			{
-				OperatingWeapon.PrimaryFireDown();
-			}
-
-			if (Input.GetKeyUp(KeyCode.P))
-			{
-				OperatingWeapon.PrimaryFireUp();
-			}
+			CancelLink();
 		}
 
 		private void OnApplicationQuit()

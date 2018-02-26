@@ -12,6 +12,8 @@ namespace WeaponAssemblage
 		public override PartType Type => PartType.Bullet;
 		[SerializeField]
 		protected GameObject bulletPrefab;
-		public GameObject BulletPrefab => bulletPrefab;
+		public virtual GameObject ProjectilePrefab => bulletPrefab;
+
+		public virtual int ProjectileNumber => 1;
 	}
 }

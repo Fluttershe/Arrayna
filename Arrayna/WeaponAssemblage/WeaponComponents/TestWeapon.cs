@@ -39,7 +39,7 @@ namespace WeaponAssemblage.WeaponComponents
 		[SerializeField]
 		Projectile projectilePrefab;
 
-		private void Update()
+		protected override void Update()
 		{
 			// 计算射击时间
 			if (fireTime > 0)
@@ -94,7 +94,7 @@ namespace WeaponAssemblage.WeaponComponents
 			if (reloadTime > 0 || numberOfAmmo == FinalValue[WpnAttrType.Capacity]) return;
 
 			numberOfAmmo = Mathf.RoundToInt(FinalValue[WpnAttrType.Capacity]);
-			reloadTime = FinalValue[WpnAttrType.ReloadingSpeed];
+			reloadTime = FinalValue[WpnAttrType.ReloadingTime];
 		}
 
 		/// <summary>
@@ -141,7 +141,7 @@ namespace WeaponAssemblage.WeaponComponents
 			// 计算散射相关数值……
 			dispersalIncrement = 10 - FinalValue[WpnAttrType.Stability] * 0.1f;
 			if (dispersalIncrement < 0) dispersalIncrement = 0;
-			dispersalDecreRate = (FinalValue[WpnAttrType.Stability]) * 0.02f;
+			dispersalDecreRate = FinalValue[WpnAttrType.Stability] * 0.025f;
 		}
 
 		private void OnDrawGizmos()

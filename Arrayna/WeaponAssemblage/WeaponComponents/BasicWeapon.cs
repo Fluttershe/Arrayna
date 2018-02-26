@@ -35,6 +35,11 @@ namespace WeaponAssemblage
 		WeaponAttributes FinalValue { get; }
 
 		/// <summary>
+		/// 武器的运行数据
+		/// </summary>
+		RuntimeValues RuntimeValues { get; }
+
+		/// <summary>
 		/// 该武器是否完善可用
 		/// </summary>
 		bool IsCompleted { get; }
@@ -130,19 +135,22 @@ namespace WeaponAssemblage
 
 	public interface IPrimaryFireHandler
 	{
-		void OnFireDown(IWeapon weapon);
-		void OnFireUp(IWeapon weapon);
+		void OnPrimaryFireDown(IWeapon weapon);
+		void OnPrimaryReadyToFire(IWeapon weapon);
+		void OnPrimaryFireUp(IWeapon weapon);
 	}
 
 	public interface ISecondaryFireHandler
 	{
-		void OnFireDown(IWeapon weapon);
-		void OnFireUp(IWeapon weapon);
+		void OnSecondaryFireDown(IWeapon weapon);
+		void OnSecondaryReadyToFire(IWeapon weapon);
+		void OnSecondaryFireUp(IWeapon weapon);
 	}
 
 	public interface IReloadHandler
 	{
 		void OnReload(IWeapon weapon);
+		void OnReloadOver(IWeapon weapon);
 	}
 
 	/// <summary>
@@ -157,16 +165,20 @@ namespace WeaponAssemblage
 		public abstract WeaponAttributes BaseValue { get; }
 		public abstract WeaponAttributes ModValue { get; }
 		public abstract WeaponAttributes FinalValue { get; }
+		public abstract RuntimeValues RuntimeValues { get; }
 
 		protected virtual event WeaponEvent OnDraw;
 		protected virtual event WeaponEvent OnHolster;
 		protected virtual event WeaponEvent OnPrimaryFireUp;
+		protected virtual event WeaponEvent OnPrimaryReadyToFire;
 		protected virtual event WeaponEvent OnPrimaryFireDown;
 		protected virtual event WeaponEvent OnSecondaryFireUp;
+		protected virtual event WeaponEvent OnSecondaryReadyToFire;
 		protected virtual event WeaponEvent OnSecondaryFireDown;
 		//protected virtual event WeaponEvent OnTertiaryFireUp;
 		//protected virtual event WeaponEvent OnTertiaryFireDown;
 		protected virtual event WeaponEvent OnReload;
+		protected virtual event WeaponEvent OnReloadOver;
 
 		/// <summary>
 		/// 清空Weapon里的Event
@@ -176,10 +188,13 @@ namespace WeaponAssemblage
 			OnDraw = null;
 			OnHolster = null;
 			OnPrimaryFireDown = null;
+			OnPrimaryReadyToFire = null;
 			OnPrimaryFireUp = null;
 			OnSecondaryFireDown = null;
+			OnSecondaryReadyToFire = null;
 			OnSecondaryFireUp = null;
 			OnReload = null;
+			OnReloadOver = null;
 		}
 
 		public abstract void CompileWeaponAttribute();
@@ -202,16 +217,24 @@ namespace WeaponAssemblage
 
 		public virtual void PrimaryFireDown()
 		{
+			if (RuntimeValues.HoldingFire) return;
+			RuntimeValues.HoldingFire = true;
 			OnPrimaryFireDown?.Invoke(this);
+			print("Fire Down");
 		}
 
 		public virtual void PrimaryFireUp()
 		{
+			if (!RuntimeValues.HoldingFire) return;
+			RuntimeValues.HoldingFire = false;
 			OnPrimaryFireUp?.Invoke(this);
+			print("Fire Up");
 		}
 
 		public virtual void Reload()
 		{
+			if (RuntimeValues.ReloadTime > 0 || 
+				RuntimeValues.NumberOfAmmo >= FinalValue[WpnAttrType.Capacity]) return;
 			OnReload?.Invoke(this);
 		}
 
@@ -224,6 +247,32 @@ namespace WeaponAssemblage
 		{
 			OnSecondaryFireUp?.Invoke(this);
 		}
+
+		protected virtual void Update()
+		{
+			if (RuntimeValues.ReloadTime > 0)
+			{
+				RuntimeValues.ReloadTime -= Time.deltaTime;
+				if (RuntimeValues.ReloadTime <= 0)
+				{
+					OnReloadOver?.Invoke(this);
+				}
+			}
+			if (RuntimeValues.FireTime > 0) RuntimeValues.FireTime -= Time.deltaTime;
+			if (RuntimeValues.Dispersal > 0) RuntimeValues.Dispersal *= 1 - (Time.deltaTime * RuntimeValues.DispersalDecreRate);
+
+			if (!RuntimeValues.HoldingFire || RuntimeValues.FireTime > 0 || RuntimeValues.ReloadTime > 0) return;
+
+			// 如果弹药已经打空，这一轮进行装弹
+			if (RuntimeValues.NumberOfAmmo <= 0)
+			{
+				Reload();
+				return;
+			}
+
+			// 发射子弹
+			OnPrimaryReadyToFire?.Invoke(this);
+		}
 	}
 
 	/// <summary>
@@ -231,8 +280,46 @@ namespace WeaponAssemblage
 	/// </summary>
 	public class BasicWeapon : MonoWeapon, ISerializationCallbackReceiver
 	{
+		#region Fields
+
 		[SerializeField]
 		protected MonoPart rootPart;
+
+		[SerializeField]
+		protected List<MonoPart> monoPartList = new List<MonoPart>();
+		protected List<IPart> partList = new List<IPart>();
+		
+		[SerializeField]
+		protected MultiSelectablePartType containedPartType = new MultiSelectablePartType();
+		
+		[SerializeField]
+		protected WeaponAttributes baseValue = new WeaponAttributes();
+		
+		[SerializeField]
+		protected WeaponAttributes modValue = new WeaponAttributes();
+		
+		[SerializeField]
+		protected WeaponAttributes finalValue = new WeaponAttributes();
+		
+		[SerializeField]
+		protected RuntimeValues rtValues = new RuntimeValues();
+
+		#endregion
+
+		#region Public properties
+
+		public override bool IsCompleted
+		{
+			get
+			{
+				return
+					ContainedPartType[PartType.Receiver]
+				 && ContainedPartType[PartType.Barrel]
+				 && ContainedPartType[PartType.Magazine]
+				 && ContainedPartType[PartType.Bullet];
+			}
+		}
+
 		public override IPart RootPart
 		{
 			get => rootPart;
@@ -243,55 +330,20 @@ namespace WeaponAssemblage
 				rootPart.SetAsRootPart(this);
 			}
 		}
-		
-		[SerializeField]
-		protected List<MonoPart> monoPartList = new List<MonoPart>();
-		protected List<IPart> partList = new List<IPart>();
+
 		public override IEnumerable<IPart> Parts => partList.AsEnumerable();
 
-		[SerializeField]
-		protected MultiSelectablePartType containedPartType = new MultiSelectablePartType();
-		public override MultiSelectablePartType ContainedPartType => containedPartType;
-
-		[SerializeField]
-		protected WeaponAttributes baseValue = new WeaponAttributes();
 		public override WeaponAttributes BaseValue => baseValue;
-
-		[SerializeField]
-		protected WeaponAttributes modValue = new WeaponAttributes();
 		public override WeaponAttributes ModValue => modValue;
-
-		[SerializeField]
-		protected WeaponAttributes finalValue = new WeaponAttributes();
 		public override WeaponAttributes FinalValue => finalValue;
 
-		protected virtual void OnEnable()
-		{
-			foreach (IPart p in partList)
-			{
-				((MonoPart)p).enabled = true;
-			}
-		}
+		public override MultiSelectablePartType ContainedPartType => containedPartType;
 
-		protected virtual void OnDisable()
-		{
-			foreach (IPart p in partList)
-			{
-				((MonoPart)p).enabled = false;
-			}
-		}
+		public override RuntimeValues RuntimeValues => rtValues;
 
-		public override bool IsCompleted
-		{
-			get
-			{
-				return 
-					ContainedPartType[PartType.Receiver]
-				 && ContainedPartType[PartType.Barrel]
-				 && ContainedPartType[PartType.Magazine]
-				 && ContainedPartType[PartType.Bullet];
-			}
-		}
+		#endregion
+
+		#region Public methods
 
 		/// <summary>
 		/// 计算该武器的各项数值
@@ -308,71 +360,14 @@ namespace WeaponAssemblage
 
 			// 获取值
 			GetPartAttributes(baseValue, modValue, containedPartType, rootPart);
-			
+
 			// 计算武器的最终数值
 			finalValue.Add(baseValue);
 			modValue.Add(1);
 			finalValue.Mul(modValue);
-		}
-
-		/// <summary>
-		/// 获取一个部件及其子部件的值
-		/// </summary>
-		/// <param name="attr"></param>
-		/// <param name="part"></param>
-		protected virtual void GetPartAttributes(WeaponAttributes bVal, WeaponAttributes mVal, MultiSelectablePartType type, IPart part)
-		{
-			if (bVal == null || mVal == null) throw new ArgumentNullException();
-			if (part == null) return;
-
-			// 将该部件加入部件列表中
-			partList.Add((MonoPart)part);
-
-			// 将该部件的值加入总和中
-			bVal.Add(part.BaseValue);
-			mVal.Add(part.ModValue);
-
-			// 记录该部件类型为该武器所拥有的部件类型
-			type[part.Type] = true;
-
-			// 如果该部件可处理武器拔出事件，加入
-			var draw = part as IDrawHandler;
-			if (draw != null) OnDraw += draw.OnDraw;
-
-			// 如果该部件可处理武器收起事件，加入
-			var holster = part as IHolsterHandler;
-			if (holster != null) OnHolster += holster.OnHolster;
-
-			// 如果该部件可处理武器主要攻击，加入
-			var primary = part as IPrimaryFireHandler;
-			if (primary != null)
-			{
-				OnPrimaryFireDown += primary.OnFireDown;
-				OnPrimaryFireUp += primary.OnFireUp;
-			}
-
-			// 如果该部件可处理武器次要攻击，加入
-			var secondary = part as ISecondaryFireHandler;
-			if (secondary != null)
-			{
-				OnSecondaryFireDown += secondary.OnFireDown;
-				OnSecondaryFireUp += secondary.OnFireUp;
-			}
-
-			// 如果该部件可处理武器重装，加入
-			var reload = part as IReloadHandler;
-			if (reload != null)
-			{
-				OnReload += reload.OnReload;
-			}
-
-			// 遍历该部件上的所有接口，如果接口上接有部件则进行处理
-			var ports = part.Ports;
-			foreach (IPort p in ports)
-			{
-				if (p.AttachedPort == null) continue;
-				GetPartAttributes(bVal, mVal, type, p.AttachedPort.Part);
-			}
+			rtValues.DispersalIncrement = 10 - finalValue[WpnAttrType.Stability] * 0.1f;
+			if (rtValues.DispersalIncrement < 0) rtValues.DispersalIncrement = 0;
+			rtValues.DispersalDecreRate = FinalValue[WpnAttrType.Stability] * 0.025f;
 		}
 
 		public override IPart GetPartOfType(PartType type)
@@ -419,6 +414,97 @@ namespace WeaponAssemblage
 			return list.ToArray();
 		}
 
+		#endregion
+
+		#region Protected & Private methods
+
+		/// <summary>
+		/// 获取一个部件及其子部件的值
+		/// </summary>
+		/// <param name="attr"></param>
+		/// <param name="part"></param>
+		protected virtual void GetPartAttributes(WeaponAttributes bVal, WeaponAttributes mVal, MultiSelectablePartType type, IPart part)
+		{
+			if (bVal == null || mVal == null) throw new ArgumentNullException();
+			if (part == null) return;
+
+			// 将该部件加入部件列表中
+			partList.Add((MonoPart)part);
+
+			// 将该部件的值加入总和中
+			bVal.Add(part.BaseValue);
+			mVal.Add(part.ModValue);
+
+			// 记录该部件类型为该武器所拥有的部件类型
+			type[part.Type] = true;
+
+			// 如果该部件可处理武器拔出事件，加入
+			var draw = part as IDrawHandler;
+			if (draw != null) OnDraw += draw.OnDraw;
+
+			// 如果该部件可处理武器收起事件，加入
+			var holster = part as IHolsterHandler;
+			if (holster != null) OnHolster += holster.OnHolster;
+
+			// 如果该部件可处理武器主要攻击，加入
+			var primary = part as IPrimaryFireHandler;
+			if (primary != null)
+			{
+				OnPrimaryFireDown += primary.OnPrimaryFireDown;
+				OnPrimaryReadyToFire += primary.OnPrimaryReadyToFire;
+				OnPrimaryFireUp += primary.OnPrimaryFireUp;
+			}
+
+			// 如果该部件可处理武器次要攻击，加入
+			var secondary = part as ISecondaryFireHandler;
+			if (secondary != null)
+			{
+				OnSecondaryFireDown += secondary.OnSecondaryFireDown;
+				OnSecondaryReadyToFire += secondary.OnSecondaryReadyToFire;
+				OnSecondaryFireUp += secondary.OnSecondaryFireUp;
+			}
+
+			// 如果该部件可处理武器重装，加入
+			var reload = part as IReloadHandler;
+			if (reload != null)
+			{
+				OnReload += reload.OnReload;
+				OnReloadOver += reload.OnReloadOver;
+			}
+
+			// 遍历该部件上的所有接口，如果接口上接有部件则进行处理
+			var ports = part.Ports;
+			foreach (IPort p in ports)
+			{
+				if (p.AttachedPort == null) continue;
+				GetPartAttributes(bVal, mVal, type, p.AttachedPort.Part);
+			}
+		}
+
+		#endregion
+		
+		#region Unity methods
+
+		protected virtual void OnEnable()
+		{
+			foreach (IPart p in partList)
+			{
+				((MonoPart)p).enabled = true;
+			}
+		}
+
+		protected virtual void OnDisable()
+		{
+			foreach (IPart p in partList)
+			{
+				((MonoPart)p).enabled = false;
+			}
+		}
+
+		#endregion
+
+		#region Serializaion
+
 		public virtual void OnBeforeSerialize()
 		{
 			monoPartList.Clear();
@@ -436,5 +522,6 @@ namespace WeaponAssemblage
 				partList.Add(p);
 			}
 		}
+		#endregion
 	}
 }

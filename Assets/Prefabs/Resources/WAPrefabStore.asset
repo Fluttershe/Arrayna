@@ -9,12 +9,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -2141570329, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
-  m_Name: WA Prefab Store
+  m_Name: WAPrefabStore
   m_EditorClassIdentifier: 
   PartPrefabs:
   - {fileID: 114646495864879186, guid: 626bb4976f8a5e14399b03c92a40d4df, type: 2}
   - {fileID: 114017469603548200, guid: 40a78c7bfdacfe64fb317138022088d2, type: 2}
-  - {fileID: 114758537095185420, guid: 443de77fa33bb69499b076d68bd8d9a1, type: 2}
+  - {fileID: 114240214245941140, guid: 443de77fa33bb69499b076d68bd8d9a1, type: 2}
   - {fileID: 114670734533261772, guid: 4b80023d50ac6c24695ae6856d21ccfe, type: 2}
   - {fileID: 114098905614332716, guid: cdf1f4cd153849d41936d736914c6bf7, type: 2}
   - {fileID: 114052177923291656, guid: 4c4922a6337135c479685cbb2da3004b, type: 2}

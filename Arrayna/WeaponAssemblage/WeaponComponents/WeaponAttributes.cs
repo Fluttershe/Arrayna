@@ -32,9 +32,9 @@ namespace WeaponAssemblage
 		/// </summary>
 		MuzzleVelocity,
 		/// <summary>
-		/// 重装速度
+		/// 重装所需时间
 		/// </summary>
-		ReloadingSpeed,
+		ReloadingTime,
 		/// <summary>
 		/// 准度
 		/// </summary>

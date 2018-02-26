@@ -13,16 +13,29 @@ namespace WeaponAssemblage
 	[CreateAssetMenu]
 	public class WAPrefabStore : ScriptableObject
 	{
-		static WAPrefabStore instance;
+		static WAPrefabStore _instance;
+		static WAPrefabStore Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					_instance = (WAPrefabStore)Resources.Load("WAPrefabStore");
+					_instance.Awake();
+				}
+
+				return _instance;
+			}
+		}
 		Dictionary<string, MonoPart> PartDictionary;
 
 		[SerializeField]
 		List<MonoPart> PartPrefabs;
 
-		private void OnEnable()
+		private void Awake()
 		{
-			instance = this;
-			PartDictionary = new SDictionary<string, MonoPart>();
+			_instance = this;
+			PartDictionary = new Dictionary<string, MonoPart>();
 			foreach (MonoPart p in PartPrefabs)
 			{
 				PartDictionary.Add(p.PrefabID, p);
@@ -31,7 +44,7 @@ namespace WeaponAssemblage
 
 		public static MonoPart GetPartPrefab(string prefabID)
 		{
-			return instance?.PartDictionary[prefabID];
+			return Instance.PartDictionary[prefabID];
 		}
 	}
 }

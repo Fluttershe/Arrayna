@@ -1,8 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using WeaponAssemblage;
 
 public class Hand : MonoBehaviour
 {
+    public MonoWeapon weapon;
+
+    void Awake()
+    {
+        weapon = PlayerWeaponStorage.GetWeapon(0);
+        weapon.transform.SetParent(transform);
+        weapon.transform.localPosition = new Vector3(-0.5f,0.8f,-3);
+        weapon.transform.localRotation = Quaternion.Euler(0, 0, 90);
+    }
+
     void Update()
     {
         //获取鼠标的坐标，鼠标是屏幕坐标，Z轴为0，这里不做转换  
@@ -17,5 +28,15 @@ public class Hand : MonoBehaviour
         direction = direction.normalized;
         //物体自身的Y轴和目标向量保持一直，这个过程XY轴都会变化数值  
         transform.up = direction;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            weapon.PrimaryFireDown();
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            weapon.PrimaryFireUp();
+        }
     }
 }

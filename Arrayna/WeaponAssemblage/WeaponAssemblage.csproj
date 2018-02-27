@@ -55,7 +55,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreatWeaponInTheArrayna.cs" />
     <Compile Include="PlayerWeaponStore.cs" />
     <Compile Include="Serializations\WeaponSerializer.cs" />
     <Compile Include="WAPrefabStore.cs" />

@@ -36,9 +36,12 @@ namespace WeaponAssemblage
 				return null;
 			}
 
-			Instance.weapons[index].transform.SetParent(null);
-			return Instance.weapons[index];
-		}
+            if (Instance.weapons[index].transform.parent == GlobalObject.HidenObject.transform)
+            {
+                Instance.weapons[index].transform.SetParent(null);
+            }
+            return Instance.weapons[index];
+        }
 
 		public static void ReturnWeapon(MonoWeapon weapon)
 		{

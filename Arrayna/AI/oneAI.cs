@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using UnityEngine;
+using WeaponAssemblage;
 
 public class oneAI : MonoBehaviour
 {
     //AI血量
-    public int HP;
+    public float HP;
 
     //AI攻击力
     public int DP;
@@ -139,6 +140,14 @@ public class oneAI : MonoBehaviour
         {
             TestPlayer.HP -= DP;
             num = gongjiyanchi;
+        }
+    }
+
+     void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "bullet")
+        {
+         HP -= collision.GetComponent<Projectile>().Damage;
         }
     }
 

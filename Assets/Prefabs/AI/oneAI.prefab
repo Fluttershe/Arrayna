@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 460517214, guid: 16e072db2b3e08547b40055b724c2cce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HP: 1
+  HP: 2
   DP: 1
   speed: 3
   chaju: 10

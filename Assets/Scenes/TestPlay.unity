@@ -427,8 +427,8 @@ MonoBehaviour:
   key: {fileID: 1743448562859066, guid: 3a8300dfbcafc0b4ca936f7122b4beef, type: 2}
   dianti: {fileID: 1038253854100934, guid: 6717b59bdb906e940b1f57b312eb70fa, type: 2}
   Player: {fileID: 1825155166668722, guid: be7f76c4dfc2e1047a8c53d28abd06c2, type: 2}
-  chaju: 15
-  chajuT: 10
+  chaju: 50
+  chajuT: 5
 --- !u!1001 &1583446452
 Prefab:
   m_ObjectHideFlags: 0

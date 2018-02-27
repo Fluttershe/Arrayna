@@ -20,11 +20,8 @@ public class TestPlayer : MonoBehaviour
     {
         HP = HealthP;
 
-		weapon = PlayerWeaponStorage.GetWeapon(0);
-		weapon.transform.SetParent(this.transform);
-		weapon.transform.localPosition = Vector3.zero;
-		weapon.transform.localRotation = Quaternion.identity;
-	}
+        weapon = PlayerWeaponStorage.GetWeapon(0);
+    }
 
     void FixedUpdate()
     {
@@ -67,15 +64,5 @@ public class TestPlayer : MonoBehaviour
 			PlayerWeaponStorage.ReturnWeapon(weapon);
 			SceneManager.LoadScene("WeaponAssemblageWIP");
         }
-
-		if (Input.GetMouseButtonDown(0))
-		{
-			weapon.PrimaryFireDown();
-		}
-
-		if (Input.GetMouseButtonUp(0))
-		{
-			weapon.PrimaryFireUp();
-		}
 	}
 }

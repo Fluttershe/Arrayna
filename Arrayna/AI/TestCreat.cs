@@ -552,7 +552,7 @@ public class TestCreat : MonoBehaviour
     {
         //随机位置
         var random = new System.Random();
-        int ran = random.Next(1, 4);
+        int ran = random.Next(3, 6);
         int ra, co;
 
         //检测距离

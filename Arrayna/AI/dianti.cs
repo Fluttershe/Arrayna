@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using WeaponAssemblage;
 
 public class dianti : MonoBehaviour
 {
@@ -8,10 +10,13 @@ public class dianti : MonoBehaviour
 
     public int chaju;
 
-    void Start()
+    public MonoWeapon weapon;
+
+    void Awake()
     {
         Player = GameObject.FindGameObjectWithTag("Player").transform;
         chaju = chaju * chaju;
+        weapon = PlayerWeaponStorage.GetWeapon(0);
     }
 
     // Update is called once per frame
@@ -26,7 +31,8 @@ public class dianti : MonoBehaviour
             if (key.zouba)
             {
                 TestCreat.level = 0;
-                Application.LoadLevel(0);
+                PlayerWeaponStorage.ReturnWeapon(weapon);
+                SceneManager.LoadScene("WeaponAssemblageWIP");
             }
         }
     }

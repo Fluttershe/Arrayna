@@ -9,17 +9,17 @@ namespace WeaponAssemblage
 	public class Projectile : MonoBehaviour
 	{
 		[SerializeField]
-		public float Speed = 1;
+		public float Speed;
 
 		[SerializeField]
 		public float Damage;
 
 		private void Start()
 		{
-			Invoke("SelfDsetroy", 5);
-		}
+            Invoke("SelfDsetroy", 5);
+        }
 
-		private void Update()
+        private void Update()
 		{
 			transform.Translate(0, Speed * Time.deltaTime, 0, Space.Self);
 		}

@@ -16,6 +16,6 @@ namespace WeaponAssemblage
 		public float DispersalIncrement;
 		public float DispersalDecreRate;
 		public float ReloadTime;
-		public int NumberOfAmmo;
+		public int ShotAmmo;
 	}
 }

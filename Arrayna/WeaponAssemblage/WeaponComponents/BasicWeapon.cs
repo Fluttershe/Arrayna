@@ -234,7 +234,7 @@ namespace WeaponAssemblage
 		public virtual void Reload()
 		{
 			if (RuntimeValues.ReloadTime > 0 || 
-				RuntimeValues.NumberOfAmmo >= FinalValue[WpnAttrType.Capacity]) return;
+				RuntimeValues.ShotAmmo <= 0) return;
 			OnReload?.Invoke(this);
 		}
 
@@ -264,7 +264,7 @@ namespace WeaponAssemblage
 			if (!RuntimeValues.HoldingFire || RuntimeValues.FireTime > 0 || RuntimeValues.ReloadTime > 0) return;
 
 			// 如果弹药已经打空，这一轮进行装弹
-			if (RuntimeValues.NumberOfAmmo <= 0)
+			if (RuntimeValues.ShotAmmo >= FinalValue[WpnAttrType.Capacity])
 			{
 				Reload();
 				return;

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using WeaponAssemblage;
 
 public class TestPlayer : MonoBehaviour
 {
@@ -12,10 +14,17 @@ public class TestPlayer : MonoBehaviour
     //速度
     public int speed;
 
+	public MonoWeapon weapon;
+
     void Awake()
     {
         HP = HealthP;
-    }
+
+		weapon = PlayerWeaponStorage.GetWeapon(0);
+		weapon.transform.SetParent(this.transform);
+		weapon.transform.localPosition = Vector3.zero;
+		weapon.transform.localRotation = Quaternion.identity;
+	}
 
     void FixedUpdate()
     {
@@ -55,7 +64,18 @@ public class TestPlayer : MonoBehaviour
         if (HP <= 0)
         {
             TestCreat.level = 0;
-            Application.LoadLevel(0);
+			PlayerWeaponStorage.ReturnWeapon(weapon);
+			SceneManager.LoadScene("WeaponAssemblageWIP");
         }
-    }
+
+		if (Input.GetMouseButtonDown(0))
+		{
+			weapon.PrimaryFireDown();
+		}
+
+		if (Input.GetMouseButtonUp(0))
+		{
+			weapon.PrimaryFireUp();
+		}
+	}
 }

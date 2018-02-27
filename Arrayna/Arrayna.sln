@@ -9,6 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaponAssemblage", "WeaponA
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI", "AI\AI.csproj", "{99EC4DB7-FB2E-4678-9A16-C38E33C87658}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8E56BD7-28CF-4A06-985C-472784A8715F} = {F8E56BD7-28CF-4A06-985C-472784A8715F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityUtility", "UnityUtility\UnityUtility.csproj", "{6333A4C4-35F0-456B-8EF9-BC1875D2C714}"
 EndProject

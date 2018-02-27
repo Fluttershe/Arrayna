@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace WeaponAssemblage.Workspace
 {
 	public class EnterTest : MonoBehaviour
 	{
-        void Awake()
+        void Start()
         {
             if (PlayerWeaponStorage.Instance.weapons.Count > 0)
             {
@@ -23,7 +24,7 @@ namespace WeaponAssemblage.Workspace
         public void exit()
         {
             Workspace.ExitWorkspace();
-            Application.LoadLevel(1);
+            SceneManager.LoadScene("TestPlay");
         }
     }
 }

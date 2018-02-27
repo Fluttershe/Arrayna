@@ -32,16 +32,29 @@ namespace UnityUtility
 			get
 			{
 				if (_instance != null) return _instance;
-
-				//LoadState();
-				if (_instance != null) return _instance;
-
 				_instance = FindObjectOfType<GlobalObject>();
+
 				if (_instance != null) return _instance;
 
 				_instance = new GameObject("GlobalObject").AddComponent<GlobalObject>();
 				
 				return _instance;
+			}
+		}
+
+		private static GameObject _hidenObject;
+		public static GameObject HidenObject
+		{
+			get
+			{
+				if (_hidenObject == null)
+				{
+					_hidenObject = new GameObject("HidenObject");
+					_hidenObject.transform.SetParent(Instance.transform);
+					_hidenObject.SetActive(false);
+				}
+
+				return _hidenObject;
 			}
 		}
 

@@ -7,7 +7,6 @@ namespace WeaponAssemblage.Workspace
     {
         void Awake()
         {
-                Instantiate(PlayerWeaponStorage.Instance.weapons[0],new Vector3(0,0,-0.1f), Quaternion.identity);
-        }
+		}
     }
 }

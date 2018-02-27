@@ -257,7 +257,7 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool AddPartToWorkspace(MonoPart part)
 		{
-			if (part == null) throw new ArgumentNullException();
+			if (part == null) return false;
 			var agent = part.GetComponent<PartAgent>();
 			if (agent == null)
 				part.gameObject.AddComponent<PartAgent>();
@@ -272,7 +272,7 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool AddPartToWorkspace(PartAgent agent)
 		{
-			if (agent == null) throw new ArgumentNullException();
+			if (agent == null) return false;
 			var part = agent.GetComponent<MonoPart>();
 			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
 
@@ -296,7 +296,7 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool RemovePartFromWorkspace(PartAgent agent)
 		{
-			if (agent == null) throw new ArgumentNullException();
+			if (agent == null) return false;
 			var part = agent.GetComponent<MonoPart>();
 			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
 
@@ -310,7 +310,7 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool AddPartToPartlist(MonoPart part)
 		{
-			if (part == null) throw new ArgumentNullException();
+			if (part == null) return false;
 			var agent = part.GetComponent<PartAgent>();
 			if (agent == null)
 				part.gameObject.AddComponent<PartAgent>();
@@ -325,7 +325,7 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool AddPartToPartlist(PartAgent agent)
 		{
-			if (agent == null) throw new ArgumentNullException();
+			if (agent == null) return false;
 			var part = agent.GetComponent<MonoPart>();
 			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
 
@@ -429,9 +429,9 @@ namespace WeaponAssemblage.Workspace
 			{
 				operatingWeapon = new GameObject("Weapon").AddComponent<BasicWeapon>();
 			}
-
-			operatingWeapon.enabled = false;
+			
 			operatingWeapon.transform.position = transform.position;
+			operatingWeapon.transform.SetParent(this.transform);
 			foreach (MonoPart p in operatingWeapon.Parts)
 				AddPartToWorkspace(p);
 
@@ -488,6 +488,12 @@ namespace WeaponAssemblage.Workspace
 				Debug.LogWarning("This weapon isn't complete!");
 			}
 
+			// Despite the weapon could be incomplete, we store it anyway.
+			PlayerWeaponStorage.ReturnWeapon(OperatingWeapon);
+
+			// Collect other parts in workspace
+			CollectAllUnconnectedParts();
+
 			// Destory every agent we created when adding parts
 			foreach (MonoPart p in partsInWorkspace)
 			{
@@ -506,6 +512,7 @@ namespace WeaponAssemblage.Workspace
 				var agent = p.GetComponent<PartAgent>();
 				if (agent != null)
 					Destroy(agent);
+				PlayerWeaponStorage.ReturnPart(p);
 			}
 
 			// Clear the lists

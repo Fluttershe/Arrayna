@@ -16,7 +16,7 @@ namespace WeaponAssemblage
 
 		public void OnReloadOver(IWeapon weapon)
 		{
-			weapon.RuntimeValues.NumberOfAmmo = (int)weapon.FinalValue[WpnAttrType.Capacity];
+			weapon.RuntimeValues.ShotAmmo = 0;
 		}
 	}
 }

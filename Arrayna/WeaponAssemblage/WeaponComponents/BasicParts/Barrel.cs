@@ -64,7 +64,8 @@ namespace WeaponAssemblage
 				return;
 			}
 
-			var totalDisp = 100 - weaponAttributes[WpnAttrType.Accuracy] + runtimeValues.Dispersal;
+			var clampedAccuracy = Mathf.Clamp(weaponAttributes[WpnAttrType.Accuracy], 0, 100);
+			var totalDisp = 100 - clampedAccuracy + runtimeValues.Dispersal;
 			for (int i = 0; i < Bullet.ProjectileNumber; i++)
 			{
 				var projectile = Instantiate(Bullet.ProjectilePrefab, FirePort.transform.position, FirePort.transform.rotation).GetComponent<Projectile>();
@@ -77,8 +78,8 @@ namespace WeaponAssemblage
 			// TODO: remove direct changes to runtimeValues
 			runtimeValues.FireTime = 1 / weaponAttributes[WpnAttrType.FireRate];
 			runtimeValues.Dispersal += runtimeValues.DispersalIncrement;
-			runtimeValues.Dispersal = Mathf.Clamp(runtimeValues.Dispersal, 0, weaponAttributes[WpnAttrType.Accuracy]);
-			runtimeValues.NumberOfAmmo--;
+			runtimeValues.Dispersal = Mathf.Clamp(runtimeValues.Dispersal, 0, clampedAccuracy);
+			runtimeValues.ShotAmmo++;
 		}
 
 		public void OnPrimaryFireUp(IWeapon weapon)

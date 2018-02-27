@@ -63,5 +63,11 @@
     <Compile Include="TestCreat.cs" />
     <Compile Include="TestPlayer.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WeaponAssemblage\WeaponAssemblage.csproj">
+      <Project>{f8e56bd7-28cf-4a06-985c-472784a8715f}</Project>
+      <Name>WeaponAssemblage</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

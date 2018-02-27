@@ -28,6 +28,48 @@ namespace WeaponAssemblage
 			}
 		}
 
+		public static MonoWeapon GetWeapon(int index)
+		{
+			if (index >= Instance.weapons.Count)
+			{
+				Debug.LogError($"This index of weapon is out of range! There are only {Instance.weapons.Count} weapon(s) in weapon storage.");
+				return null;
+			}
+
+			Instance.weapons[index].transform.SetParent(null);
+			return Instance.weapons[index];
+		}
+
+		public static void ReturnWeapon(MonoWeapon weapon)
+		{
+			if (!Instance.weapons.Contains(weapon))
+			{
+				Debug.LogWarning($"This weapon wasn't belong to the storage... How did you get it");
+				Instance.weapons.Add(weapon);
+			}
+
+			if (weapon.RuntimeValues.HoldingFire) weapon.PrimaryFireUp();
+			
+			weapon.transform.SetParent(GlobalObject.HidenObject.transform);
+			weapon.transform.position = Vector3.zero;
+			weapon.transform.rotation = Quaternion.identity;
+			weapon.transform.localScale = Vector3.one;
+		}
+
+		public static void ReturnPart(MonoPart parts)
+		{
+			if (!Instance.spareParts.Contains(parts))
+			{
+				Debug.LogWarning($"This part wasn't belong to the storage... How did you get it");
+				Instance.spareParts.Add(parts);
+			}
+
+			parts.transform.SetParent(GlobalObject.HidenObject.transform);
+			parts.transform.position = Vector3.zero;
+			parts.transform.rotation = Quaternion.identity;
+			parts.transform.localScale = Vector3.one;
+		}
+
 		public static void SaveToFile()
 		{
 			SerializableWeaponBundle bundle = new SerializableWeaponBundle();
@@ -49,21 +91,41 @@ namespace WeaponAssemblage
 
 		public static void LoadFromFile()
 		{
-            //return;
 			var bundle = Load();
 			if (bundle == null)
+			{
+				if ((Instance.weapons?.Count > 0) ||
+					(Instance.spareParts?.Count > 0))
+					return;
+
+				print("Have a set of default parts.");
 				bundle = new SerializableWeaponBundle();
+				bundle.weapons = new PreserializedWeapon[0];
+				bundle.partIDs = new string[] {
+					"simple_barrel",
+					"simple_bullet",
+					"simple_magazine",
+					"simple_reciever",
+					"simple_reciever_2",
+					"simple_stock",
+					"simple_sight"
+				};
+			}
 
 			Instance.weapons.Clear();
 			for (int i = 0; i < bundle.weapons.Length; i ++)
 			{
-				Instance.weapons.Add(WeaponPreserializer.DeserializeWeapon(bundle.weapons[i]));
+				var weapon = WeaponPreserializer.DeserializeWeapon(bundle.weapons[i]);
+				Instance.weapons.Add(weapon);
+				ReturnWeapon(weapon);
 			}
 
 			Instance.spareParts.Clear();
 			for (int i = 0; i < bundle.partIDs.Length; i ++)
 			{
-				Instance.spareParts.Add(GameObject.Instantiate(WAPrefabStore.GetPartPrefab(bundle.partIDs[i]).gameObject).GetComponent<MonoPart>());
+				var part = GameObject.Instantiate(WAPrefabStore.GetPartPrefab(bundle.partIDs[i]).gameObject).GetComponent<MonoPart>();
+				Instance.spareParts.Add(part);
+				ReturnPart(part);
 			}
 		}
 

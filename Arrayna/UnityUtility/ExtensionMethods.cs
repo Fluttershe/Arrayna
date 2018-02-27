@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEditor;
 
 namespace UnityUtility
 {
@@ -27,6 +26,7 @@ namespace UnityUtility
 
 		// From TOMS...
 		// TODO: Figure out those 'reflection' stuffs.
+		/*
 		static readonly char[] dotSplit = { '.' };
 		static readonly Regex indexRegex = new Regex(@"data\[(\d+)\]", RegexOptions.Compiled);
 
@@ -83,5 +83,6 @@ namespace UnityUtility
 			}
 			return obj;
 		}
+		*/
 	}
 }

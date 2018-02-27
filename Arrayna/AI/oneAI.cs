@@ -33,8 +33,6 @@ public class oneAI : MonoBehaviour
     //攻击时间
     int num;
 
-    bool kaishi=true;
-
     void Awake()
     {
         InvokeRepeating("SuiJiYiXia", 0, Random.Range(1,4));
@@ -46,17 +44,6 @@ public class oneAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (kaishi)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                AiSi = 0;
-                kaishi = false;
-            }
-        }
-
-        if (!kaishi)
-        {
             Vector2 juli = Player.position - transform.position;
             float julishu = juli.sqrMagnitude;
 
@@ -78,7 +65,6 @@ public class oneAI : MonoBehaviour
             {
                 AiSi = 3;
             }
-        }
        
         //状态检测
         switch (AiSi)

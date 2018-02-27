@@ -6,5 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/WeaponAssemblageWIP.unity
+    guid: 39f82c85fd1ebad499bd74375288a2dd
+  - enabled: 1
     path: Assets/Scenes/TestPlay.unity
     guid: b7207fff0276e3f4ab5c3d6661045c05

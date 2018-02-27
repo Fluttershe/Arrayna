@@ -26,10 +26,15 @@ public class TestCreat : MonoBehaviour
     public GameObject dianti;
     public GameObject Player;
 
+    public int chaju;
+    public int chajuT;
+
     public static int level=0;
 
     void Awake()
     {
+        chaju = chaju * chaju;
+        chajuT = chajuT * chajuT;
         cubes = new GameObject();
         useRandomSeed = true;
         Regen = true;
@@ -544,67 +549,91 @@ public class TestCreat : MonoBehaviour
     /// 造宝箱
     /// </summary>
     void CreateBox()
-    { 
-		//随机位置
-		var random = new System.Random();
-		int ran = random.Next(1, 4);
-		int ra, co;
+    {
+        //随机位置
+        var random = new System.Random();
+        int ran = random.Next(1, 4);
+        int ra, co;
 
-            //随机宝箱
-            while (ran > 0)
+        //检测距离
+        Vector2 me;
+        Vector2 you;
+        Vector2 juli;
+
+        //随机玩家生成
+        while (true)
+        {
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+            if (CheckNeighborWalls(ra, co) == 0)
             {
-                ra = random.Next(0, row - 1);
-                co = random.Next(0, row - 1);
-                if (CheckNeighborWalls(ra, co) == 0)
-                {
-                    ra -= row / 2;
-                    co -= col / 2;
-                    Instantiate(box, new Vector3(ra, co,-4), Quaternion.identity);
-                    ran--;
-                }
+                ra = -(row / 2 - ra);
+                co = -(col / 2 - co);
+                me = new Vector2(ra, co);
+                Instantiate(Player, new Vector3(ra, co, -4), Quaternion.identity);
+                break;
             }
+        }
 
-            //随机电梯
-            while (true)
+        //随机钥匙
+        while (true)
+        {
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+            if (CheckNeighborWalls(ra, co) == 0)
             {
-                ra = random.Next(0, row - 1);
-                co = random.Next(0, row - 1);
-                if (CheckNeighborWalls(ra, co) == 0)
+                ra = -(row / 2 - ra);
+                co = -(col / 2 - co);
+                you = new Vector2(ra, co);
+                juli = you - me;
+                float julishu = juli.sqrMagnitude;
+                if (julishu > chaju)
                 {
-                    ra -= row / 2;
-                    co -= col / 2;
-                    Instantiate(dianti, new Vector3(ra, co, -4), Quaternion.identity);
-                    break;
-                }
-            }
-
-            //随机钥匙
-            while (true)
-            {
-                ra = random.Next(0, row - 1);
-                co = random.Next(0, row - 1);
-                if (CheckNeighborWalls(ra, co) == 0)
-                {
-                    ra = -(row / 2 - ra);
-                    co = -(col / 2 - co);
                     Instantiate(key, new Vector3(ra, co, -4), Quaternion.identity);
                     break;
                 }
             }
+        }
 
-            //随机玩家生成
-            while (true)
+        //随机电梯
+        while (true)
+        {
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+            if (CheckNeighborWalls(ra, co) == 0)
             {
-                ra = random.Next(0, row - 1);
-                co = random.Next(0, row - 1);
-                if (CheckNeighborWalls(ra, co) == 0)
+                ra = -(row / 2 - ra);
+                co = -(col / 2 - co);
+                you = new Vector2(ra, co);
+                juli = you - me;
+                float julishu = juli.sqrMagnitude;
+                if (julishu > chajuT)
                 {
-                    ra = -(row / 2 - ra);
-                    co = -(col / 2 - co);
-                    Instantiate(Player, new Vector3(ra, co, -4), Quaternion.identity);
+                    Instantiate(dianti, new Vector3(ra, co, -4), Quaternion.identity);
                     break;
                 }
             }
+        }
+
+        //随机宝箱
+        while (ran > 0)
+        {
+            ra = random.Next(0, row - 1);
+            co = random.Next(0, row - 1);
+            if (CheckNeighborWalls(ra, co) == 0)
+            {
+                ra = -(row / 2 - ra);
+                co = -(col / 2 - co);
+                you = new Vector2(ra, co);
+                juli = you - me;
+                float julishu = juli.sqrMagnitude;
+                if (julishu > chajuT)
+                {
+                    Instantiate(box, new Vector3(ra, co, -4), Quaternion.identity);
+                    ran--;
+                }
+            }
+        }
     }
 
 

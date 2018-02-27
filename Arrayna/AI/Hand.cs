@@ -5,8 +5,6 @@ public class Hand : MonoBehaviour
 {
     void Update()
     {
-        Vector3 worldPos2 = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-
         //获取鼠标的坐标，鼠标是屏幕坐标，Z轴为0，这里不做转换  
         Vector3 mouse = Input.mousePosition;
         //获取物体坐标，物体坐标是世界坐标，将其转换成屏幕坐标，和鼠标一直  
@@ -19,15 +17,5 @@ public class Hand : MonoBehaviour
         direction = direction.normalized;
         //物体自身的Y轴和目标向量保持一直，这个过程XY轴都会变化数值  
         transform.up = direction;
-
-        //当目标向量的Y轴大于等于0F时候
-        if (mouse.y > worldPos2.y)
-        {
-            transform.localPosition = new Vector3(0.5f, 0, 1);
-        }
-        else if (mouse.y <= worldPos2.y)
-        {
-            transform.localPosition = new Vector3(0.5f, 0, -1);
-        }
     }
 }

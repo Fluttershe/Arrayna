@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4161303983077292}
   - component: {fileID: 114102093856694696}
-  - component: {fileID: 60477186368074718}
+  - component: {fileID: 61696293603731464}
   m_Layer: 8
   m_Name: SimpleStock
   m_TagString: Untagged
@@ -131,8 +131,8 @@ Transform:
   m_Father: {fileID: 4161303983077292}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
---- !u!60 &60477186368074718
-PolygonCollider2D:
+--- !u!61 &61696293603731464
+BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -153,13 +153,9 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -0.17825389, y: 0.11102331}
-      - {x: -0.17796135, y: -0.20665073}
-      - {x: -0.05882764, y: -0.2069645}
-      - {x: 0.33436465, y: -0.029660463}
-      - {x: 0.33627915, y: 0.08511484}
+  serializedVersion: 2
+  m_Size: {x: 0.6, y: 0.4}
+  m_EdgeRadius: 0
 --- !u!114 &114102093856694696
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -227,7 +223,6 @@ SpriteRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -243,7 +238,6 @@ SpriteRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -271,7 +265,6 @@ SpriteRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -287,7 +280,6 @@ SpriteRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5

@@ -49,6 +49,7 @@ namespace WeaponAssemblage
 
 		public static void LoadFromFile()
 		{
+            //return;
 			var bundle = Load();
 			if (bundle == null)
 				bundle = new SerializableWeaponBundle();

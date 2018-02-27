@@ -94,7 +94,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.08, y: 0.16}
+  m_Size: {x: 0.2, y: 0.3}
   m_EdgeRadius: 0
 --- !u!114 &114313037108364232
 MonoBehaviour:
@@ -107,7 +107,8 @@ MonoBehaviour:
   m_Script: {fileID: -597837944, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  Speed: 1
+  Damage: 0
 --- !u!212 &212232856747915708
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -117,7 +118,6 @@ SpriteRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -133,7 +133,6 @@ SpriteRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5

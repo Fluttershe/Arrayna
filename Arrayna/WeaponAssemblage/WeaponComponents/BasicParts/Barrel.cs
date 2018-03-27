@@ -65,20 +65,19 @@ namespace WeaponAssemblage
 			}
 
 			var clampedAccuracy = Mathf.Clamp(weaponAttributes[WpnAttrType.Accuracy], 0, 100);
-			var totalDisp = 100 - clampedAccuracy + runtimeValues.Dispersal;
+			var totalDisp = 100 - clampedAccuracy;
 			for (int i = 0; i < Bullet.ProjectileNumber; i++)
 			{
 				var projectile = Instantiate(Bullet.ProjectilePrefab, FirePort.transform.position, FirePort.transform.rotation).GetComponent<Projectile>();
 				projectile.transform.position += Vector3.forward;
-				projectile.transform.up = RandomDispersedRotation(FirePort.transform.up, totalDisp);
+				projectile.transform.up = RandomDispersedDirection(FirePort.transform.up, totalDisp);
 				projectile.Speed = weaponAttributes[WpnAttrType.MuzzleVelocity];
 				projectile.Damage = weaponAttributes[WpnAttrType.Damage];
+				projectile.CriticalRate = weaponAttributes[WpnAttrType.CriticalRate];
 			}
 
 			// TODO: remove direct changes to runtimeValues
 			runtimeValues.FireTime = 1 / weaponAttributes[WpnAttrType.FireRate];
-			runtimeValues.Dispersal += runtimeValues.DispersalIncrement;
-			runtimeValues.Dispersal = Mathf.Clamp(runtimeValues.Dispersal, 0, clampedAccuracy);
 			runtimeValues.ShotAmmo++;
 		}
 
@@ -101,9 +100,9 @@ namespace WeaponAssemblage
 		/// <param name="direction"></param>
 		/// <param name="dispersal">0~100, 100 = -30~30 degree, 0 = 0 degree</param>
 		/// <returns></returns>
-		protected virtual Vector2 RandomDispersedRotation(Vector2 direction, float dispersal)
+		protected virtual Vector2 RandomDispersedDirection(Vector2 direction, float dispersal)
 		{
-			dispersal = Mathf.Clamp(dispersal, 0, 100) * 0.3f;
+			dispersal = Mathf.Clamp(dispersal, 0, 100) * 0.45f;
 
 			dispersal = UnityEngine.Random.Range(-dispersal, dispersal);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityUtility;
@@ -35,6 +36,8 @@ namespace WeaponAssemblage.Workspace
 		private Partlist partlist;
 
 		[Header("References")]
+		[SerializeField]
+		private CanvasGroup warningWindow;
 		[SerializeField]
 		private MonoWeapon operatingWeapon;
 
@@ -94,9 +97,9 @@ namespace WeaponAssemblage.Workspace
 		public static bool IsPointerInPartlist => Instance.pointerInPartlist;
 
 		/// <summary>
-		/// 当前部件的数量
+		/// 当前Workspace内部件的数量
 		/// </summary>
-		public static int PartCount => Instance.partCount;
+		public static int PartCount => Instance.partsInWorkspace.Count;
 
 		/// <summary>
 		/// 当前正在操作的武器
@@ -156,9 +159,9 @@ namespace WeaponAssemblage.Workspace
 		/// <summary>
 		/// 退出Workspace
 		/// </summary>
-		public static void ExitWorkspace()
+		public static bool ExitWorkspace()
 		{
-			Instance._ExitWorkspace();
+			return Instance._ExitWorkspace();
 		}
 
 		/// <summary>
@@ -225,6 +228,12 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool InstallPart(MonoPort masterPort, MonoPart slavePart)
 		{
+			if (masterPort.AttachedPort != null)
+			{
+				var prevPart = (MonoPart)masterPort.Detach();
+				prevPart.transform.SetParent(null);
+				Bump(prevPart);
+			}
 			if (!masterPort.Attach(slavePart)) return false;
 
 			var slavePort = (MonoPort)slavePart.RootPort;
@@ -242,12 +251,21 @@ namespace WeaponAssemblage.Workspace
 		}
 
 		/// <summary>
-		/// 将一个部件挪开
+		/// 将一个部件挪开 (TBD)
 		/// </summary>
 		/// <param name="agent"></param>
 		public static void Bump(PartAgent agent)
 		{
-			agent.transform.position += Vector3.left;
+			agent.transform.position += Vector3.up;
+		}
+
+		/// <summary>
+		/// 将一个部件挪开 (TBD)
+		/// </summary>
+		/// <param name="agent"></param>
+		public static void Bump(MonoPart part)
+		{
+			part.transform.position += Vector3.up;
 		}
 
 		/// <summary>
@@ -258,9 +276,8 @@ namespace WeaponAssemblage.Workspace
 		public static bool AddPartToWorkspace(MonoPart part)
 		{
 			if (part == null) return false;
-			var agent = part.GetComponent<PartAgent>();
-			if (agent == null)
-				part.gameObject.AddComponent<PartAgent>();
+
+			var agent = part.GetOrAddComponent<PartAgent>();
 
 			return Instance._addPartToWorkspace(part);
 		}
@@ -273,8 +290,8 @@ namespace WeaponAssemblage.Workspace
 		public static bool AddPartToWorkspace(PartAgent agent)
 		{
 			if (agent == null) return false;
+			
 			var part = agent.GetComponent<MonoPart>();
-			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
 
 			return Instance._addPartToWorkspace(part);
 		}
@@ -297,8 +314,8 @@ namespace WeaponAssemblage.Workspace
 		public static bool RemovePartFromWorkspace(PartAgent agent)
 		{
 			if (agent == null) return false;
+
 			var part = agent.GetComponent<MonoPart>();
-			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
 
 			return Instance._removePartFromWorkspace(part);
 		}
@@ -311,9 +328,8 @@ namespace WeaponAssemblage.Workspace
 		public static bool AddPartToPartlist(MonoPart part)
 		{
 			if (part == null) return false;
-			var agent = part.GetComponent<PartAgent>();
-			if (agent == null)
-				part.gameObject.AddComponent<PartAgent>();
+
+			var agent = part.GetOrAddComponent<PartAgent>();
 
 			return Instance._addPartToPartlist(part);
 		}
@@ -326,8 +342,8 @@ namespace WeaponAssemblage.Workspace
 		public static bool AddPartToPartlist(PartAgent agent)
 		{
 			if (agent == null) return false;
+
 			var part = agent.GetComponent<MonoPart>();
-			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
 
 			return Instance._addPartToPartlist(part);
 		}
@@ -349,9 +365,10 @@ namespace WeaponAssemblage.Workspace
 		/// <returns></returns>
 		public static bool RemovePartFromPartlist(PartAgent agent)
 		{
-			if (agent == null) throw new ArgumentNullException();
+			if (agent == null) return false;
+
 			var part = agent.GetComponent<MonoPart>();
-			if (part == null) throw new ArgumentNullException("A PartAgent without a part? How did you do that?!");
+
 			return Instance._removePartFromPartlist(part);
 		}
 
@@ -392,7 +409,6 @@ namespace WeaponAssemblage.Workspace
 		private void OnApplicationQuit()
 		{
 			ExitWorkspace();
-			PlayerWeaponStorage.SaveToFile();
 		}
 
 		#endregion
@@ -469,24 +485,29 @@ namespace WeaponAssemblage.Workspace
 				{
 					RemovePartFromPartlist(receiver);
 					AddPartToWorkspace(receiver);
-					UpdateWeaponStates();
 				}
 			}
+
+			UpdateWeaponStates();
 		}
 
-		private void _ExitWorkspace()
+		private bool _ExitWorkspace()
 		{
-			if (!Active) return;
+			if (!Active) return !Active;
+
+			// If the weapon isn't complete, send a warning and return
+			if (!operatingWeapon.IsCompleted)
+			{
+				Debug.LogWarning("This weapon isn't complete!");
+				StopAllCoroutines();
+				StartCoroutine(FlashWarningWindow());
+				return !Active;
+			}
+
 			// Disable this instance
 			Active = false;
 
 			partlist.OnEnterOrExit -= EnterPartlist;
-
-			// If the weapon isn't complete, send a warning.
-			if (!operatingWeapon.IsCompleted)
-			{
-				Debug.LogWarning("This weapon isn't complete!");
-			}
 
 			// Despite the weapon could be incomplete, we store it anyway.
 			PlayerWeaponStorage.ReturnWeapon(OperatingWeapon);
@@ -497,6 +518,7 @@ namespace WeaponAssemblage.Workspace
 			// Destory every agent we created when adding parts
 			foreach (MonoPart p in partsInWorkspace)
 			{
+				FileDebug.WriteLine($"Destroying agent {p.PartName}");
 				var agent = p.GetComponent<PartAgent>();
 				if (agent != null)
 					Destroy(agent);
@@ -507,6 +529,7 @@ namespace WeaponAssemblage.Workspace
 			while (partlist.Parts.Count > 0)
 			{
 				var p = partlist.Parts[0];
+				FileDebug.WriteLine($"Returning{p.PartName}");
 				storage.spareParts.Add(p);
 				RemovePartFromPartlist(p);
 				var agent = p.GetComponent<PartAgent>();
@@ -515,9 +538,13 @@ namespace WeaponAssemblage.Workspace
 				PlayerWeaponStorage.ReturnPart(p);
 			}
 
+			PlayerWeaponStorage.SaveToFile();
+
 			// Clear the lists
 			partsInWorkspace.Clear();
 			portsInWorkspace.Clear();
+
+			return !Active;
 		}
 
 		private MonoPort _checkForNearPort(MonoPort port)
@@ -526,10 +553,10 @@ namespace WeaponAssemblage.Workspace
 			var min = Single.PositiveInfinity;
 			for (int i = 0; i < portsInWorkspace.Count; i++)
 			{
-				if (!portsInWorkspace[i].CanAttachBy(port.Part)     // 如果部件类型不合适
+				if (!portsInWorkspace[i].CanBeAttachedBy(port.Part)     // 如果部件类型不合适
 				|| (portsInWorkspace[i].Part == port.Part)          // 如果是自己身上的接口
-				|| (portsInWorkspace[i].AttachedPort != null))      // 如果这个接口已经接有部件
-					continue; // 跳过
+				//|| (portsInWorkspace[i].AttachedPort != null)      // 如果这个接口已经接有部件
+				) continue; // 跳过
 
 				var dist = ((Vector2)port.transform.position - (Vector2)portsInWorkspace[i].transform.position).sqrMagnitude;
 				if (dist < min)
@@ -568,7 +595,6 @@ namespace WeaponAssemblage.Workspace
 			if (partsInWorkspace.Contains(part)) return false;
 
 			partsInWorkspace.Add(part);
-			partCount++;
 
 			// Add ports from the part.
 			foreach (MonoPort mp in part.Ports)
@@ -608,6 +634,23 @@ namespace WeaponAssemblage.Workspace
 			// Remove the part from list
 			partsInWorkspace.Remove(part);
 			return true;
+		}
+
+		private IEnumerator FlashWarningWindow()
+		{
+			warningWindow.alpha = 1;
+			yield return new WaitForSeconds(2);
+
+			float flashDuration = 1f;
+
+			while (flashDuration > 0)
+			{
+				warningWindow.alpha = flashDuration;
+				flashDuration -= Time.deltaTime;
+				yield return null;
+			}
+
+			warningWindow.alpha = 0;
 		}
 
 		#endregion

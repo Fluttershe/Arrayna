@@ -8,11 +8,12 @@ public class Hand : MonoBehaviour
 
     void Awake()
     {
-        weapon = PlayerWeaponStorage.GetWeapon(0);
+        weapon = PlayerWeaponStorage.TakeWeapon(0);
         weapon.transform.SetParent(transform);
         weapon.transform.localPosition = new Vector3(-0.5f,0.8f,-3);
         weapon.transform.localRotation = Quaternion.Euler(0, 0, 90);
-    }
+		var ang = weapon.transform.rotation * weapon.transform.rotation;
+	}
 
     void Update()
     {

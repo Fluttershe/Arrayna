@@ -40,9 +40,9 @@ namespace WeaponAssemblage
 		/// </summary>
 		Accuracy,
 		/// <summary>
-		/// 稳定性
+		/// 暴击率
 		/// </summary>
-		Stability,
+		CriticalRate,
 	}
 
 	/// <summary>

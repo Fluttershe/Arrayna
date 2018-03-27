@@ -16,7 +16,7 @@ public class dianti : MonoBehaviour
     {
         Player = GameObject.FindGameObjectWithTag("Player").transform;
         chaju = chaju * chaju;
-        weapon = PlayerWeaponStorage.GetWeapon(0);
+        weapon = PlayerWeaponStorage.TakeWeapon(0);
     }
 
     // Update is called once per frame

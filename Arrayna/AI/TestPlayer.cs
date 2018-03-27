@@ -6,42 +6,41 @@ using WeaponAssemblage;
 public class TestPlayer : MonoBehaviour
 {
     //可编辑血量
-    public int HealthP;
+	[SerializeField]
+    int HealthP;
 
     //血量
     public static int HP;
 
-    //速度
-    public int speed;
+	//速度
+	[SerializeField]
+	int speed;
 
-	public MonoWeapon weapon;
+	[SerializeField]
+	public float weightMultiplier;
+	
+	[SerializeField]
+	MonoWeapon weapon;
 
     void Awake()
     {
         HP = HealthP;
 
-        weapon = PlayerWeaponStorage.GetWeapon(0);
+        weapon = PlayerWeaponStorage.TakeWeapon(0);
     }
 
     void FixedUpdate()
     {
-        //移动
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(Vector2.up * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(Vector2.down * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(Vector2.left * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(Vector2.right * speed * Time.deltaTime);
-        }
+		Vector2 moveVector = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+		if (moveVector.sqrMagnitude > 1) moveVector.Normalize();
+		moveVector *= speed * Time.deltaTime;
+		moveVector *= 1 - Mathf.Clamp01(weightMultiplier * weapon.FinalValue[WpnAttrType.Weight]);
+		print(Mathf.Clamp01(weightMultiplier * weapon.FinalValue[WpnAttrType.Weight]));
+		print(moveVector);
+
+		//移动
+        transform.Translate(moveVector);
 
         //转向
         Vector3 worldPos2 = new Vector3(Screen.width / 2, Screen.height / 2, 0);

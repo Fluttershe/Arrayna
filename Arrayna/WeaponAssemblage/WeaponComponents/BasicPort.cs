@@ -16,7 +16,7 @@ namespace WeaponAssemblage
 		MultiSelectablePartType SuitableType { get; }
 
 		/// <summary>
-		/// 接口的位置，x和y代表位置，z代表角度[0~360)
+		/// 接口的位置，x和y代表位置，z代表角度 [0~360)
 		/// </summary>
 		Vector3 Position { get; set; }
 
@@ -40,13 +40,13 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		bool CanAttachBy(IPart part);
+		bool CanBeAttachedBy(IPart part);
 
 		/// <summary>
-		/// 尝试连接部件到该端口上
+		/// 连接部件到该端口上
 		/// </summary>
 		/// <param name="part">尝试连接的部件</param>
-		/// <returns>连接成功即返回true，否则返回false</returns>
+		/// <returns>原先该接口上接的接口</returns>
 		bool Attach(IPart part);
 
 		/// <summary>
@@ -87,7 +87,7 @@ namespace WeaponAssemblage
 
 		protected abstract bool AttachRoot(IPort port);
 
-		public abstract bool CanAttachBy(IPart part);
+		public abstract bool CanBeAttachedBy(IPart part);
 
 		public abstract IPart Detach();
 	}
@@ -131,7 +131,7 @@ namespace WeaponAssemblage
 		/// </summary>
 		/// <param name="part"></param>
 		/// <returns></returns>
-		public override bool CanAttachBy(IPart part)
+		public override bool CanBeAttachedBy(IPart part)
 		{
 			return suitableType[part.Type];
 		}
@@ -144,15 +144,18 @@ namespace WeaponAssemblage
 		public override bool Attach(IPart part)
 		{
 			// 如果部件类型不合适
-			if (!CanAttachBy(part))
+			if (!CanBeAttachedBy(part))
 			{
 				Debug.LogWarning($"该端口不兼容 {part.Type} 类型的部件！");
 				return false;
 			}
 
-			// 如果该接口接有部件且无法移除..
-			if (AttachedPort != null && Detach() == null)
+			// 如果该接口接有部件..
+			if (AttachedPort != null)
+			{
+				Debug.LogWarning($"该端口仍接有 {part.PartName} ！");
 				return false;
+			}
 
 			// Casting.. Dirty?
 			attachedPort = (MonoPort)part.RootPort;
@@ -274,7 +277,7 @@ namespace WeaponAssemblage
 		/// <param name="part"></param>
 		/// <returns></returns>
 		[Obsolete]
-		public override bool CanAttachBy(IPart part) { return false; }
+		public override bool CanBeAttachedBy(IPart part) { return false; }
 
 		/// <summary>
 		/// Always return null

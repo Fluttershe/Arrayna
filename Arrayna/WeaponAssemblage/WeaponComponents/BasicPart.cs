@@ -279,7 +279,7 @@ namespace WeaponAssemblage
 		/// <returns></returns>
 		public override bool CanAttachTo(IPort port)
 		{
-			return port.CanAttachBy(this);
+			return port.CanBeAttachedBy(this);
 		}
 
 		/// <summary>

@@ -139,9 +139,9 @@ namespace WeaponAssemblage.WeaponComponents
 		private void UpdateDebugValue()
 		{
 			// 计算散射相关数值……
-			dispersalIncrement = 10 - FinalValue[WpnAttrType.Stability] * 0.1f;
+			dispersalIncrement = 10 - FinalValue[WpnAttrType.CriticalRate] * 0.1f;
 			if (dispersalIncrement < 0) dispersalIncrement = 0;
-			dispersalDecreRate = FinalValue[WpnAttrType.Stability] * 0.025f;
+			dispersalDecreRate = FinalValue[WpnAttrType.CriticalRate] * 0.025f;
 		}
 
 		private void OnDrawGizmos()

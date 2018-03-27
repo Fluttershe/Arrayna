@@ -21,9 +21,9 @@ namespace WeaponAssemblage.Workspace
             }
         }
 
-        public void exit()
+        public void Exit()
         {
-            Workspace.ExitWorkspace();
+           if (!Workspace.ExitWorkspace()) return;
             SceneManager.LoadScene("TestPlay");
         }
     }

@@ -121,6 +121,11 @@ namespace WeaponAssemblage
 		/// 重装武器弹药
 		/// </summary>
 		void Reload();
+
+		/// <summary>
+		/// 重设武器数值
+		/// </summary>
+		void ResetWeapon();
 	}
 
 	public interface IDrawHandler
@@ -212,21 +217,22 @@ namespace WeaponAssemblage
 
 		public virtual void Holster()
 		{
+			RuntimeValues.HoldingPrimaryFire = false;
 			OnHolster?.Invoke(this);
 		}
 
 		public virtual void PrimaryFireDown()
 		{
-			if (RuntimeValues.HoldingFire) return;
-			RuntimeValues.HoldingFire = true;
+			if (RuntimeValues.HoldingPrimaryFire) return;
+			RuntimeValues.HoldingPrimaryFire = true;
 			OnPrimaryFireDown?.Invoke(this);
 			print("Fire Down");
 		}
 
 		public virtual void PrimaryFireUp()
 		{
-			if (!RuntimeValues.HoldingFire) return;
-			RuntimeValues.HoldingFire = false;
+			if (!RuntimeValues.HoldingPrimaryFire) return;
+			RuntimeValues.HoldingPrimaryFire = false;
 			OnPrimaryFireUp?.Invoke(this);
 			print("Fire Up");
 		}
@@ -248,6 +254,8 @@ namespace WeaponAssemblage
 			OnSecondaryFireUp?.Invoke(this);
 		}
 
+		public abstract void ResetWeapon();
+
 		protected virtual void Update()
 		{
 			if (RuntimeValues.ReloadTime > 0)
@@ -259,9 +267,8 @@ namespace WeaponAssemblage
 				}
 			}
 			if (RuntimeValues.FireTime > 0) RuntimeValues.FireTime -= Time.deltaTime;
-			if (RuntimeValues.Dispersal > 0) RuntimeValues.Dispersal *= 1 - (Time.deltaTime * RuntimeValues.DispersalDecreRate);
 
-			if (!RuntimeValues.HoldingFire || RuntimeValues.FireTime > 0 || RuntimeValues.ReloadTime > 0) return;
+			if (!RuntimeValues.HoldingPrimaryFire || RuntimeValues.FireTime > 0 || RuntimeValues.ReloadTime > 0) return;
 
 			// 如果弹药已经打空，这一轮进行装弹
 			if (RuntimeValues.ShotAmmo >= FinalValue[WpnAttrType.Capacity])
@@ -365,9 +372,11 @@ namespace WeaponAssemblage
 			finalValue.Add(baseValue);
 			modValue.Add(1);
 			finalValue.Mul(modValue);
-			rtValues.DispersalIncrement = 10 - finalValue[WpnAttrType.Stability] * 0.1f;
-			if (rtValues.DispersalIncrement < 0) rtValues.DispersalIncrement = 0;
-			rtValues.DispersalDecreRate = FinalValue[WpnAttrType.Stability] * 0.025f;
+		}
+
+		public override void ResetWeapon()
+		{
+			rtValues = default(RuntimeValues);
 		}
 
 		public override IPart GetPartOfType(PartType type)

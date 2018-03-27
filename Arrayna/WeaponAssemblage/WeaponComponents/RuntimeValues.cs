@@ -8,13 +8,11 @@ namespace WeaponAssemblage
 	[Serializable]
 	public class RuntimeValues
 	{
-		public bool HoldingFire;
-		public bool Holstered;
+		public bool HoldingPrimaryFire;
+		public bool HoldingSecondaryFire;
+		public bool Drew;
 
 		public float FireTime;
-		public float Dispersal;
-		public float DispersalIncrement;
-		public float DispersalDecreRate;
 		public float ReloadTime;
 		public int ShotAmmo;
 	}

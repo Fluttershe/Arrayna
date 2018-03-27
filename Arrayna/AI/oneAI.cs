@@ -143,13 +143,13 @@ public class oneAI : MonoBehaviour
         }
     }
 
-     void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "bullet")
-        {
-         HP -= collision.GetComponent<Projectile>().Damage;
-        }
-    }
+	void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision.tag == "bullet")
+		{
+			HP -= collision.GetComponent<Projectile>().CriticizedDamage();
+		}
+	}
 
     //死亡状态
     void SiWang()

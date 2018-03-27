@@ -13,6 +13,9 @@ namespace WeaponAssemblage
 
 		[SerializeField]
 		public float Damage;
+		
+		[SerializeField]
+		public float CriticalRate;
 
 		private void Start()
 		{
@@ -32,6 +35,16 @@ namespace WeaponAssemblage
 		void SelfDsetroy()
 		{
 			Destroy(this.gameObject);
+		}
+
+		public float CriticizedDamage()
+		{
+			if (UnityEngine.Random.Range(0, 100) <= CriticalRate)
+			{
+				return Damage * 2;
+			}
+
+			return Damage;
 		}
 	}
 }

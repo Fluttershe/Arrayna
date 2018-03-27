@@ -21,6 +21,8 @@ namespace WeaponAssemblage
 				if (_instance == null)
 				{
 					_instance = GlobalObject.GetOrAddComponent<PlayerWeaponStorage>();
+					if (_instance.spareParts.Count != 0 || _instance.weapons.Count != 0)
+						return _instance;
 					LoadFromFile();
 				}
 
@@ -28,7 +30,7 @@ namespace WeaponAssemblage
 			}
 		}
 
-		public static MonoWeapon GetWeapon(int index)
+		public static MonoWeapon TakeWeapon(int index)
 		{
 			if (index >= Instance.weapons.Count)
 			{
@@ -51,7 +53,7 @@ namespace WeaponAssemblage
 				Instance.weapons.Add(weapon);
 			}
 
-			if (weapon.RuntimeValues.HoldingFire) weapon.PrimaryFireUp();
+			if (weapon.RuntimeValues.HoldingPrimaryFire) weapon.PrimaryFireUp();
 			
 			weapon.transform.SetParent(GlobalObject.HidenObject.transform);
 			weapon.transform.position = Vector3.zero;
@@ -97,6 +99,7 @@ namespace WeaponAssemblage
 			var bundle = Load();
 			if (bundle == null)
 			{
+				print("Bundle is null");
 				if ((Instance.weapons?.Count > 0) ||
 					(Instance.spareParts?.Count > 0))
 					return;
@@ -106,11 +109,15 @@ namespace WeaponAssemblage
 				bundle.weapons = new PreserializedWeapon[0];
 				bundle.partIDs = new string[] {
 					"simple_barrel",
+					"simple_barrel",
 					"simple_bullet",
+					"simple_bullet",
+					"simple_magazine",
 					"simple_magazine",
 					"simple_reciever",
 					"simple_reciever_2",
 					"simple_stock",
+					"simple_sight",
 					"simple_sight"
 				};
 			}

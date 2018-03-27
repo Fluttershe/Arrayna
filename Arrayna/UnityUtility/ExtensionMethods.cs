@@ -24,6 +24,16 @@ namespace UnityUtility
 			return exists;
 		}
 
+		public static T GetOrAddComponent<T>(this Component c) where T : Component
+		{
+			if (c == null) throw new ArgumentNullException("The operational component is null!");
+			var part = c.GetComponent<T>();
+			if (part == null)
+				part = c.gameObject.AddComponent<T>();
+
+			return part;
+		}
+
 		// From TOMS...
 		// TODO: Figure out those 'reflection' stuffs.
 		/*

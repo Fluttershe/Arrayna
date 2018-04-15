@@ -62,8 +62,8 @@ namespace WeaponAssemblage.WeaponComponents
 			// 更新一些调试用数值
 			UpdateDebugValue();
 
-			// 如果没有开火，或者还在开火间隔间，或者还在装弹，终止函数
-			if (!firing || fireTime > 0 || reloadTime > 0) return;
+            // 如果没有开火，或者还在开火间隔间，或者还在装弹，终止函数
+            if (!firing || fireTime > 0 || reloadTime > 0) return;
 
 			// 如果弹药已经打空，这一轮进行装弹
 			if (numberOfAmmo <= 0)

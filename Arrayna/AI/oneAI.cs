@@ -13,9 +13,6 @@ public class oneAI : MonoBehaviour
     //AI速度
     public int speed;
 
-    //AI距离
-    public int chaju;
-
     //AI攻击就离
     public int gongjichaju;
 
@@ -28,51 +25,62 @@ public class oneAI : MonoBehaviour
     //AI状态
     int AiSi=-1;
 
-    //随机方向
-    int ran;
-
     //攻击时间
     int num;
 
+    //移动速度
+    int sudu;
+
+    public Animator Enemy;
+
+    public AudioClip siwang;
+
+    public AudioClip gongji;
+
+    bool kaiguan;
+
     void Awake()
     {
-        InvokeRepeating("SuiJiYiXia", 0, Random.Range(1,4));
         Player = GameObject.FindGameObjectWithTag("Player").transform;
-        chaju = chaju * chaju;
         gongjichaju = gongjichaju * gongjichaju;
-        int num = gongjiyanchi;
+        num = gongjiyanchi;
+        sudu = speed;
+        kaiguan = false;
     }
 
     void FixedUpdate()
     {
-            Vector2 juli = Player.position - transform.position;
-            float julishu = juli.sqrMagnitude;
+        Vector2 juli = Player.position - transform.position;
+        float julishu = juli.sqrMagnitude;
 
-            //距离检测
-            if (julishu > chaju)
-            {
-                AiSi = 0;
-            }
-            else if (julishu <= chaju && julishu > gongjichaju)
-            {
-                AiSi = 1;
-            }
-            else if (julishu <= gongjichaju)
-            {
-                AiSi = 2;
-            }
+        //距离检测
+        if (julishu <= gongjichaju)
+        {
+            AiSi = 2;
+        }
+        else
+        {
+            AiSi = 1;
+        }
 
-            if (HP <= 0)
-            {
-                AiSi = 3;
-            }
-       
+        if (HP <= 0)
+        {
+            AiSi = 3;
+        }
+
+        if (julishu < 4)
+        {
+            CreatPlayer.anquanjuli = true;
+        }
+
+        if (CreatPlayer.win)
+        {
+            SiWang();
+        }
+
         //状态检测
         switch (AiSi)
         {
-            case 0:
-            YouZou();
-                break;
             case 1:
             ZhuiJi();
                 break;
@@ -85,74 +93,82 @@ public class oneAI : MonoBehaviour
         }
     }
 
-    //随机方向
-    void SuiJiYiXia()
-    {
-        ran = Random.Range(1, 9);
-    }
-
-    //游走状态
-    void YouZou()
-    {
-        switch (ran)
-        {
-            case 1:
-                    transform.Translate(new Vector2(0, 1) * speed * Time.deltaTime);
-                break;
-            case 2:
-                    transform.Translate(new Vector2(1, 1) * speed * Time.deltaTime);
-                break;
-            case 3:
-                    transform.Translate(new Vector2(1, 0) * speed * Time.deltaTime);
-                break;
-            case 4:
-                    transform.Translate(new Vector2(1, -1) * speed * Time.deltaTime);
-                break;
-            case 5:
-                    transform.Translate(new Vector2(0, -1) * speed * Time.deltaTime);
-                break;
-            case 6:
-                    transform.Translate(new Vector2(-1, -1) * speed * Time.deltaTime);
-                break;
-            case 7:
-                    transform.Translate(new Vector2(-1, 0) * speed * Time.deltaTime);
-                break;
-            case 8:
-                    transform.Translate(new Vector2(-1, 1) * speed * Time.deltaTime);
-                break;
-        }
-    }
-
     //追击状态
     void ZhuiJi()
     {
-        transform.position = Vector3.MoveTowards(transform.position, Player.position, speed * Time.deltaTime);
+        num = gongjiyanchi;
+
+        if (TestPlayer.kaiguan)
+        {
+            sudu = 0;
+            Enemy.SetBool("attack", true);
+        }
+        else
+        {
+            sudu = speed;
+            Enemy.SetBool("attack", false);
+        }
+
+        transform.position = Vector3.MoveTowards(transform.position, Player.position, sudu * Time.deltaTime);
+
+        Vector3 player = Player.transform.position;
+        //当目标向量的Y轴大于等于0时候  
+        if (player.x >= transform.position.x)
+        {
+            transform.localScale = new Vector3(-0.6f, 0.6f, 0.6f);
+        }
+        else if (player.x < transform.position.x)
+        {
+            transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+        }
     }
 
     //攻击状态
     void GongJi()
     {
+        Enemy.SetBool("attack", true);
+        sudu = 0;
         if (num > 0)
         {
+            Enemy.SetBool("gongji", false);
             num--;
         }
-        else if(num<=0)
+        else
         {
+            Enemy.SetBool("gongji", true);
+            AudioSource.PlayClipAtPoint(gongji, transform.localPosition);
             TestPlayer.HP -= DP;
             num = gongjiyanchi;
         }
     }
 
-	void OnTriggerEnter2D(Collider2D collision)
-	{
-		if (collision.tag == "bullet")
-		{
-			HP -= collision.GetComponent<Projectile>().CriticizedDamage();
-		}
-	}
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "bullet")
+        {
+            HP -= collision.GetComponent<Projectile>().CriticizedDamage();
+        }
+    }
 
     //死亡状态
     void SiWang()
+    {
+        if (!CreatPlayer.win)
+        {
+            CreatAI.ranD--;
+            CreatPlayer.killNum++;
+        }
+        Enemy.SetBool("dead", true);
+        if (!kaiguan)
+        {
+            AudioSource.PlayClipAtPoint(siwang, transform.localPosition);
+            kaiguan = true;
+        }
+        sudu = 0;
+        InvokeRepeating("Dead", 0.5f, 0);
+    }
+
+    void Dead()
     {
         Destroy(gameObject);
     }

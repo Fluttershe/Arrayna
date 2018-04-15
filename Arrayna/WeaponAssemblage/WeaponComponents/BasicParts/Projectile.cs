@@ -17,9 +17,15 @@ namespace WeaponAssemblage
 		[SerializeField]
 		public float CriticalRate;
 
+        public AudioClip bang;
+
+        private GameObject player;
+
 		private void Start()
 		{
-            Invoke("SelfDsetroy", 5);
+            Invoke("SelfDsetroy", 0.5f);
+            player = GameObject.FindGameObjectWithTag("Player");
+            AudioSource.PlayClipAtPoint(bang,player.transform.position);
         }
 
         private void Update()

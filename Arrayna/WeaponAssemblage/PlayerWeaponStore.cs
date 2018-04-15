@@ -96,7 +96,9 @@ namespace WeaponAssemblage
 
 		public static void LoadFromFile()
 		{
-			var bundle = Load();
+            //var bundle = Load();
+            SerializableWeaponBundle bundle = null;
+
 			if (bundle == null)
 			{
 				print("Bundle is null");
@@ -108,18 +110,42 @@ namespace WeaponAssemblage
 				bundle = new SerializableWeaponBundle();
 				bundle.weapons = new PreserializedWeapon[0];
 				bundle.partIDs = new string[] {
-					"simple_barrel",
-					"simple_barrel",
-					"simple_bullet",
-					"simple_bullet",
-					"simple_magazine",
-					"simple_magazine",
-					"simple_reciever",
-					"simple_reciever_2",
-					"simple_stock",
-					"simple_sight",
-					"simple_sight"
-				};
+                    "M4A1_R_V1",
+                    "AK47_R_V1",
+                    "AWM_R_V1",
+                    "A1_R_V1",
+                    "A2_R_V1",
+                    "A3_R_V1",
+                    "M4A1_B_V1",
+                    "AK47_B_V1",
+                    "A1_B_V1",
+                    "A2_B_V1",
+                    "A3_B_V1",
+                    "A1_M_V1",
+                    "A2_M_V1",
+                    "A3_M_V1",
+                    "A3_M_V2",
+                    "A3_M_V3",
+                    "A4_M_V1",
+                    "A5_M_V1",
+                    "7.62mm",
+                    "9mm",
+                    "AWM_Si_V1",
+                    "A1_Si_V1",
+                    "A2_Si_V1",
+                    "A3_Si_V1",
+                    "AK47_St_V1",
+                    "AK47_St_V2",
+                    "M4A1_St_V1",
+                    "A1_St_V1",
+                    "A1_St_V2",
+                    "A1_A_V1",
+                    "A1_A_V2",
+                    "A1_Ad_V1",
+                    "A1_Ba_V1",
+                    "A1_Ba_V2",
+                    "A2_St_V1",
+                };
 			}
 
 			Instance.weapons.Clear();

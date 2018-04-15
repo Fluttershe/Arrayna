@@ -98,8 +98,8 @@ namespace WeaponAssemblage
 	[Serializable]
 	public class BasicPort : MonoPort
 	{
-		[SerializeField]
-		protected MultiSelectablePartType suitableType;
+        [SerializeField]
+        protected MultiSelectablePartType suitableType = new MultiSelectablePartType();
 		public override MultiSelectablePartType SuitableType => suitableType;
 
 		[SerializeField]

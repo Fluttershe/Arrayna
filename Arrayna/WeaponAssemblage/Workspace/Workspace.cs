@@ -11,12 +11,14 @@ namespace WeaponAssemblage.Workspace
 	/// </summary>
 	public class Workspace : MonoBehaviour
 	{
-		#region Fields
+        #region Fields
 
-		/// <summary>
-		/// Backing field of <see cref="Instance"/>
-		/// </summary>
-		private static Workspace _instance;
+        public AudioSource ka;
+
+        /// <summary>
+        /// Backing field of <see cref="Instance"/>
+        /// </summary>
+        private static Workspace _instance;
 
 		/// <summary>
 		/// Backing field of <see cref="IsPointerInPartlist"/>
@@ -247,6 +249,8 @@ namespace WeaponAssemblage.Workspace
 			slavePart.transform.parent = ((MonoPart)masterPort.Part).transform;
 			slavePort.transform.parent = slavePart.transform;
 			Debug.Log($"Set {slavePart.name}'s parent to {slavePart.transform.parent.name}");
+
+            Instance.ka.Play();
 			return true;
 		}
 

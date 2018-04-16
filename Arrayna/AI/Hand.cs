@@ -8,18 +8,17 @@ public class Hand : MonoBehaviour
     public MonoWeapon weapon;
 
     public AudioClip reload;
-
+    public Animator reloading;
     bool huandan;
 
     float fen;
-
     float zong;
 
     public Text code;
-
     public Text ammoNum;
 
-    public Animator reloading;
+    public Text kill;
+    public Text gameTime;
 
     void Awake()
     {
@@ -34,6 +33,9 @@ public class Hand : MonoBehaviour
 
     void Update()
     {
+        kill.text = "杀敌数：" + CreatPlayer.killNum;
+        gameTime.text = "剩余时间：" + CreatPlayer.time;
+
         if (!TestPlayer.kaiguan)
         {
             //获取鼠标的坐标，鼠标是屏幕坐标，Z轴为0，这里不做转换  

@@ -301,9 +301,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 1825155166668722, guid: be7f76c4dfc2e1047a8c53d28abd06c2, type: 2}
-  time: 0
   kill: 0
   huanhu: {fileID: 493344722}
+  shengli: {fileID: 8300000, guid: 0e4d321aa005e0644a1a4fadfc89d0c0, type: 3}
 --- !u!82 &119439182
 AudioSource:
   m_ObjectHideFlags: 0

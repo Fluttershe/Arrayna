@@ -1,8 +1,9 @@
-Destroying agent AWM枪身V1
+Destroying agent M4A1枪身V1
 Destroying agent AK47枪管V1
 Destroying agent A2弹夹V1
 Destroying agent 9mm
 ReturningAK47枪身V1
+ReturningAWM枪身V1
 ReturningA1枪身V1
 ReturningA2枪身V1
 ReturningA3枪身V1
@@ -32,12 +33,12 @@ ReturningA1红外V1
 ReturningA1消音V1
 ReturningA1消音V2
 ReturningA2枪托V1
-ReturningM4A1枪身V1
-Destroying agent AWM枪身V1
+Destroying agent M4A1枪身V1
 Destroying agent A2弹夹V1
 Destroying agent AK47枪管V1
 Destroying agent 9mm
 ReturningAK47枪身V1
+ReturningAWM枪身V1
 ReturningA1枪身V1
 ReturningA2枪身V1
 ReturningA3枪身V1
@@ -67,4 +68,3 @@ ReturningA1红外V1
 ReturningA1消音V1
 ReturningA1消音V2
 ReturningA2枪托V1
-ReturningM4A1枪身V1

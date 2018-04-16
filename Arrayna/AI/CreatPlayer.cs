@@ -9,7 +9,7 @@ public class CreatPlayer : MonoBehaviour
 
 
     //游戏时间
-    public int time;
+    public static int time;
     //击杀目标
     public int kill;
     //击杀数量
@@ -19,6 +19,8 @@ public class CreatPlayer : MonoBehaviour
 
     //欢呼声
     public AudioSource huanhu;
+    //胜利声
+    public AudioClip shengli;
     //过关开关
     public static bool win;
 
@@ -38,12 +40,21 @@ public class CreatPlayer : MonoBehaviour
             kill = 3;
             Invoke("GameOver", time);
         }
+        InvokeRepeating("TimeDown", 0, 1);
+    }
+
+    void TimeDown()
+    {
+        if (time > 0)
+        {
+            time -= 1;
+        }
     }
 
     void GameOver()
     {
         huanhu.Play();
-        win = true;
+        AudioSource.PlayClipAtPoint(shengli, transform.position);
         if (Menu.level == 1)
         {
             Menu.roomNum[1, Menu.level] = true;
@@ -56,5 +67,6 @@ public class CreatPlayer : MonoBehaviour
                 Menu.roomNum[3, Menu.level] = true;
             }
         }
+        win = true;
     }
 }

@@ -30,21 +30,24 @@ public class CreatAI : MonoBehaviour
 
     void SuiJiShengCheng()
     {
-        if (ranD < 30)
+        if (!CreatPlayer.win)
         {
-            ranS = Random.Range(num, num + 2);
-
-            switch (ranS)
+            if (ranD < 30)
             {
-                case 1:
-                    Instantiate(oneAI,  transform.position, Quaternion.identity);
-                    break;
-                case 2:
-                    Instantiate(twoAI, transform.position, Quaternion.identity);
-                    break;
-            }
+                ranS = Random.Range(num, num + 2);
 
-            ranD += 1;
+                switch (ranS)
+                {
+                    case 1:
+                        Instantiate(oneAI, transform.position, Quaternion.identity);
+                        break;
+                    case 2:
+                        Instantiate(twoAI, transform.position, Quaternion.identity);
+                        break;
+                }
+
+                ranD += 1;
+            }
         }
     }
 }

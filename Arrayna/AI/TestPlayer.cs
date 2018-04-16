@@ -26,10 +26,9 @@ public class TestPlayer : MonoBehaviour
 
     //死亡开关
     public static bool kaiguan;
-
     public AudioClip siwang;
-
     public AudioClip huanhu;
+    public AudioClip shibai;
 
     void Awake()
     {
@@ -44,7 +43,7 @@ public class TestPlayer : MonoBehaviour
     {
         if (CreatPlayer.win)
         {
-            InvokeRepeating("Dead", 2, 0);
+            Invoke("Dead", 2);
         }
 
         if (!kaiguan)
@@ -91,6 +90,7 @@ public class TestPlayer : MonoBehaviour
             {
                 AudioSource.PlayClipAtPoint(siwang, transform.localPosition);
                 AudioSource.PlayClipAtPoint(huanhu, transform.localPosition);
+                AudioSource.PlayClipAtPoint(shibai, transform.localPosition);
                 kaiguan = true;
             }
             player.SetBool("dead", true);

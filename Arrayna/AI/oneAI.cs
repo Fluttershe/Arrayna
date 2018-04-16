@@ -153,11 +153,6 @@ public class oneAI : MonoBehaviour
     //死亡状态
     void SiWang()
     {
-        if (!CreatPlayer.win)
-        {
-            CreatAI.ranD--;
-            CreatPlayer.killNum++;
-        }
         Enemy.SetBool("dead", true);
         if (!kaiguan)
         {
@@ -170,6 +165,11 @@ public class oneAI : MonoBehaviour
 
     void Dead()
     {
+        if (!CreatPlayer.win)
+        {
+            CreatAI.ranD--;
+            CreatPlayer.killNum++;
+        }
         Destroy(gameObject);
     }
 }

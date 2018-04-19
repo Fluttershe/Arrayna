@@ -23,6 +23,7 @@ public class CreatPlayer : MonoBehaviour
     public static int killNum;
     //目标开关
     public static bool anquanjuli;
+    public static bool anquanxiaoxiong;
 
     //欢呼声
     public AudioSource huanhu;
@@ -35,6 +36,7 @@ public class CreatPlayer : MonoBehaviour
     {
         KaiShi();
         anquanjuli = false;
+        anquanxiaoxiong = false;
         win = false;
         time = 0;
         killNum = 0;
@@ -90,92 +92,152 @@ public class CreatPlayer : MonoBehaviour
 
         if (Menu.level == 1)
         {
-            Menu.roomNum[1, Menu.level] = true;
+            if (!Menu.roomNum[1, Menu.level] == true)
+            {
+                Menu.roomNum[1, Menu.level] = true;
+                Menu.balabala[1] += 0.333f;
+            }
             if (killNum >= kill)
             {
-                Menu.roomNum[2, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Si_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Ba_V1")));
+                if (!Menu.roomNum[2, Menu.level] == true)
+                {
+                    Menu.roomNum[2, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Si_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Ba_V1")));
+                    Menu.balabala[1] += 0.333f;
+                }
             }
             if (!anquanjuli)
             {
-                Menu.roomNum[3, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("M4A1_R_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_M_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("M4A1_B_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("M4A1_St_V1")));
+                if (!Menu.roomNum[3, Menu.level] == true)
+                {
+                    Menu.roomNum[3, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("M4A1_R_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_M_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("M4A1_B_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("M4A1_St_V1")));
+                    Menu.balabala[1] += 0.333f;
+                }
             }
         }
         if (Menu.level == 2)
         {
-            Menu.roomNum[1, Menu.level] = true;
+            if (!Menu.roomNum[1, Menu.level] == true)
+            {
+                Menu.roomNum[1, Menu.level] = true;
+                Menu.balabala[2] += 0.333f;
+            }
             if (time <= 60)
             {
-                Menu.roomNum[2, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_Si_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_A_V1")));
+                if (!Menu.roomNum[2, Menu.level] == true)
+                {
+                    Menu.roomNum[2, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_Si_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_A_V1")));
+                    Menu.balabala[2] += 0.333f;
+                }
             }
             if (time <= 35)
             {
-                Menu.roomNum[3, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_R_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_M_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_B_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_St_V1")));
+                if (!Menu.roomNum[3, Menu.level] == true)
+                {
+                    Menu.roomNum[3, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_R_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_M_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_B_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_St_V1")));
+                    Menu.balabala[2] += 0.333f;
+                }
             }
         }
         if (Menu.level == 3)
         {
-            Menu.roomNum[1, Menu.level] = true;
+            if (!Menu.roomNum[1, Menu.level] == true)
+            {
+                Menu.roomNum[1, Menu.level] = true;
+                Menu.balabala[3] += 0.333f;
+            }
             if (killNum <= kill)
             {
-                Menu.roomNum[2, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("AWM_Si_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_A_V2")));
+                if (!Menu.roomNum[2, Menu.level] == true)
+                {
+                    Menu.roomNum[2, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("AWM_Si_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_A_V2")));
+                    Menu.balabala[3] += 0.333f;
+                }
             }
             if (!anquanjuli)
             {
-                Menu.roomNum[3, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("AWM_R_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A4_M_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A5_M_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_St_V2")));
+                if (!Menu.roomNum[3, Menu.level] == true)
+                {
+                    Menu.roomNum[3, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("AWM_R_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A4_M_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A5_M_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_St_V2")));
+                    Menu.balabala[3] += 0.333f;
+                }
             }
         }
         if (Menu.level == 4)
         {
-            Menu.roomNum[1, Menu.level] = true;
+            if (!Menu.roomNum[1, Menu.level] == true)
+            {
+                Menu.roomNum[1, Menu.level] = true;
+                Menu.balabala[4] += 0.333f;
+            }
             if (killNum <= kill)
             {
-                Menu.roomNum[2, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("7.62mm")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_Si_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Ba_V2")));
+                if (!Menu.roomNum[2, Menu.level] == true)
+                {
+                    Menu.roomNum[2, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("7.62mm")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_Si_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Ba_V2")));
+                    Menu.balabala[4] += 0.333f;
+                }
             }
-            if (anquanjuli)
+            if (anquanxiaoxiong)
             {
-                Menu.roomNum[3, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_R_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_M_V2")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_B_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("AK47_St_V2")));
+                if (!Menu.roomNum[3, Menu.level] == true)
+                {
+                    Menu.roomNum[3, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_R_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_M_V2")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_B_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("AK47_St_V2")));
+                    Menu.balabala[4] += 0.333f;
+                }
             }
         }
         if (Menu.level == 5)
         {
-            Menu.roomNum[1, Menu.level] = true;
-            if (anquanjuli)
+            if (!Menu.roomNum[1, Menu.level] == true)
             {
-                Menu.roomNum[3, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Ad_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_St_V1")));
+                Menu.roomNum[1, Menu.level] = true;
+                Menu.balabala[5] += 0.333f;
+            }
+            if (anquanxiaoxiong)
+            {
+                if (!Menu.roomNum[2, Menu.level] == true)
+                {
+                    Menu.roomNum[2, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_Ad_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A2_St_V1")));
+                    Menu.balabala[5] += 0.333f;
+                }
             }
             if (time <= 30)
             {
-                Menu.roomNum[3, Menu.level] = true;
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_R_V1")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_M_V3")));
-                PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_B_V1")));
+                if (!Menu.roomNum[3, Menu.level] == true)
+                {
+                    Menu.roomNum[3, Menu.level] = true;
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_R_V1")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A3_M_V3")));
+                    PlayerWeaponStorage.ReturnPart(Instantiate(WAPrefabStore.GetPartPrefab("A1_B_V1")));
+                    Menu.balabala[5] += 0.333f;
+                }
             }
         }
 

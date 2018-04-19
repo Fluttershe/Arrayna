@@ -12,12 +12,15 @@ public class Menu : MonoBehaviour
     //房间编号
     public static int level;
 
+    public static float[] balabala;
+
     void Awake()
     {
         //禁止删除
         GameObject.DontDestroyOnLoad(gameObject);
         //更新房间信息
         roomNum = new bool[4,num+1];
+        balabala = new float[num + 1];
         //解锁第一个房间
         roomNum[0,1] = true;
         level = 1;

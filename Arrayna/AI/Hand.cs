@@ -28,7 +28,7 @@ public class Hand : MonoBehaviour
         weapon.transform.localPosition = new Vector3(-0.5f,0.8f,-3);
         weapon.transform.localRotation = Quaternion.Euler(0, 0, 90);
 		var ang = weapon.transform.rotation * weapon.transform.rotation;
-        code.text = Random.Range(0, 10) + " " + Random.Range(0, 10) + " " + Random.Range(0, 10);
+        code.text = "ID:" + Random.Range(0, 10) + Random.Range(0, 10) +  Random.Range(0, 10) + Random.Range(0, 10) + Random.Range(0, 10) + Random.Range(0, 10) + Random.Range(0, 10);
     }
 
     void Update()

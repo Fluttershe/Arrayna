@@ -108,7 +108,7 @@ public class TestPlayer : MonoBehaviour
     {
         if (collision.tag == "bear")
         {
-            CreatPlayer.anquanjuli = true;
+            CreatPlayer.anquanxiaoxiong = true;
             Destroy(collision.gameObject);
         }   
     }

@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4335184097062640}
   - component: {fileID: 212740818648107186}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 92535487923254552}
   - component: {fileID: 124492404702341456}
   - component: {fileID: 81168203216128302}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 224847626550425998}
   - component: {fileID: 222166495148715298}
   - component: {fileID: 114324673100766510}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: information
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 224979015404019906}
   - component: {fileID: 222873581158126604}
   - component: {fileID: 114376430548239648}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: timeUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4387846144315348}
   - component: {fileID: 114368783689487714}
   - component: {fileID: 82895061727800388}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 224644186782859592}
   - component: {fileID: 222906563587283840}
   - component: {fileID: 114607258460004026}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: killUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4491040224116930}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4147220629016490}
   - component: {fileID: 212579581977441716}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 224842208168805486}
   - component: {fileID: 222508063271102288}
   - component: {fileID: 114600252239483794}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ammoNum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 224246365554648700}
   - component: {fileID: 222823866772211778}
   - component: {fileID: 114080942399514832}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: rec
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4358308343556422}
   - component: {fileID: 212156435642405174}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: hand (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 222045039282137794}
   - component: {fileID: 114063070502895830}
   - component: {fileID: 95181456388959058}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ammo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 223507764080060794}
   - component: {fileID: 114693420722548096}
   - component: {fileID: 114140083209966850}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4323840151227228}
   - component: {fileID: 114715196390093802}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 224063844068047972}
   - component: {fileID: 222616701223289450}
   - component: {fileID: 114952913536309360}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: code
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 61532971775145966}
   - component: {fileID: 114253241011622768}
   - component: {fileID: 50534776132672556}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -292,7 +292,7 @@ GameObject:
   - component: {fileID: 4755539358005934}
   - component: {fileID: 212050276419379504}
   - component: {fileID: 95027903933289644}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: 1_092
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +308,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4110084792086586}
   - component: {fileID: 212928835064785530}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,7 +349,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1299010119412628}
   m_LocalRotation: {x: -0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.4, y: 0.58, z: 0.218}
+  m_LocalPosition: {x: -0.321, y: 0.267, z: -4.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4358308343556422}
@@ -391,7 +391,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1503184578190118}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -0.052, y: 0.902, z: -0.169}
+  m_LocalPosition: {x: -0.249, y: 1.207, z: -0.169}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4147220629016490}

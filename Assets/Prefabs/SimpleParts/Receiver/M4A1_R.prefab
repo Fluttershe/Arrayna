@@ -69,6 +69,7 @@ GameObject:
   - component: {fileID: 4306683764076440}
   - component: {fileID: 61062751098560676}
   - component: {fileID: 114800541646537640}
+  - component: {fileID: 114067369224399584}
   m_Layer: 8
   m_Name: M4A1_R
   m_TagString: Untagged
@@ -276,6 +277,17 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.92, y: 0.79}
   m_EdgeRadius: 0
+--- !u!114 &114067369224399584
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1451958224580670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1190838562, guid: eaf8df302a0fafb4280a85f9e6598363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114095968932758250
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -404,8 +416,8 @@ MonoBehaviour:
     - 6
     - 6
     - 0
-    - 10
-    - 3
+    - 50
+    - 0
   modValue:
     keys: 0000000001000000020000000300000004000000050000000600000007000000
     vals:

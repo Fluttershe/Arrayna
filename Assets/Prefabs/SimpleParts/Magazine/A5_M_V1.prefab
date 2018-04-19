@@ -148,10 +148,10 @@ MonoBehaviour:
     vals:
     - 0
     - 0
-    - 12
+    - 10
     - 0.5
     - 0
-    - 0.2
+    - 2
     - 0
     - 0
   modValue:

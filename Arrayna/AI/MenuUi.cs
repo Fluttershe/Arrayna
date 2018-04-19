@@ -18,9 +18,33 @@ public class MenuUi : MonoBehaviour
         {
             case 1:
                 code.text = "代号：本能";
-                mission1.text = "任务1：坚持10秒\n(解锁新关卡)";
-                mission2.text = "任务2：击杀3个敌人\n(解锁新零件)";
-                mission3.text = "任务3：与敌人距离不小于2米\n(解锁新零件)";
+                mission1.text = "任务1：坚持30秒\n(解锁新关卡)";
+                mission2.text = "任务2：击杀10个敌人\n(解锁新零件)";
+                mission3.text = "任务3：与敌人距离不小于1米\n(解锁新零件)";
+                break;
+            case 2:
+                code.text = "代号：启示";
+                mission1.text = "任务1：击杀30名敌人\n(暂无)";
+                mission2.text = "任务2：1分钟内完成\n(解锁新零件)";
+                mission3.text = "任务3：35秒内完成\n(解锁新零件)";
+                break;
+            case 3:
+                code.text = "代号：危机";
+                mission1.text = "任务1：坚持2分钟\n(暂无)";
+                mission2.text = "任务2：与敌人距离不小于1米\n(解锁新零件)";
+                mission3.text = "任务3：杀敌数不能达到40\n(解锁新零件)";
+                break;
+            case 4:
+                code.text = "代号：抉择";
+                mission1.text = "任务1：坚持1分钟\n(暂无)";
+                mission2.text = "任务2：杀敌数不能达到20\n(解锁新零件)";
+                mission3.text = "任务3：找到粉红毛绒熊\n(解锁新零件)";
+                break;
+            case 5:
+                code.text = "代号：风暴";
+                mission1.text = "任务1：击杀30个敌人\n(暂无)";
+                mission2.text = "任务2：找到粉红毛绒熊\n(解锁新零件)";
+                mission3.text = "任务3：30秒内完成\n(解锁新零件)";
                 break;
         }
 

@@ -103,4 +103,13 @@ public class TestPlayer : MonoBehaviour
         PlayerWeaponStorage.ReturnWeapon(weapon);
         SceneManager.LoadScene("Menu");
     }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "bear")
+        {
+            CreatPlayer.anquanjuli = true;
+            Destroy(collision.gameObject);
+        }   
+    }
 }

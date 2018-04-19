@@ -914,7 +914,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 2
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -1290,7 +1290,7 @@ RectTransform:
   m_GameObject: {fileID: 1449976653178714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 12.682271, y: 5.815504, z: 2.3881748}
+  m_LocalScale: {x: 7.844982, y: 4.4066114, z: 1.477274}
   m_Children:
   - {fileID: 224847626550425998}
   - {fileID: 224979015404019906}

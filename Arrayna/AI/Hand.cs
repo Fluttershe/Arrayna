@@ -34,7 +34,7 @@ public class Hand : MonoBehaviour
     void Update()
     {
         kill.text = "杀敌数：" + CreatPlayer.killNum;
-        gameTime.text = "剩余时间：" + CreatPlayer.time;
+        gameTime.text = "挑战时间：" + CreatPlayer.time;
 
         if (!TestPlayer.kaiguan)
         {

@@ -68,7 +68,7 @@ public class oneAI : MonoBehaviour
             AiSi = 3;
         }
 
-        if (julishu < 4)
+        if (julishu < 2)
         {
             CreatPlayer.anquanjuli = true;
         }
@@ -96,6 +96,17 @@ public class oneAI : MonoBehaviour
     //追击状态
     void ZhuiJi()
     {
+        Vector3 player = Player.transform.position;
+        //当目标向量的Y轴大于等于0时候  
+        if (player.x >= transform.position.x)
+        {
+            transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+        }
+        else if (player.x < transform.position.x)
+        {
+            transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        }
+
         num = gongjiyanchi;
 
         if (TestPlayer.kaiguan)
@@ -110,7 +121,11 @@ public class oneAI : MonoBehaviour
         }
 
         transform.position = Vector3.MoveTowards(transform.position, Player.position, sudu * Time.deltaTime);
+    }
 
+    //攻击状态
+    void GongJi()
+    {
         Vector3 player = Player.transform.position;
         //当目标向量的Y轴大于等于0时候  
         if (player.x >= transform.position.x)
@@ -121,11 +136,7 @@ public class oneAI : MonoBehaviour
         {
             transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
         }
-    }
 
-    //攻击状态
-    void GongJi()
-    {
         Enemy.SetBool("attack", true);
         sudu = 0;
         if (num > 0)

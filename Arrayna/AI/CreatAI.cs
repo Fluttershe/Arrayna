@@ -15,17 +15,33 @@ public class CreatAI : MonoBehaviour
     //AI种类
     public GameObject oneAI;
     public GameObject twoAI;
+    public GameObject threeAI;
+    public GameObject fourAI;
 
     void Awake()
     {
         //房间等级
-        if (Menu.level < 6)
+        switch (Menu.level)
         {
-            num = 1;
+            case 1:
+                num = 1;
+                break;
+            case 2:
+                num = 2;
+                break;
+            case 3:
+                num = 1;
+                break;
+            case 4:
+                num = 3;
+                break;
+            case 5:
+                num = 4;
+                break;
         }
 
         ranD = 0;
-        InvokeRepeating("SuiJiShengCheng", 5,Random.Range(1,4));
+        InvokeRepeating("SuiJiShengCheng", 5,Random.Range(2,5));
     }
 
     void SuiJiShengCheng()
@@ -34,15 +50,71 @@ public class CreatAI : MonoBehaviour
         {
             if (ranD < 30)
             {
-                ranS = Random.Range(num, num + 2);
+                ranS = Random.Range(1,11);
 
-                switch (ranS)
+                switch (num)
                 {
                     case 1:
-                        Instantiate(oneAI, transform.position, Quaternion.identity);
+                        if (Menu.level == 1)
+                        {
+                            if (ranS >= 8)
+                            {
+                                Instantiate(oneAI, transform.position, Quaternion.identity);
+                            }
+                            else
+                            {
+                                Instantiate(twoAI, transform.position, Quaternion.identity);
+                            }
+                        }
+                        else
+                        {
+                            if (ranS >= 8)
+                            {
+                                Instantiate(threeAI, transform.position, Quaternion.identity);
+                            }
+                            else
+                            {
+                                Instantiate(fourAI, transform.position, Quaternion.identity);
+                            }
+                        }
                         break;
                     case 2:
-                        Instantiate(twoAI, transform.position, Quaternion.identity);
+                        if (ranS >= 7)
+                        {
+                            Instantiate(threeAI, transform.position, Quaternion.identity);
+                        }
+                        else
+                        {
+                            Instantiate(fourAI, transform.position, Quaternion.identity);
+                        }
+                        break;
+                    case 3:
+                        if (ranS >= 6)
+                        {
+                            Instantiate(oneAI, transform.position, Quaternion.identity);
+                        }
+                        else
+                        {
+                            Instantiate(twoAI, transform.position, Quaternion.identity);
+                        }
+                        break;
+                    case 4:
+                        ranS = Random.Range(1,5);
+                        switch (ranS)
+                        {
+                            case 1:
+                                Instantiate(oneAI, transform.position, Quaternion.identity);
+                                break;
+                            case 2:
+                                Instantiate(twoAI, transform.position, Quaternion.identity);
+                                break;
+                            case 3:
+                                Instantiate(threeAI, transform.position, Quaternion.identity);
+                                break;
+                            case 4:
+                                Instantiate(fourAI, transform.position, Quaternion.identity);
+                                break;
+                        }
                         break;
                 }
 
